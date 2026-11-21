@@ -197,20 +197,23 @@ sources:
     description: "Parlamentarische Vorstösse (Motionen, Postulate) zu Migration, Integration und IT-Arbeitsmarkt."
     category: ["E"]
     adapter_type: "rest_api"
-    endpoint: "https://ws.parlament.ch/odata.svc/Business"   # geprüft 2026-11-21: 200 (HTTP/1.1)
+    endpoint: "https://ws.parlament.ch/odata.svc/Business"   # geprüft 2026-11-21: 200 mit Filter
+    timeout: 60
+    # Ohne $filter antwortet der Dienst erst nach ~20 s, $orderby läuft ins Timeout.
+    # Der Datumsfilter ist schnell (<2 s) und liefert die seit 2026 eingereichten Geschäfte.
     params:
-      "$top": 30
-      "$orderby": "Modified desc"
+      "$top": 50
+      "$filter": "Language eq 'DE' and SubmissionDate gt datetime'2026-01-01T00:00:00'"
       "$format": "json"
     items_path: "d"
     filter_keywords: ["Asyl", "Status S", "Status F", "Integration", "Fachkräftemangel", "Stellenmeldepflicht"]
     field_map:
       id: "BusinessShortNumber"
       title: "{Title}"
-      summary: "{Abstract}"
+      summary: "{BusinessTypeName}, eingereicht von {SubmittedBy}"
       url: "https://www.parlament.ch/de/ratsbetrieb/suche-curia-vista/geschaeft?AffairId={ID}"
-      published_at: "Modified"
-      tags: "Parlament,{SubmissionTypeName}"
+      published_at: "SubmissionDate"
+      tags: "Parlament,{TagNames}"
     refresh_rate: "weekly"
 
   # ----------------------------------------------------------------------------

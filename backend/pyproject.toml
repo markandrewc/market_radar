@@ -3,6 +3,7 @@ name = "market-radar-backend"
 version = "0.0.1"
 requires-python = ">=3.12"
 dependencies = [
+    "certifi>=2026.11.20",
     "fastapi>=0.115",
     "psycopg[binary]>=3.2",
     "pydantic>=2.9",

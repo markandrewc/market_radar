@@ -9,6 +9,7 @@ import hashlib
 import json
 import math
 import re
+import ssl
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 from html import unescape as html_unescape
@@ -21,8 +22,9 @@ from .config import Defaults, SourceConfig, expand_env
 USER_AGENT = "market-radar/1.0 (+https://github.com/markandrewc/market_radar)"
 MAX_BYTES = 8 * 1024 * 1024
 
-_TEMPLATE = re.compile(r"\{([^{}]+)\}")
-_TAG_SPLIT = re.compile(r"[,;]")
+_TEMPLATE = re.compile(r"(?<!\$)\{([^{}]+)\}")  # not ${ENV}
+
+_TAG_SPLIT = re.compile(r"[,;|]")
 _HTML_TAG = re.compile(r"<[^>]+>")
 _WHITESPACE = re.compile(r"\s+")
 _ODATA_DATE = re.compile(r"^/Date\((-?\d+)(?:[+-]\d{4})?\)/$")
@@ -34,6 +36,15 @@ class ConnectorError(RuntimeError):
     """The source could not be read, or its payload is not what the adapter expects."""
 
 
+def _ssl_context() -> ssl.SSLContext:
+    """Use certifi's bundle when available: some Python builds ship without a usable CA store."""
+    try:
+        import certifi
+        return ssl.create_default_context(cafile=certifi.where())
+    except Exception:  # pragma: no cover - certifi is a dependency, this is the safety net
+        return ssl.create_default_context()
+
+
 def fetch(url: str, *, headers: dict[str, str] | None = None, timeout: float = 20.0) -> bytes:
     """GET a URL (http(s) or file). Only used on URLs validated by the config loader."""
     target = expand_env(url)
@@ -42,8 +53,9 @@ def fetch(url: str, *, headers: dict[str, str] | None = None, timeout: float = 2
         "Accept": "*/*",
         **{name: expand_env(value) for name, value in (headers or {}).items()},
     })
+    tls = {"context": _ssl_context()} if target.startswith("https://") else {}
     try:
-        with urlopen(request, timeout=timeout) as response:  # noqa: S310 - schemes restricted in the config loader
+        with urlopen(request, timeout=timeout, **tls) as response:  # noqa: S310 - schemes restricted by the loader
             body = response.read(MAX_BYTES + 1)
     except Exception as exc:  # HTTPError, URLError, timeout, missing file
         raise ConnectorError(f"{target}: {exc}") from exc

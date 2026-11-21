@@ -198,6 +198,8 @@ class SourceConfig(BaseModel):
     def _endpoint_choice(self) -> SourceConfig:
         if bool(self.endpoint) == bool(self.endpoints):
             raise ValueError("set exactly one of 'endpoint' or 'endpoints'")
+        if self.pages > 1 and any("{page}" not in url for url in self.urls):
+            raise ValueError("pages > 1 needs a {page} placeholder in the endpoint")
         return self
 
     @property

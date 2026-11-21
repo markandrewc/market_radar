@@ -7,7 +7,7 @@
 from collections.abc import Callable
 
 from ..schemas import MarketItem
-from . import csv_url, rss_atom
+from . import csv_url, rest_api, rss_atom
 from .base import ConnectorError
 from .config import Defaults, SourceConfig
 
@@ -15,6 +15,7 @@ Adapter = Callable[..., list[MarketItem]]
 
 ADAPTERS: dict[str, Adapter] = {
     "csv_url": csv_url.fetch_items,
+    "rest_api": rest_api.fetch_items,
     "rss_atom": rss_atom.fetch_items,
 }
 
