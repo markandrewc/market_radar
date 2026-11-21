@@ -5,6 +5,7 @@ dist
 .env
 .env.local
 .DS_Store
+/.market-radar/
 
 # Python backend
 .venv

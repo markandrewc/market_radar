@@ -1,3 +1,5 @@
+from concurrent.futures import ThreadPoolExecutor
+
 import pytest
 from fastapi.testclient import TestClient
 
@@ -48,6 +50,16 @@ def test_demand_and_skills(client):
     assert s["skills"][0]["skill"] == "React"
     assert s["skills"][0]["share"] == 50.0       # 60 / 120
     assert s["skills"][0]["changePct"] == 25.0   # 40 % -> 50 %
+
+
+def test_parallel_dashboard_reads(client):
+    _seed()
+    requests = ["/api/demand", "/api/skills?role=web"] * 8
+    with ThreadPoolExecutor(max_workers=8) as workers:
+        responses = list(workers.map(client.get, requests))
+    assert all(response.status_code == 200 for response in responses)
+    assert all(response.json()[0]["current"] == 120 for response in responses[::2])
+    assert all(response.json()["skills"][0]["share"] == 50 for response in responses[1::2])
 
 
 TOKEN = {"Authorization": "Bearer secret"}

@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "sources": [
+    {
+      "id": "adzuna",
+      "name": "Adzuna Jobs API",
+      "access": "credentials-required",
+      "sourceUrl": "https://developer.adzuna.com/swagger/spec/test2.json",
+      "endpointUrl": "https://api.adzuna.com/v1/api/jobs/ch/search/1",
+      "scope": "The official search specification lists Switzerland (ch). An app_id and app_key are required. A live Swiss query and permission to redistribute results still require confirmation."
+    },
+    {
+      "id": "esco",
+      "name": "EU ESCO occupations and skills",
+      "access": "public",
+      "sourceUrl": "https://esco.ec.europa.eu/en/about-esco/escopedia/escopedia/esco-api",
+      "scope": "Multilingual occupation and skill taxonomy. The occupation search supplies terminology, not Swiss job demand. An official downloadable classification is available.",
+      "downloadUrl": "https://esco.ec.europa.eu/en/use-esco/download",
+      "probe": {
+        "url": "https://ec.europa.eu/esco/api/search?type=occupation&language=en&text=software%20developer&limit=1",
+        "kind": "esco-search"
+      }
+    },
+    {
+      "id": "bfs-statpop",
+      "name": "BFS STATPOP population",
+      "access": "public",
+      "sourceUrl": "https://www.pxweb.bfs.admin.ch/pxweb/de/px-x-0103010000_425/px-x-0103010000_425/px-x-0103010000_425.px/",
+      "scope": "Annual permanent and non-permanent resident population by canton and citizenship. The referenced cube is the 2025 release; population counts and new work permits are separate measures.",
+      "probe": {
+        "url": "https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010000_425/px-x-0103010000_425.px",
+        "kind": "pxweb-metadata"
+      }
+    },
+    {
+      "id": "bfs-besta",
+      "name": "BFS BESTA employment in NOGA 62–63",
+      "access": "public",
+      "sourceUrl": "https://statistik.admin.ch/de/themen/industrie-dienstleistungen/beschaeftigte-offene-stellen",
+      "releaseUrl": "https://statistik.admin.ch/de/asset/36829781",
+      "scope": "Quarterly Swiss full-time equivalents in IT and information services (NOGA 62–63), an employment measure. The referenced XLSX is the Q2 2026 edition. BFS requires source attribution.",
+      "probe": {
+        "url": "https://dam-api.bfs.admin.ch/hub/api/dam/assets/36829781/master",
+        "kind": "xlsx"
+      }
+    },
+    {
+      "id": "sem-migration",
+      "name": "SEM foreign population and permits",
+      "access": "public",
+      "sourceUrl": "https://www.sem.admin.ch/de/auslaenderstatistik-2026",
+      "releaseUrl": "https://www.sem.admin.ch/de/auslaenderstatistik-oktober-2026",
+      "scope": "Monthly administrative statistics. The sample is table 2-20, October 2026 stock of permanent foreign residents by permit type, published on 19 November 2026. Use the yearly index to discover monthly releases.",
+      "probe": {
+        "url": "https://www.sem.admin.ch/dam/de/sd-web/1R58B14ya0RG/2-20-best-stae-bewi-2026-10-d.xlsx",
+        "kind": "xlsx"
+      }
+    },
+    {
+      "id": "opendata-swiss",
+      "name": "opendata.swiss catalogue",
+      "access": "public",
+      "sourceUrl": "https://handbook.opendata.swiss/de/content/nutzen/api-nutzen.html",
+      "scope": "CKAN dataset discovery and resource links. Each publisher supplies its own usage terms, geography and release cadence.",
+      "probe": {
+        "url": "https://ckan.opendata.swiss/api/3/action/package_search?fq=organization%3Abundesamt-fur-statistik-bfs&q=STATPOP&rows=1",
+        "kind": "ckan-search"
+      }
+    },
+    {
+      "id": "parliament-ows",
+      "name": "Swiss Parliament Open Data Webservice",
+      "access": "credentials-required",
+      "sourceUrl": "https://www.parlament.ch/de/%C3%BCber-das-parlament/fakten-und-zahlen/open-data-web-services",
+      "endpointUrl": "https://ws.parl.ch/",
+      "scope": "Current parliamentary business and proceedings interface. Requires registration and an X-API-KEY header. Use the published OpenAPI specification for an authenticated integration."
+    },
+    {
+      "id": "parliament-odata",
+      "name": "Swiss Parliament legacy OData",
+      "access": "public",
+      "lifecycle": "legacy",
+      "sourceUrl": "https://www.parlament.ch/de/%C3%BCber-das-parlament/fakten-und-zahlen/open-data-web-services",
+      "scope": "Transitional public parliamentary business feed. The provider plans to retire ws.parlament.ch by the end of 2028. A returned parliamentary item does not establish current law.",
+      "probe": {
+        "url": "https://ws.parlament.ch/odata.svc/Business?$top=1&$select=ID,Title&$format=json",
+        "kind": "parliament-odata"
+      }
+    },
+    {
+      "id": "fedlex",
+      "name": "Fedlex federal legislation",
+      "access": "public",
+      "sourceUrl": "https://fedlex.data.admin.ch/de-CH/home",
+      "scope": "Federal legislation metadata and links to consolidated texts. The sample requests one metadata match for the Foreign Nationals and Integration Act (FNIA). Effective dates and consolidation versions require verification against each text.",
+      "probe": {
+        "url": "https://fedlex.data.admin.ch/sparqlendpoint",
+        "query": "SELECT ?act WHERE { VALUES ?act { <https://fedlex.data.admin.ch/eli/cc/2007/758> } ?act a ?type } LIMIT 1",
+        "kind": "fedlex-sparql"
+      }
+    },
+    {
+      "id": "sem-news",
+      "name": "SEM news and media releases",
+      "access": "public",
+      "sourceUrl": "https://www.sem.admin.ch/de/news-und-social-media",
+      "scope": "Official change signals and announcements. Verify the status and effective date of proposed rule changes in the published legal text.",
+      "probe": {
+        "url": "https://www.sem.admin.ch/de/news-und-social-media",
+        "kind": "html",
+        "match": "Medienmitteilungen"
+      }
+    }
+  ]
+}
