@@ -1,0 +1,42 @@
+# Lokale Umgebung, die der Railway-Umgebung entspricht: FastAPI + PostgreSQL.
+#   docker compose up --build
+#   -> http://localhost:8080
+#
+# Alternative ohne Docker: `cd backend && uv run python dev_db.py` (siehe backend/README.md).
+# Bewusst ein anderer DB-Port (55432), damit eine lokal laufende PostgreSQL-
+# Installation auf 5432 nicht kollidiert.
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: market_radar
+      POSTGRES_PASSWORD: market_radar
+      POSTGRES_DB: market_radar
+    ports:
+      - "55432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U market_radar -d market_radar"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      args:
+        # 0 = Frontend nutzt die API, 1 = Mock-Daten (Demo)
+        VITE_USE_MOCKS: "0"
+    environment:
+      DATABASE_URL: postgresql://market_radar:market_radar@db:5432/market_radar
+      INGEST_TOKEN: change-me
+      PORT: "8080"
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  db-data:

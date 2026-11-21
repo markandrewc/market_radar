@@ -1,118 +1,157 @@
 # Deployment auf Railway
 
-Die App ist ein reines Vite/React-Frontend (SPA). Für Railway heißt das: bauen und
-statisch ausliefern. Der SPA-Fallback ist zwingend nötig, weil `BrowserRouter`
-direkte Aufrufe wie `/skills` sonst als 404 beim Webserver landen.
+Die App läuft dort als **ein** Service: FastAPI bedient die API (`/api/...`) **und**
+liefert das gebaute React-Bundle aus (`dist/`). Die Daten liegen in einer
+Railway-PostgreSQL-Datenbank. Gleicher Origin für Frontend und API heißt: kein CORS,
+keine zweite Rechnung.
+
+```
+Railway-Projekt
+├── market_radar (Web/API)  ← Dockerfile, uvicorn auf $PORT
+│     ├── /api/...  FastAPI (Postgres via DATABASE_URL)
+│     └── /         gebautes React-Bundle (SPA-Fallback auf index.html)
+└── Postgres                ← DATABASE_URL
+```
 
 ## Was im Repo dafür liegt
 
 | Datei | Zweck |
 | --- | --- |
-| [`Dockerfile`](Dockerfile) | Multi-Stage-Build: `node:24-alpine` baut, `nginx:1.29-alpine` serviert |
-| [`nginx/default.conf.template`](nginx/default.conf.template) | Port aus `$PORT`, SPA-Fallback, Cache-Header, `/healthz` |
-| [`.dockerignore`](.dockerignore) | `node_modules`, `dist`, `.git`, `.env*` bleiben aus dem Image |
-| [`.env.example`](.env.example) | Dokumentation der Variablen (`VITE_USE_MOCKS`) |
+| [`Dockerfile`](Dockerfile) | Stage 1 `node:24-alpine` baut das Frontend, Stage 2 `python:3.12-slim` + `uv` startet uvicorn |
+| [`docker-compose.yml`](docker-compose.yml) | Lokale Umgebung wie auf Railway: App + PostgreSQL |
+| [`backend/app/db.py`](backend/app/db.py) | psycopg-3-Verbindung, Schema-Anlage beim Start |
+| [`backend/app/schema.sql`](backend/app/schema.sql) | Tabellen (idempotent, wird bei jedem Start angewendet) |
+| [`.env.example`](.env.example) | Alle Variablen dokumentiert |
+| [`.dockerignore`](.dockerignore) | hält `node_modules`, `dist`, `.venv`, Tests aus dem Image |
 
-Railway erkennt ein `Dockerfile` im Repo-Root automatisch — es braucht **kein**
-`railway.json` (siehe [Warum kein railway.json](#warum-kein-railwayjson)).
+Ein `railway.json` gibt es bewusst nicht: Config as Code ist abgekündigt
+(bestehende Dateien werden nur noch bis **1. Dez. 2026** gelesen, neue Services
+können es nicht mehr aktivieren). Das `Dockerfile` wird automatisch erkannt,
+Healthcheck-Pfad und Region sind zwei Klicks im Dashboard.
 
-## Variante A — GitHub-Repo verbinden (empfohlen)
+## Einrichten
 
-1. Railway → **New Project** → **Deploy from GitHub repo** → `markandrewc/market_radar`.
-   Jeder Push auf `main` deployt automatisch.
-2. Im Build-Log erscheint `Using detected Dockerfile!`; der Build dauert ca. 1–2 Minuten.
-3. **Settings → Deploy → Healthcheck Path**: `/healthz` eintragen
-   (Timeout 100 s reicht).
-4. **Settings → Networking → Generate Domain** für eine `*.up.railway.app`-Adresse,
-   oder eigene Domain über **Custom Domain** (CNAME auf das Railway-Ziel).
-5. **Variables** (optional, siehe unten): `VITE_USE_MOCKS=0`, wenn das Demo-Banner weg soll.
-6. **Settings → Region**: eine EU-Region wählen (z. B. `europe-west4`), damit die
-   Latenz für Nutzer:innen in der Schweiz klein bleibt.
+1. **Postgres anlegen**: Im Projekt **+ New → Database → Add PostgreSQL**.
+2. **Service deployen**: **+ New → GitHub Repo** → `markandrewc/market_radar`,
+   Branch `main`. Im Build-Log erscheint `Using detected Dockerfile!`.
+3. **Datenbank verbinden**: Beim Service **Variables → New Variable → Add
+   Reference** → `Postgres` → `DATABASE_URL` (erscheint als
+   `${{Postgres.DATABASE_URL}}`). Ohne diese Variable startet der Container
+   nicht – er bricht mit `RuntimeError: DATABASE_URL is not set` ab.
+4. **Healthcheck**: **Settings → Deploy → Healthcheck Path** = `/api/health`
+   (Timeout 100 s genügt; der Endpoint prüft auch die DB-Verbindung).
+5. **Ingest-Token**: Variable `INGEST_TOKEN` auf ein langes Zufallswort setzen
+   (`openssl rand -hex 32`). Ohne Token antworten alle Schreib-Endpunkte
+   (`/api/raw`, `/api/ingest`, `/api/transform`, `DELETE /api/sources/{id}`) mit `503`.
+6. **Domain**: **Settings → Networking → Generate Domain** für `*.up.railway.app`
+   oder **Custom Domain** mit CNAME.
+7. **Region**: eine EU-Region wählen (z. B. `europe-west4`) für kurze Latenz in
+   der Schweiz.
 
-Der Port muss nichts konfiguriert werden: nginx hört auf `$PORT` (Default 8080), und
-Railway setzt `PORT` selbst.
-
-## Variante B — Railway CLI
-
-```bash
-npm i -g @railway/cli
-railway login
-railway link          # Projekt auswählen
-railway up            # baut das Dockerfile und deployt
-railway logs          # Build-/Runtime-Logs
-```
+Der Port braucht keine Konfiguration: uvicorn bindet auf `$PORT` (Default 8080).
 
 ## Variablen
 
 | Variable | Wann | Wirkung |
 | --- | --- | --- |
-| `PORT` | von Railway gesetzt | Port, auf dem nginx lauscht (Default 8080) |
-| `VITE_USE_MOCKS` | Build-Zeit | `1`/unset = Banner „Demo data“ sichtbar, `0` = aus |
+| `DATABASE_URL` | von Postgres, per Referenz | Pflicht; ohne sie startet der Service nicht |
+| `PORT` | von Railway gesetzt | Port von uvicorn |
+| `INGEST_TOKEN` | selbst setzen | schaltet die Schreib-Endpunkte frei |
+| `VITE_USE_MOCKS` | Build-Zeit, Default `1` | `1` = Frontend zeigt Mock-Daten (Demo), `0` = Frontend liest `/api` |
 
-**Wichtig zu `VITE_*`:** Vite ersetzt diese Variablen beim **Build** durch literale
-Werte. Eine Änderung der Variable im Dashboard wirkt deshalb erst nach einem
-Redeploy. Das Dockerfile deklariert `ARG VITE_USE_MOCKS`, damit Railway den Wert
-als Build-Arg durchreicht.
+**`VITE_*` wirkt nur beim Build.** Vite ersetzt die Variable beim Bauen durch einen
+festen Wert; nach jeder Änderung ist ein Redeploy nötig. Das Dockerfile deklariert
+`ARG VITE_USE_MOCKS`, damit Railway den Wert als Build-Arg durchreicht.
 
-## Lokal testen (genau derselbe Weg wie auf Railway)
+## Datenbank
 
-```bash
-docker build -t market-radar .
-docker run --rm -p 8080:8080 -e PORT=8080 market-radar
-# -> http://localhost:8080
-curl -i http://localhost:8080/healthz        # 200 "ok"
-curl -i http://localhost:8080/skills         # 200, liefert index.html (SPA-Fallback)
+Das Schema wird bei jedem Start angewendet (`CREATE TABLE IF NOT EXISTS`, geschützt
+durch einen Advisory Lock für parallel startende Worker) – es gibt keinen
+Migrationsschritt und keine manuell vorzubereitende Datenbank. Neue Spalten in
+Zukunft brauchen ein Migrationswerkzeug (z. B. Alembic), das Schema ist bisher
+bewusst klein.
+
+Tabellen: `sources`, `raw_documents` (JSONB-Rohdaten), `roles`, `observations`.
+
+### Datenfluss – wichtig für den ersten Deploy
+
+```
+POST /api/raw  →  raw_documents (roh, dedupliziert per sha256)
+                        ↓ automatisch nach dem Upload
+                 Parser für die Quelle (backend/app/transform/parsers/)
+                        ↓ ersetzt die Zahlen der Quelle
+                  observations  →  GET /api/demand, /api/skills  →  Frontend
 ```
 
-Ohne Docker, für die Entwicklung:
+**Es ist noch kein Parser registriert** (`PARSERS = {}`). Hochgeladene Rohdaten
+bleiben deshalb mit Status `pending` liegen und das Dashboard bleibt leer – das
+ist der aktuelle Stand des Codes, kein Deployment-Fehler. Bis der erste Parser da
+ist, lassen sich fertige Zahlen direkt über `POST /api/ingest` einspielen:
 
-```bash
-npm ci
-npm run dev:web      # http://localhost:5173, /api/ wird nach :8787 geproxyt
-npm run build        # prüft, ob der Railway-Build durchläuft
+```sh
+curl -X POST https://<deine-domain>/api/ingest \
+  -H "Authorization: Bearer $INGEST_TOKEN" -H "Content-Type: application/json" \
+  -d '{
+    "source": {"id": "itboard", "name": "IT-Board", "url": "https://example.org/itboard", "fetchedAt": "2026-11-21T08:00:00Z"},
+    "roles": [{"id": "web-developer", "name": "Web Developer"}],
+    "observations": [
+      {"metric": "demand", "roleId": "web-developer", "period": "2026-10", "value": 120},
+      {"metric": "demand", "roleId": "web-developer", "period": "2026-11", "value": 132},
+      {"metric": "skill", "roleId": "web-developer", "skill": "React", "period": "2026-11", "value": 54, "base": 132}
+    ]
+  }'
 ```
 
-## Warum kein railway.json
+Prüfen: `curl https://<deine-domain>/api/demand`. Ob Rohdaten angekommen sind:
+`curl https://<deine-domain>/api/raw/status -H "Authorization: Bearer $INGEST_TOKEN"`.
 
-Railway hat **Config as Code** (`railway.json` / `railway.toml`) abgekündigt
-und liest bestehende Dateien nur noch bis **1. Dezember 2026**. Neue Services
-können es nicht mehr aktivieren. Der Ersatz ist Infrastructure as Code über
-`.railway/railway.ts` und `railway config plan/apply`.
+Sinnvolle Reihenfolge für den ersten Deploy: erst deployen (Demo-Modus), dann
+`VITE_USE_MOCKS=0` setzen und redeployen, sobald Zahlen in der DB liegen.
 
-Für dieses Projekt braucht es beides nicht: Das `Dockerfile` wird automatisch
-gefunden, Healthcheck-Pfad und Region sind zwei Klicks im Dashboard. Wenn ihr
-die Umgebung später als Code versionieren wollt:
+## Lokal testen
 
 ```bash
-railway config init     # erzeugt .railway/railway.ts
-```
+# A) wie auf Railway: App + PostgreSQL in Docker
+docker compose up --build               # http://localhost:8080
 
-## Später: echtes API-Backend
+# B) ohne Docker: eingebettetes Postgres für die Entwicklung
+cd backend
+uv sync
+uv run python dev_db.py                 # gibt DATABASE_URL aus, läuft weiter
+# zweites Terminal:
+cd backend
+export DATABASE_URL='<ausgegebene URL>'
+INGEST_TOKEN=change-me uv run uvicorn app.main:app --reload --port 8787
+# Frontend dazu (Repo-Root, drittes Terminal):
+VITE_USE_MOCKS=0 npm run dev:web        # http://localhost:5173, /api/ -> :8787
 
-Aktuell kommen die Daten aus [`src/web/api.ts`](src/web/api.ts) (Mocks). Sobald ein
-zweites Railway-Service die API liefert, wird es über Railway **Private Networking**
-angesprochen, z. B. `http://market-radar-api.railway.internal:8787`. Für den
-gleichen Origin wie das Frontend einen Proxy-Block in
-[`nginx/default.conf.template`](nginx/default.conf.template) ergänzen:
-
-```nginx
-location /api/ {
-    proxy_pass http://market-radar-api.railway.internal:8787/;
-    proxy_http_version 1.1;
-    proxy_set_header Host $host;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header X-Forwarded-Proto $scheme;
-}
+# C) Tests (starten ein eigenes Wegwerf-Postgres, oder TEST_DATABASE_URL setzen)
+cd backend && uv run pytest
+# pgserver (Embedded-Postgres) hat nur Wheels bis Python 3.12:
+#   uv sync --python 3.12 && uv run pytest --python 3.12
+# Alternativ gegen ein vorhandenes Postgres:
+#   TEST_DATABASE_URL=postgresql:///market_radar_test uv run pytest
 ```
 
 ## Troubleshooting
 
 | Symptom | Ursache / Lösung |
 | --- | --- |
-| `404` beim Neuladen von `/skills` | SPA-Fallback fehlt — in diesem Setup übernimmt ihn `nginx/default.conf.template`; bei anderen Hostern `dist` als SPA konfigurieren |
-| Deploy schlägt fehl mit `npm ci can only install with an existing package-lock.json` | `package-lock.json` nicht eingecheckt oder nicht synchron → lokal `npm install` und Lockfile committen |
-| Build bricht mit `Rolldown failed to resolve import …` | Unvollständiges `node_modules`/kaputter npm-Cache. Lokal `rm -rf node_modules && npm ci` — im Container ist es frisch |
-| Leere Seite nach Deploy, Konsole zeigt 404 auf `/assets/index-*.js` | Altes `index.html` aus dem Browser-Cache: `location = /index.html { expires -1; }` ist bereits gesetzt, einmal hart neu laden |
-| Healthcheck schlägt fehl | Pfad `/healthz` eingetragen? Der Endpoint antwortet sofort mit `200 ok`, ohne Assets |
-| „Demo data“-Banner verschwindet nicht | `VITE_USE_MOCKS=0` setzen **und** Redeploy auslösen (Build-Zeit-Variable) |
-| Port-Fehler beim Start | `PORT` nicht überschreiben; nginx liest den Wert aus der Umgebung |
+| `RuntimeError: DATABASE_URL is not set` im Deploy-Log | Reference `${{Postgres.DATABASE_URL}}` beim Service fehlt |
+| `503 Writing is disabled` | `INGEST_TOKEN` im Service setzen und redeployen |
+| Dashboard leer, `raw/status` zeigt `pending` | Für die Quelle ist noch kein Parser registriert (siehe Kommentar in `backend/app/transform/parsers/__init__.py`); bis dahin `/api/ingest` nutzen |
+| Seite zeigt „Demo data“, obwohl Daten in der DB liegen | `VITE_USE_MOCKS=0` setzen **und** redeployen (Build-Zeit-Variable) |
+| Healthcheck schlägt fehl | Pfad `/api/health` eingetragen? Der Endpoint prüft die DB mit |
+| `404` beim Neuladen von `/reports` | SPA-Fallback fehlt; FastAPI liefert ihn aus `dist/` – existiert `/app/dist` im Image? |
+| `ModuleNotFoundError: psycopg` | Image ohne `uv sync` gebaut (siehe `Dockerfile`) |
+| Alte Assets nach Deploy | Browser-Cache; einmal hart neu laden (Dateinamen sind gehasht) |
+| Deploy-Log: `pgserver` fehlt | `pgserver` ist nur eine Dev-Abhängigkeit (`--no-dev` im Image) – erwartet |
+| `uv sync`: `pgserver` „can't be installed … cp312" | pgserver hat nur Wheels bis Python 3.12 → `uv sync --python 3.12` |
+
+## Wenn Frontend und API getrennt laufen sollen
+
+Für mehr Unabhängigkeit lässt sich das Frontend als eigener statischer Service
+(nginx) betreiben und `/api/` per Proxy an den FastAPI-Service weiterleiten
+(Railway Private Networking, z. B. `market-radar-api.railway.internal:8080`).
+Das frühere nginx-Setup wurde entfernt, weil ein Service hier einfacher ist;
+bei Bedarf ist es schnell wiederhergestellt.

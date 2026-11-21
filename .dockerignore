@@ -4,10 +4,23 @@ dist
 .git
 .gitignore
 .npm-cache
+.tools
 npm-debug.log*
 .DS_Store
 
-# Env-Dateien bleiben draußen (Railway-Variablen kommen als Build-Args rein).
+# Python-Backend: venv, Caches, lokale Postgres-Daten, Tests
+backend/.venv
+backend/data
+backend/tests
+backend/.pytest_cache
+backend/dev_db.py
+**/__pycache__
+**/*.pyc
+**/*.db
+**/*.db-wal
+**/*.db-shm
+
+# Env-Dateien bleiben draußen (Railway-Variablen kommen zur Laufzeit).
 # So landen keine lokalen Secrets im Image.
 .env
 .env.*
