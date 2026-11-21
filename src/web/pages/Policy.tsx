@@ -2,9 +2,11 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { MarketItem, PolicyGroup, PolicyNote } from '../../shared/types';
 import { useItems, useTaxonomy } from '../api';
+import { usePaged } from '../hooks';
 import { PageHeader } from '@/components/PageHeader';
 import { PolicyCard } from '@/components/PolicyCard';
 import { FilterPills } from '@/components/FilterPills';
+import { Pagination } from '@/components/ui/pagination';
 import { Empty, ErrorMsg, Loading } from '@/components/Status';
 import { formatDate } from '../lib/source';
 
@@ -47,6 +49,7 @@ function noteFor(item: MarketItem, notes: PolicyNote[]): PolicyNote | undefined 
 }
 
 const ALL_TOPICS = '';
+const PAGE = 8;
 
 export default function Policy() {
   const [topic, setTopic] = useState<string>(ALL_TOPICS);
@@ -62,7 +65,15 @@ export default function Policy() {
   const activeGroup = policyGroups.find((group) => group.label === topic);
   const allItems = data ?? [];
   const items = activeGroup ? allItems.filter((item) => mentions(item, activeGroup.keywords)) : allItems;
-  const groups = sourceGroups(items);
+  // Pages hold 8 items in the order of the source sections; each page is regrouped by source.
+  const ordered = sourceGroups(items).flatMap((group) => group.items);
+  const paged = usePaged(ordered, PAGE);
+  const groups = sourceGroups(paged.slice);
+
+  const chooseTopic = (next: string) => {
+    setTopic(next);
+    paged.setPage(1);
+  };
 
   const header = (
     <PageHeader
@@ -102,8 +113,8 @@ export default function Policy() {
       <FilterPills
         label="Filter policy items by topic"
         options={chipOptions}
-        value={activeGroup ? topic : ALL_TOPICS}
-        onChange={setTopic}
+        value={activeGroup ? activeGroup.label : ALL_TOPICS}
+        onChange={chooseTopic}
       />
 
       {items.length === 0 ? (
@@ -111,7 +122,7 @@ export default function Policy() {
           <Empty text={`No policy item mentions “${activeGroup?.label ?? topic}” right now.`} />
           <button
             type="button"
-            onClick={() => setTopic(ALL_TOPICS)}
+            onClick={() => chooseTopic(ALL_TOPICS)}
             className="rounded-md border border-slate-200 px-3 py-1 text-xs font-medium text-slate-600"
           >
             Show all topics
@@ -133,7 +144,8 @@ export default function Policy() {
                   </a>
                 </h2>
                 <p className="text-xs text-slate-500">
-                  {group.items.length} item(s) · newest {group.newest ? formatDate(group.newest) : 'date not stated'}
+                  {group.items.length} item(s) on this page · newest{' '}
+                  {group.newest ? formatDate(group.newest) : 'date not stated'}
                 </p>
               </div>
               <div className="grid gap-4 md:grid-cols-2">
@@ -147,8 +159,16 @@ export default function Policy() {
               </div>
             </section>
           ))}
+          <Pagination
+            label="Policy items pages"
+            page={paged.page}
+            pageCount={paged.pageCount}
+            total={paged.total}
+            size={PAGE}
+            onChange={paged.setPage}
+          />
           <p className="text-xs text-slate-500">
-            {items.length} item(s) from {groups.length} source(s)
+            {items.length} item(s) from {new Set(items.map((item) => item.source_name)).size} source(s)
             {activeGroup ? ` on “${activeGroup.label}”` : ''}.
           </p>
         </div>
