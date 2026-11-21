@@ -19,4 +19,5 @@ class NormalizeResult(BaseModel):
     status: Literal["parsed", "error", "no_parser", "not_downloaded"]
     parser: str | None = None
     observations: int = 0
+    items: int = 0
     error: str | None = None

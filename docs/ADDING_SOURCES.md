@@ -113,6 +113,17 @@ entscheidet, welche Quelle dabei fällig ist (`static` nur mit ausdrücklichem A
 Liegt die Datei auf einem Volume (`SOURCES_FILE=/data/sources.yaml`), genügt nach dem Editieren ein
 `reload` — kein Redeploy.
 
+## Connector oder Parser?
+
+| Datenlage | Weg |
+|---|---|
+| CSV, JSON-API oder RSS mit Zeilen/Datensätzen | Connector in `sources.yaml` (kein Code) |
+| Excel-Exporte oder Tabellen mit mehrstufigem Kopf | Parser in `backend/app/normalize/parsers/` (Code + Fixture-Test) |
+
+Ein Parser schreibt entweder Kennzahlen (`observations`, Rollen) oder Kontext-Records als MarketItems der
+Kategorie D (`market_items`) — wie die BFS-/SEM-Tabellen. Beide Wege landen im Frontend: Zahlen auf den
+Dashboard-Seiten, Datensätze unter **Items**.
+
 ## Regeln
 
 - Nur offizielle APIs, RSS-Feeds oder Open-Data-Exporte. Kein Scraping, wo Nutzungsbedingungen es verbieten

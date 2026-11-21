@@ -26,10 +26,13 @@ CREATE TABLE IF NOT EXISTS raw_files (
     status         TEXT NOT NULL CHECK (status IN ('parsed', 'error', 'no_parser')),
     parser         TEXT,
     observations   INTEGER NOT NULL DEFAULT 0,
+    items          INTEGER NOT NULL DEFAULT 0,   -- parsed context records written to market_items
     error          TEXT,
     processed_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
     PRIMARY KEY (source_id, sha256)
 );
+
+ALTER TABLE raw_files ADD COLUMN IF NOT EXISTS items INTEGER NOT NULL DEFAULT 0;
 
 -- Replaced by the raw folder.
 DROP TABLE IF EXISTS raw_documents;
@@ -107,7 +110,8 @@ CREATE TABLE IF NOT EXISTS connector_state (
 -- Normalised connector records (docs/market-item.schema.json). One row per record of a
 -- configured source; payload keeps the raw record for the AI skill matcher and is not served.
 CREATE TABLE IF NOT EXISTS market_items (
-    source_id    TEXT NOT NULL REFERENCES connector_sources(id) ON DELETE CASCADE,
+    -- Written by connectors (connector_sources) and by pipeline parsers (sources); hence no FK.
+    source_id    TEXT NOT NULL,
     id           TEXT NOT NULL,
     category     TEXT NOT NULL CHECK (category IN ('A', 'B', 'C', 'D', 'E')),
     categories   TEXT[] NOT NULL,
@@ -128,3 +132,5 @@ CREATE INDEX IF NOT EXISTS market_items_category ON market_items (category, publ
 CREATE INDEX IF NOT EXISTS market_items_fetched ON market_items (fetched_at DESC);
 CREATE INDEX IF NOT EXISTS market_items_tags ON market_items USING GIN (tags);
 CREATE INDEX IF NOT EXISTS market_items_region ON market_items (region);
+ALTER TABLE market_items DROP CONSTRAINT IF EXISTS market_items_source_id_fkey;
+CREATE INDEX IF NOT EXISTS market_items_source ON market_items (source_id);

@@ -13,6 +13,7 @@ from pathlib import Path
 from .. import config
 from ..db import Conn
 from ..schemas import NormalizeResult
+from ..services import items as items_store
 from ..services import observations
 from .base import RawFile
 from .parsers import PARSERS
@@ -41,17 +42,18 @@ def _date(value) -> date | None:
         return None
 
 
-def _record(conn: Conn, f: RawFile, status: str, parser: str | None, count: int, error: str | None) -> None:
+def _record(conn: Conn, f: RawFile, status: str, parser: str | None, observations: int, error: str | None,
+            items: int = 0) -> None:
     conn.execute(
         """INSERT INTO raw_files (source_id, sha256, relative_path, fetched_at, fetch_error, status, parser,
-                                  observations, error, processed_at)
-           VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, now())
+                                  observations, items, error, processed_at)
+           VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, now())
            ON CONFLICT (source_id, sha256) DO UPDATE SET relative_path = EXCLUDED.relative_path,
                fetched_at = EXCLUDED.fetched_at, fetch_error = EXCLUDED.fetch_error, status = EXCLUDED.status,
-               parser = EXCLUDED.parser, observations = EXCLUDED.observations, error = EXCLUDED.error,
-               processed_at = now()""",
+               parser = EXCLUDED.parser, observations = EXCLUDED.observations, items = EXCLUDED.items,
+               error = EXCLUDED.error, processed_at = now()""",
         (f.source_id, f.sha256, f.meta.get("relative_path"), f.fetched_at, f.meta.get("error"), status, parser,
-         count, error))
+         observations, items, error))
 
 
 def run_entry(conn: Conn, raw_dir: Path, entry: dict) -> NormalizeResult:
@@ -89,9 +91,12 @@ def run_entry(conn: Conn, raw_dir: Path, entry: dict) -> NormalizeResult:
             _record(conn, f, "error", name, 0, msg)
             return NormalizeResult(source=sid, status="error", parser=name, error=msg)
         observations.merge(conn, sid, out.roles, out.observations)
+        if out.items:
+            items_store.upsert_items(conn, sid, out.items)
         conn.execute("UPDATE sources SET comparable_from = %s WHERE id = %s", (out.comparable_from, sid))
-        _record(conn, f, "parsed", name, len(out.observations), None)
-    return NormalizeResult(source=sid, status="parsed", parser=name, observations=len(out.observations))
+        _record(conn, f, "parsed", name, len(out.observations), None, len(out.items))
+    return NormalizeResult(source=sid, status="parsed", parser=name, observations=len(out.observations),
+                           items=len(out.items))
 
 
 def run(conn: Conn, raw_dir: Path | None = None, only: set[str] | None = None) -> list[NormalizeResult]:

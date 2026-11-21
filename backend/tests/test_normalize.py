@@ -75,12 +75,13 @@ def test_checksum_and_missing_file(client, raw):
 
 
 def test_sources_without_parser_or_file(client, raw):
-    raw.add("sem-status-s-monthly", b"PK\x03\x04", ext="xlsx")
+    # Every staged source has a parser today; a new one starts without and must not break the run.
+    raw.add("future-source", b"PK\x03\x04", ext="xlsx")
     raw.entries["bfs-besta-regions"] = {"id": "bfs-besta-regions", "status": "unavailable", "relative_path": None,
                                         "sha256": None, "error": "HTTP 503"}
     raw.save()
     results = {r.source: r for r in normalize()}
-    assert results["sem-status-s-monthly"].status == "no_parser"
+    assert results["future-source"].status == "no_parser"
     assert results["bfs-besta-regions"].status == "not_downloaded"
     assert results["bfs-besta-regions"].error == "HTTP 503"
     assert client.get("/api/sources").json() == []  # nothing on the dashboard from these

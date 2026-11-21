@@ -16,7 +16,15 @@ except ManifestError as e:
 
 print(f"Raw folder: {config.RAW_DIR}")
 for r in results:
-    detail = {"parsed": f"{r.observations} values", "no_parser": "no parser yet, skipped"}.get(r.status, r.error)
+    if r.status == "parsed":
+        parts = []
+        if r.observations:
+            parts.append(f"{r.observations} values")
+        if r.items:
+            parts.append(f"{r.items} items")
+        detail = ", ".join(parts) or "no data"
+    else:
+        detail = {"no_parser": "no parser yet, skipped"}.get(r.status, r.error)
     print(f"  {r.source:40} {r.status:15} {detail}")
 if any(r.status == "error" for r in results):
     sys.exit(1)

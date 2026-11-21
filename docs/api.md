@@ -216,7 +216,8 @@ curl -X PUT https://<domain>/api/connectors/config \
 
 ### `GET /api/items`
 
-Normalised records from every connector (shape see [MarketItem](#marketitem-frozen-contract)). Query parameters:
+Normalised records from every connector **and** from the pipeline parsers that produce context data
+(BFS vacancies, SEM asylum/residence tables; shape see [MarketItem](#marketitem-frozen-contract)). Query parameters:
 `category` (A–E, matches `categories`), `region` (canton code), `source` (connector id), `q` (title/summary
 contains), `order` (`published_at`, default, or `fetched_at`), `limit` (1–1000, default 100), `offset`.
 An unknown `category` or `order` answers `422`.

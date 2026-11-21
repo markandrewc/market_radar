@@ -30,6 +30,9 @@ Interactive API docs: http://localhost:8787/docs · Tests: `uv run pytest` (own 
 2. **Normalization** (`app/normalize/`, `npm run normalize` or `uv run python -m app.normalize [source-id]`):
    one parser per source turns its latest file into observations and replaces that source's numbers.
    Results per file are kept in the `raw_files` table and drive the status on the Sources page.
+   Parsers for context tables (BFS BESTA vacancies, SEM asylum / residence permits) write **MarketItems of
+   category D** into `market_items` instead of role observations, so they show up under Items with canton and
+   metrics: `bfs_besta.py`, `sem_asylum.py`, `sem_immigration.py`, `sem_provisional.py`, `sem_status_s.py`.
 3. **UI**: `/api/demand`, `/api/skills`, `/api/sources` read from the database.
 
 Adding a source: download it in step 1, write a parser in `app/normalize/parsers/` (see `__init__.py` there),

@@ -4,7 +4,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from ..schemas import NormalizedObservation, Role
+from ..schemas import MarketItem, NormalizedObservation, Role
 
 
 @dataclass(frozen=True)
@@ -22,6 +22,8 @@ class RawFile:
 class ParseOutput:
     roles: list[Role] = field(default_factory=list)
     observations: list[NormalizedObservation] = field(default_factory=list)
+    # Context data (asylum, residence permits, vacancies by branch) -> market_items, category D.
+    items: list[MarketItem] = field(default_factory=list)
     # YYYY-MM if the source changed how it counts: months before are kept but not used for trends
     comparable_from: str | None = None
 
