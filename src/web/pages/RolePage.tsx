@@ -85,16 +85,6 @@ export default function RolePage() {
       <div className="space-y-3">
         <h1 className="text-3xl font-semibold text-brand">{d.role.name}</h1>
         <nav aria-label="Switch role">
-          <ul className="flex flex-wrap gap-2">
-            {demand.data!.map((r) => (
-              <li key={r.role.id}>
-                <Link to={`/roles/${r.role.id}`} aria-current={r.role.id === id ? 'page' : undefined}
-                  className={`inline-flex min-h-9 items-center rounded-full border px-4 text-sm font-medium ${r.role.id === id ? 'border-brand bg-brand text-white' : 'border-slate-300 bg-white text-brand hover:bg-slate-50'}`}>
-                  {r.role.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
         </nav>
       </div>
       <Tabs key={id} label={`${d.role.name}: demand, skills and employers`} tabs={tabs} />
