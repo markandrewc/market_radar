@@ -48,3 +48,47 @@ def test_demand_and_skills(client):
     assert s["skills"][0]["skill"] == "React"
     assert s["skills"][0]["share"] == 50.0       # 60 / 120
     assert s["skills"][0]["changePct"] == 25.0   # 40 % -> 50 %
+
+
+TOKEN = {"Authorization": "Bearer secret"}
+PAYLOAD = {
+    "source": {"id": "s2", "name": "Upload", "url": "https://example.org/u", "fetchedAt": "2026-11-20T00:00:00Z"},
+    "roles": [{"id": "data", "name": "Data Analyst"}],
+    "observations": [
+        {"metric": "demand", "roleId": "data", "period": "2026-10", "value": 10},
+        {"metric": "demand", "roleId": "data", "period": "2026-11", "value": 15},
+        {"metric": "skill", "roleId": "data", "skill": "SQL", "period": "2026-11", "value": 6, "base": 15},
+    ],
+}
+
+
+def test_ingest_disabled_without_token(client, monkeypatch):
+    monkeypatch.setattr(config, "INGEST_TOKEN", None)
+    assert client.post("/api/ingest", json=PAYLOAD, headers=TOKEN).status_code == 503
+
+
+def test_ingest_auth_and_validation(client, monkeypatch):
+    monkeypatch.setattr(config, "INGEST_TOKEN", "secret")
+    assert client.post("/api/ingest", json=PAYLOAD).status_code == 401
+    bad = {**PAYLOAD, "roles": [], "observations": [{"metric": "skill", "roleId": "x", "period": "2026-11", "value": 1}]}
+    r = client.post("/api/ingest", json=bad, headers=TOKEN)
+    assert r.status_code == 422 and len(r.json()["detail"]) == 2
+    assert client.post("/api/ingest", json={**PAYLOAD, "observations": [
+        {"metric": "demand", "roleId": "data", "period": "2026-13", "value": 1}]}, headers=TOKEN).status_code == 422
+    assert client.get("/api/sources").json() == []  # nothing written
+
+
+def test_ingest_roundtrip_and_delete(client, monkeypatch):
+    monkeypatch.setattr(config, "INGEST_TOKEN", "secret")
+    r = client.post("/api/ingest", json=PAYLOAD, headers=TOKEN)
+    assert r.json() == {"source": "s2", "roles": 1, "observations": 3}
+    client.post("/api/ingest", json=PAYLOAD, headers=TOKEN)  # same data again: upsert, no duplicates
+    d = client.get("/api/demand").json()
+    assert len(d) == 1 and d[0]["current"] == 15 and len(d[0]["series"]) == 2
+    assert client.get("/api/skills", params={"role": "data"}).json()["skills"][0]["share"] == 40.0
+    client.post("/api/ingest", json={**PAYLOAD, "observations": PAYLOAD["observations"][:1], "replace": True},
+                headers=TOKEN)
+    assert len(client.get("/api/demand").json()[0]["series"]) == 1
+    assert client.delete("/api/sources/s2", headers=TOKEN).status_code == 204
+    assert client.get("/api/demand").json() == []
+    assert client.delete("/api/sources/s2", headers=TOKEN).status_code == 404

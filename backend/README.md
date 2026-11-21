@@ -1,36 +1,25 @@
 # Market Radar – Backend
 
-FastAPI + SQLite. Antworten entsprechen `src/shared/types.ts`.
+FastAPI + SQLite. The API contract is in [docs/api.md](../docs/api.md).
 
-## Starten
+## Run
 
 ```sh
 cd backend
 uv sync
-uv run uvicorn app.main:app --reload --port 8787
+INGEST_TOKEN=change-me uv run uvicorn app.main:app --reload --port 8787
 ```
 
-Port 8787, weil der Vite-Proxy `/api/` dorthin weiterleitet (`npm run dev:web` im Repo-Root).
-API-Doku: http://localhost:8787/docs
+Port 8787 because the Vite dev server proxies `/api/` there. Frontend against the real backend:
+`VITE_USE_MOCKS=0 npm run dev:web` in the repo root. Without `VITE_USE_MOCKS=0` the frontend shows mock data.
 
-Tests: `uv run pytest`
+Interactive API docs: http://localhost:8787/docs · Tests: `uv run pytest`
 
-## Endpunkte
+## Data
 
-| Methode | Pfad | Antwort |
-|---|---|---|
-| GET | `/api/health` | `{"status": "ok"}` |
-| GET | `/api/roles` | `Role[]` |
-| GET | `/api/sources` | `SourceRef[]` |
-| GET | `/api/demand?months=12` | `DemandResponse[]` |
-| GET | `/api/skills?role=<id>` | `SkillsResponse` (404, wenn keine Daten) |
+SQLite at `backend/data/market-radar.db` (override with `DB_PATH`), schema in `app/schema.sql`.
+The database starts empty; the ingestion team fills it via `POST /api/ingest` (see docs/api.md).
 
-## Daten
+## Production
 
-SQLite unter `backend/data/market-radar.db` (anpassbar mit `DB_PATH`). Schema: `app/schema.sql`.
-Jede Zahl gehört zu einer Quelle (`sources`), damit Name, Link und Stand immer mitgeliefert werden.
-Noch gibt es keinen Import: Die Datenbank startet leer.
-
-## Produktion
-
-Wenn `dist/` existiert (`npm run build`), liefert FastAPI das Frontend gleich mit aus.
+If `dist/` exists (`npm run build`), FastAPI also serves the frontend.

@@ -1,13 +1,14 @@
 import { Link, Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
 import { Logo } from './components/Logo';
+import { useMocks } from './api';
 
 const nav = ['Market', 'Skills', 'Employers', 'Sources'];
 
 export default function App() {
   return (
     <div className="min-h-screen bg-white text-slate-900">
-      {import.meta.env.VITE_USE_MOCKS !== '0' && (
+      {useMocks && (
         <div className="bg-brand-accent px-4 py-1 text-center text-xs font-medium text-white">Demo data</div>
       )}
       <header className="border-b border-slate-200 bg-white">

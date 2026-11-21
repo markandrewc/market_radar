@@ -24,6 +24,8 @@ export default function Home() {
   if (demand.isLoading || skills.isLoading) return <p className="text-slate-500">Loading…</p>;
   if (demand.error || skills.error || !demand.data || !skills.data) return <p className="text-red-600">Something went wrong.</p>;
 
+  if (demand.data.length === 0) return <p className="text-slate-500">No data yet.</p>;
+
   const main = demand.data[0];
   return (
     <div className="space-y-6">
