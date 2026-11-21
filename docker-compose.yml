@@ -32,6 +32,10 @@ services:
       DATABASE_URL: postgresql://market_radar:market_radar@db:5432/market_radar
       INGEST_TOKEN: change-me
       PORT: "8080"
+      # Quellen aus dem Image (Default). Für eine Datei vom Host:
+      # SOURCES_FILE: /data/sources.yaml
+    # volumes:
+    #   - ./sources.yaml:/data/sources.yaml:ro
     ports:
       - "8080:8080"
     depends_on:

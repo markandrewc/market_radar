@@ -19,6 +19,8 @@ Railway-Projekt
 | --- | --- |
 | [`Dockerfile`](Dockerfile) | Stage 1 `node:24-alpine` baut das Frontend, Stage 2 `python:3.12-slim` + `uv` startet uvicorn |
 | [`docker-compose.yml`](docker-compose.yml) | Lokale Umgebung wie auf Railway: App + PostgreSQL |
+| [`sources.yaml`](sources.yaml) | Alle Datenquellen als Konfiguration (Anleitung: [docs/ADDING_SOURCES.md](docs/ADDING_SOURCES.md)) |
+| [`backend/app/connectors/`](backend/app/connectors/) | Adapter `rest_api`, `rss_atom`, `csv_url` → `market_items` |
 | [`backend/app/db.py`](backend/app/db.py) | psycopg-3-Verbindung, Schema-Anlage beim Start |
 | [`backend/app/schema.sql`](backend/app/schema.sql) | Tabellen (idempotent, wird bei jedem Start angewendet) |
 | [`.env.example`](.env.example) | Alle Variablen dokumentiert |
@@ -58,6 +60,8 @@ Der Port braucht keine Konfiguration: uvicorn bindet auf `$PORT` (Default 8080).
 | `PORT` | von Railway gesetzt | Port von uvicorn |
 | `INGEST_TOKEN` | selbst setzen | schaltet die Schreib-Endpunkte frei |
 | `VITE_USE_MOCKS` | Build-Zeit, Default `1` | `1` = Frontend zeigt Mock-Daten (Demo), `0` = Frontend liest `/api` |
+| `SOURCES_FILE` | optional | Pfad zu `sources.yaml`, z. B. `/data/sources.yaml` auf einem Volume |
+| `ADZUNA_APP_ID` / `ADZUNA_APP_KEY` | optional | Schlüssel für die Adzuna-Quelle; fehlen sie, wird die Quelle übersprungen |
 
 **`VITE_*` wirkt nur beim Build.** Vite ersetzt die Variable beim Bauen durch einen
 festen Wert; nach jeder Änderung ist ein Redeploy nötig. Das Dockerfile deklariert
@@ -71,7 +75,8 @@ Migrationsschritt und keine manuell vorzubereitende Datenbank. Neue Spalten in
 Zukunft brauchen ein Migrationswerkzeug (z. B. Alembic), das Schema ist bisher
 bewusst klein.
 
-Tabellen: `sources`, `roles`, `observations`, `raw_files` (welche Rohdatei wie verarbeitet wurde).
+Tabellen: `sources`, `roles`, `observations`, `raw_files` (welche Rohdatei wie verarbeitet wurde),
+`connector_sources` + `connector_state` (angewandte `sources.yaml`) und `market_items` (normalisierte Records).
 
 ### Datenfluss – wichtig für den ersten Deploy
 
@@ -94,8 +99,62 @@ npm run pipeline
 
 Prüfen: `curl https://<deine-domain>/api/sources` zeigt Quelle, Link, Stand und Status.
 
-Sinnvolle Reihenfolge für den ersten Deploy: erst deployen (Demo-Modus), dann
-`VITE_USE_MOCKS=0` setzen und redeployen, sobald Zahlen in der DB liegen.
+Für die Connector-Quellen aus `sources.yaml` gilt ein zweiter, unabhängiger Weg (Details im nächsten Abschnitt):
+
+```
+sources.yaml ──reload──▶ connector_sources
+      │                       │ sync (Cron oder curl)
+      └── Adapter ───────────▶ market_items ──▶ GET /api/items
+```
+
+Sinnvolle Reihenfolge für den ersten Deploy: erst deployen (Demo-Modus), Daten einspielen
+(Pipeline und/oder Connector-Sync), dann `VITE_USE_MOCKS=0` setzen und redeployen.
+
+## Quellen (sources.yaml)
+
+Die Datei liegt im Image unter `/app/sources.yaml` und wird beim Start nach `connector_sources` übernommen.
+
+**Variante A — Änderung über Git (Standard).** Block in [`sources.yaml`](sources.yaml) ergänzen, pushen, deployen.
+Kein Code-Change, aber ein Redeploy.
+
+**Variante B — Datei auf einem Railway-Volume.** Volume am Service anlegen (Mount-Pfad `/data`), Variable
+`SOURCES_FILE=/data/sources.yaml` setzen. Beim ersten Start kopiert der Service seine mitgelieferte Datei dorthin.
+Danach gilt:
+
+```sh
+railway ssh                                  # im Service
+vi /data/sources.yaml                        # Block ergänzen
+exit
+curl -X POST https://<deine-domain>/api/connectors/reload \
+  -H "Authorization: Bearer $INGEST_TOKEN"   # -> {added, updated, disabled, sourceCount, errors}
+```
+
+Ein Tippfehler ist hier nicht fatal: die Datei wird beim Start nur gelesen, Probleme landen in
+`GET /api/connectors` (`configError`), der zuletzt angewandte Stand bleibt aktiv.
+
+**Synchronisieren.** Manuell:
+
+```sh
+curl -X POST "https://<deine-domain>/api/connectors/sync?due_only=true" \
+  -H "Authorization: Bearer $INGEST_TOKEN"
+```
+
+Automatisch: zweiten Service aus demselben Repo anlegen, Start-Command überschreiben und Cron setzen:
+
+| Einstellung | Wert |
+| --- | --- |
+| Custom Start Command | `.venv/bin/python -m app.connectors sync --due-only` |
+| Cron Schedule | `*/30 * * * *` |
+
+`refresh_rate` entscheidet, welche Quelle fällig ist (`static` nur mit ausdrücklichem Aufruf ohne `due_only`).
+Eine neue Quelle braucht damit **keine** Code-Änderung und keinen neuen Job.
+
+Prüfen:
+
+```sh
+curl -s https://<deine-domain>/api/connectors | jq '.sources[] | {id, enabled, itemCount, lastSyncAt, lastError}'
+curl -s 'https://<deine-domain>/api/items?category=E&limit=3' | jq
+```
 
 ## Lokal testen
 

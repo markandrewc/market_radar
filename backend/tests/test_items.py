@@ -168,6 +168,22 @@ def test_sync_stores_items(configured, client, monkeypatch):
     assert len(client.get("/api/items").json()) == 2
 
 
+def test_connector_listing_reports_counts_and_keeps_sync_state(configured, client, monkeypatch):
+    patch_fetch(monkeypatch, CSV)
+    client.post("/api/connectors/sync", headers=TOKEN)
+    before = client.get("/api/connectors").json()["sources"][0]
+
+    assert before["itemCount"] == 2
+    assert before["lastSyncAt"] and before["lastError"] is None
+
+    configured.write_text(configured.read_text() + "\n")  # edited file: runtime state must survive a reload
+    client.post("/api/connectors/reload", headers=TOKEN)
+    after = client.get("/api/connectors").json()["sources"][0]
+
+    assert after["itemCount"] == 2
+    assert after["lastSyncAt"] == before["lastSyncAt"]
+
+
 def test_sync_replaces_disappeared_items(configured, client, monkeypatch):
     patch_fetch(monkeypatch, CSV)
     client.post("/api/connectors/sync", headers=TOKEN)

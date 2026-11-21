@@ -35,6 +35,22 @@ Interactive API docs: http://localhost:8787/docs · Tests: `uv run pytest` (own 
 Adding a source: download it in step 1, write a parser in `app/normalize/parsers/` (see `__init__.py` there),
 add a test with a small real excerpt in `tests/fixtures/`.
 
+## Connectors (sources.yaml)
+
+A second, configuration-driven path: data sources listed in [`sources.yaml`](../sources.yaml) are fetched by
+the adapters in `app/connectors/` and stored as `MarketItem` records (`market_items`), served by
+`GET /api/items`. Adding a source is a YAML block - see [docs/ADDING_SOURCES.md](../docs/ADDING_SOURCES.md).
+
+```sh
+uv run python -m app.connectors list                 # what the file contains
+uv run python -m app.connectors check adzuna_ch      # fetch one source, no database needed
+uv run python -m app.connectors reload               # sources.yaml -> connector_sources
+uv run python -m app.connectors sync --due-only      # cron entry point
+```
+
+`sources.yaml` is applied on startup and by `POST /api/connectors/reload`. `SOURCES_FILE` can point at a volume
+(`/data/sources.yaml`); a missing file is seeded from the image copy.
+
 ## Production
 
 FastAPI also serves the built frontend from `dist/` (see `DEPLOY.md`). The pipeline can run anywhere that reaches

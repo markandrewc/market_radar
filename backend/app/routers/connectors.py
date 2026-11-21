@@ -17,7 +17,7 @@ from ..connectors import config as sources_config
 router = APIRouter()
 
 
-def _source(row) -> ConnectorSource:
+def _source(row, item_count: int = 0) -> ConnectorSource:
     endpoints = list(row["endpoints"] or [])
     if not endpoints and row["endpoint"]:
         endpoints = [row["endpoint"]]
@@ -27,7 +27,8 @@ def _source(row) -> ConnectorSource:
         refreshRate=row["refresh_rate"], refreshSeconds=row["refresh_seconds"], enabled=row["enabled"],
         inConfig=row["in_config"], authEnv=list(row["auth_env"] or []),
         filterKeywords=list(row["filter_keywords"] or []), licence=row["licence"], licenceUrl=row["licence_url"],
-        lastSyncAt=iso(row["last_sync_at"]) if row["last_sync_at"] else None, lastError=row["last_error"])
+        lastSyncAt=iso(row["last_sync_at"]) if row["last_sync_at"] else None, lastError=row["last_error"],
+        itemCount=item_count)
 
 
 @router.get("/connectors", response_model=ConnectorList)
@@ -36,6 +37,8 @@ def list_connectors(conn: Conn = Depends(get_conn)) -> ConnectorList:
     loaded = sources_config.load(sources_config.ensure_file())
     state = connectors.read_state(conn)
     rows = conn.execute("SELECT * FROM connector_sources ORDER BY name").fetchall()
+    counts = {row["source_id"]: row["n"] for row in
+              conn.execute("SELECT source_id, count(*) AS n FROM market_items GROUP BY source_id")}
     return ConnectorList(
         configFile=str(loaded.path) if loaded.path else "",
         configError=" | ".join(loaded.errors) or None,
@@ -44,7 +47,7 @@ def list_connectors(conn: Conn = Depends(get_conn)) -> ConnectorList:
         defaults=ConnectorDefaults(targetCities=loaded.defaults.target_cities,
                                    targetRoles=loaded.defaults.target_roles,
                                    policyKeywords=loaded.defaults.policy_keywords),
-        sources=[_source(row) for row in rows])
+        sources=[_source(row, counts.get(row["id"], 0)) for row in rows])
 
 
 @router.post("/connectors/reload", response_model=ReloadResult, dependencies=[Depends(require_token)])

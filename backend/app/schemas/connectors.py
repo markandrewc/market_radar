@@ -22,6 +22,7 @@ class ConnectorSource(BaseModel):
     licenceUrl: str | None = None
     lastSyncAt: str | None = None
     lastError: str | None = None
+    itemCount: int = 0
 
 
 class ConnectorDefaults(BaseModel):
