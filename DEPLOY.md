@@ -41,8 +41,8 @@ Healthcheck-Pfad und Region sind zwei Klicks im Dashboard.
 4. **Healthcheck**: **Settings → Deploy → Healthcheck Path** = `/api/health`
    (Timeout 100 s genügt; der Endpoint prüft auch die DB-Verbindung).
 5. **Ingest-Token**: Variable `INGEST_TOKEN` auf ein langes Zufallswort setzen
-   (`openssl rand -hex 32`). Ohne Token antworten alle Schreib-Endpunkte
-   (`/api/raw`, `/api/ingest`, `/api/transform`, `DELETE /api/sources/{id}`) mit `503`.
+   (`openssl rand -hex 32`). Ohne Token antwortet der einzige Schreib-Endpunkt
+   (`DELETE /api/sources/{id}`) mit `503`.
 6. **Domain**: **Settings → Networking → Generate Domain** für `*.up.railway.app`
    oder **Custom Domain** mit CNAME.
 7. **Region**: eine EU-Region wählen (z. B. `europe-west4`) für kurze Latenz in
@@ -71,39 +71,28 @@ Migrationsschritt und keine manuell vorzubereitende Datenbank. Neue Spalten in
 Zukunft brauchen ein Migrationswerkzeug (z. B. Alembic), das Schema ist bisher
 bewusst klein.
 
-Tabellen: `sources`, `raw_documents` (JSONB-Rohdaten), `roles`, `observations`.
+Tabellen: `sources`, `roles`, `observations`, `raw_files` (welche Rohdatei wie verarbeitet wurde).
 
 ### Datenfluss – wichtig für den ersten Deploy
 
+Daten kommen nur über die Pipeline in die Datenbank, nicht über die API (Details: [docs/api.md](docs/api.md)):
+
 ```
-POST /api/raw  →  raw_documents (roh, dedupliziert per sha256)
-                        ↓ automatisch nach dem Upload
-                 Parser für die Quelle (backend/app/transform/parsers/)
-                        ↓ ersetzt die Zahlen der Quelle
-                  observations  →  GET /api/demand, /api/skills  →  Frontend
+1. npm run ingest     → Originaldateien + latest.json im Raw-Ordner (.market-radar/raw)
+2. npm run normalize  → Parser pro Quelle → Postgres (sources, roles, observations)
+3. Frontend           → GET /api/demand, /api/skills, /api/sources
 ```
 
-**Es ist noch kein Parser registriert** (`PARSERS = {}`). Hochgeladene Rohdaten
-bleiben deshalb mit Status `pending` liegen und das Dashboard bleibt leer – das
-ist der aktuelle Stand des Codes, kein Deployment-Fehler. Bis der erste Parser da
-ist, lassen sich fertige Zahlen direkt über `POST /api/ingest` einspielen:
+Der Railway-Container führt die Pipeline nicht selbst aus (das Laufzeit-Image hat kein Node und keinen
+dauerhaften Raw-Ordner). Die Pipeline läuft dort, wo sie die Datenbank erreicht, z. B. lokal mit der öffentlichen
+Verbindung der Railway-Postgres (**Postgres → Connect → Public Network**):
 
 ```sh
-curl -X POST https://<deine-domain>/api/ingest \
-  -H "Authorization: Bearer $INGEST_TOKEN" -H "Content-Type: application/json" \
-  -d '{
-    "source": {"id": "itboard", "name": "IT-Board", "url": "https://example.org/itboard", "fetchedAt": "2026-11-21T08:00:00Z"},
-    "roles": [{"id": "web-developer", "name": "Web Developer"}],
-    "observations": [
-      {"metric": "demand", "roleId": "web-developer", "period": "2026-10", "value": 120},
-      {"metric": "demand", "roleId": "web-developer", "period": "2026-11", "value": 132},
-      {"metric": "skill", "roleId": "web-developer", "skill": "React", "period": "2026-11", "value": 54, "base": 132}
-    ]
-  }'
+export DATABASE_URL='<öffentliche Railway-Postgres-URL>'
+npm run pipeline
 ```
 
-Prüfen: `curl https://<deine-domain>/api/demand`. Ob Rohdaten angekommen sind:
-`curl https://<deine-domain>/api/raw/status -H "Authorization: Bearer $INGEST_TOKEN"`.
+Prüfen: `curl https://<deine-domain>/api/sources` zeigt Quelle, Link, Stand und Status.
 
 Sinnvolle Reihenfolge für den ersten Deploy: erst deployen (Demo-Modus), dann
 `VITE_USE_MOCKS=0` setzen und redeployen, sobald Zahlen in der DB liegen.
@@ -139,7 +128,7 @@ cd backend && uv run pytest
 | --- | --- |
 | `RuntimeError: DATABASE_URL is not set` im Deploy-Log | Reference `${{Postgres.DATABASE_URL}}` beim Service fehlt |
 | `503 Writing is disabled` | `INGEST_TOKEN` im Service setzen und redeployen |
-| Dashboard leer, `raw/status` zeigt `pending` | Für die Quelle ist noch kein Parser registriert (siehe Kommentar in `backend/app/transform/parsers/__init__.py`); bis dahin `/api/ingest` nutzen |
+| Dashboard leer | Pipeline noch nicht gegen diese Datenbank gelaufen (`npm run pipeline`). `npm run normalize` zeigt pro Quelle `parsed`, `error` oder `no_parser` |
 | Seite zeigt „Demo data“, obwohl Daten in der DB liegen | `VITE_USE_MOCKS=0` setzen **und** redeployen (Build-Zeit-Variable) |
 | Healthcheck schlägt fehl | Pfad `/api/health` eingetragen? Der Endpoint prüft die DB mit |
 | `404` beim Neuladen von `/reports` | SPA-Fallback fehlt; FastAPI liefert ihn aus `dist/` – existiert `/app/dist` im Image? |

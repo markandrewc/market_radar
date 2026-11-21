@@ -24,3 +24,6 @@ backend/dev_db.py
 # So landen keine lokalen Secrets im Image.
 .env
 .env.*
+
+# Pipeline: raw folder stays local (see DEPLOY.md)
+.market-radar

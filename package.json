@@ -7,7 +7,10 @@
     "dev:web": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "typecheck": "tsc -p src/web --noEmit"
+    "typecheck": "tsc -p src/web --noEmit",
+    "ingest": "node scripts/stage-raw-sources.mjs",
+    "normalize": "cd backend && uv run python -m app.normalize",
+    "pipeline": "npm run ingest && npm run normalize"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.5.0",

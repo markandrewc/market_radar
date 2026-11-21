@@ -14,34 +14,39 @@ const months = ['januar', 'februar', 'maerz', 'april', 'mai', 'juni', 'juli', 'a
 
 const sources = [
   {
-    id: 'itboard-monthly', publisher: 'ITBoard.ch', extension: 'csv',
+    id: 'itboard-monthly', name: 'ITBoard · IT-Arbeitsmarkt Schweiz', publisher: 'ITBoard.ch', extension: 'csv',
     discovery_url: itboardReport, licence: 'CC BY 4.0',
     licence_url: 'https://creativecommons.org/licenses/by/4.0/',
     scope: 'Monatliche Kennzahlen der ITBoard-Stelleninserate.',
   },
   {
-    id: 'bfs-besta-regions', publisher: 'Bundesamt für Statistik', extension: 'xlsx',
+    id: 'bfs-besta-regions', name: 'BFS · Offene Stellen nach Branche und Grossregion (BESTA)',
+    publisher: 'Bundesamt für Statistik', extension: 'xlsx',
     discovery_url: bfsAlias, licence: 'OPEN-BY',
     licence_url: 'https://www.bfs.admin.ch/de/nutzungsbedingungen',
     scope: 'BESTA-Quartalswerte zu offenen Stellen nach Wirtschaftsabteilung und Grossregion.',
   },
   {
-    id: 'sem-asylum-applications', publisher: 'Staatssekretariat für Migration', extension: 'xlsx',
+    id: 'sem-asylum-applications', name: 'SEM · Asylgesuche (Tabelle 7-21)',
+    publisher: 'Staatssekretariat für Migration', extension: 'xlsx',
     discovery_url: semAsylum, table: '7-21',
     scope: 'Monatstabelle 7-21 zu Primär- und Sekundärgesuchen im Asylbereich.',
   },
   {
-    id: 'sem-provisional-employment', publisher: 'Staatssekretariat für Migration', extension: 'xlsx',
+    id: 'sem-provisional-employment', name: 'SEM · Vorläufig Aufgenommene mit Erwerb (Tabelle 6-22)',
+    publisher: 'Staatssekretariat für Migration', extension: 'xlsx',
     discovery_url: semAsylum, table: '6-22',
     scope: 'Monatstabelle 6-22 zum Bestand vorläufig aufgenommener Personen mit Erwerb (Ausweis F).',
   },
   {
-    id: 'sem-status-s-monthly', publisher: 'Staatssekretariat für Migration', extension: 'xlsx',
+    id: 'sem-status-s-monthly', name: 'SEM · Schutzstatus S (Tabelle 7-70)',
+    publisher: 'Staatssekretariat für Migration', extension: 'xlsx',
     discovery_url: semAsylum, table: '7-70',
     scope: 'Monatstabelle 7-70 zu Gesuchen, Erledigungen und Beendigungen von Schutzstatus S.',
   },
   {
-    id: 'sem-immigration-canton-nationality', publisher: 'Staatssekretariat für Migration', extension: 'xlsx',
+    id: 'sem-immigration-canton-nationality', name: 'SEM · Einwanderung nach Kanton und Staatsangehörigkeit (Tabelle 3-25)',
+    publisher: 'Staatssekretariat für Migration', extension: 'xlsx',
     discovery_url: semResidents, table: '3-25',
     scope: 'Monatstabelle 3-25 zur Einwanderung der ständigen und nichtständigen ausländischen Wohnbevölkerung nach Kanton und Staatsangehörigkeit.',
   },
@@ -53,7 +58,7 @@ const assetName = (source, hash) => `${source.id}-${hash}.${source.extension}`;
 function allowedUrl(url) {
   if (url.protocol !== 'https:' || url.username || url.password || url.port || url.search || url.hash) return false;
   const { hostname, pathname } = url;
-  if (hostname === 'www.itboard.ch') return pathname === '/arbeitsmarkt/daten.csv';
+  if (hostname === 'www.itboard.ch') return pathname === '/arbeitsmarkt/daten.csv' || pathname === '/arbeitsmarkt';
   if (hostname === 'www.bfs.admin.ch') return url.href === bfsAlias;
   if (hostname === 'statistik.admin.ch') {
     return /^\/de\/asset\/\d+$/.test(pathname) ||
@@ -155,6 +160,20 @@ async function discoverBfs(fetchImpl) {
     period: `${periodEnd.slice(0, 4)}-Q${Math.ceil(Number(periodEnd.slice(5, 7)) / 3)}`,
     period_end: periodEnd,
   };
+}
+
+// The report page states the cutoff of the latest edition ("Stand: 15.11.2026"). If it cannot be read, the CSV is
+// still staged, just without a publisher date.
+async function discoverItboard(fetchImpl) {
+  const base = { source_url: `${itboardReport}/daten.csv`, report_url: itboardReport, report_date: null, period_end: null,
+    report_date_basis: 'Stichtag der neuesten Ausgabe laut ITBoard-Berichtsseite ("Stand").' };
+  try {
+    const page = await fetchBytes(itboardReport, 'text/html', fetchImpl);
+    const stand = /Stand:\s*(\d{1,2})\.(\d{1,2})\.(\d{4})/.exec(plain(page.bytes.toString('utf8')));
+    return { ...base, report_date: stand ? isoDate(stand[1], stand[2], stand[3]) : null };
+  } catch {
+    return base;
+  }
 }
 
 async function discoverSem(indexUrl, fetchImpl) {
@@ -279,10 +298,7 @@ export async function stageRawSources({ outputDir = process.env.MARKET_RADAR_RAW
   const previous = await loadPrevious(outputDir);
   const resolutions = new Map();
   function discover(source) {
-    if (source.id === 'itboard-monthly') {
-      return { source_url: `${itboardReport}/daten.csv`, report_url: itboardReport, report_date: null, period_end: null,
-        report_date_basis: 'Die rollierende CSV enthält mehrere Ausgaben. Die Stichtage stehen in den Monatsberichten.' };
-    }
+    if (source.id === 'itboard-monthly') return discoverItboard(fetchImpl);
     if (source.id === 'bfs-besta-regions') return discoverBfs(fetchImpl);
     if (!resolutions.has(source.discovery_url)) resolutions.set(source.discovery_url, discoverSem(source.discovery_url, fetchImpl));
     return resolutions.get(source.discovery_url).then((edition) => semDownload(source, edition));

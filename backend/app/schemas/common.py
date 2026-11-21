@@ -6,7 +6,9 @@ class SourceRef(BaseModel):
     id: str
     name: str
     url: str
-    fetchedAt: str  # ISO 8601
+    fetchedAt: str  # ISO 8601, when we last retrieved data from this source
+    dataAsOf: str | None = None  # YYYY-MM-DD, the publisher's last update, if known
+    comparableFrom: str | None = None  # YYYY-MM: the source changed how it counts; earlier months differ
 
 
 class Point(BaseModel):
