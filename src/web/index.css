@@ -1,23 +1,140 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
-/* Brand tokens: swap these once the official Powercoders colors are confirmed */
+/* ---------------------------------------------------------------------------
+   Market Radar — editorial design tokens (docs/DESIGN.md)
+   Warm paper, graphite ink, crimson only for data and actions.
+   The names brand / brand-accent / brand-soft stay valid so existing markup
+   keeps working; the new names give the refresh its palette.
+--------------------------------------------------------------------------- */
 @theme {
+  --font-sans: 'Inter Variable', 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --color-ink: #1b1b1d;
+  --color-ink-soft: #57534e;
   --color-brand: #2f2f31;
   --color-brand-accent: #a8324e;
-  --color-brand-soft: #f5f3ef;
-  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --color-brand-soft: #f5f1ea;
+  --color-paper: #faf7f2;
+  --color-surface: #ffffff;
+  --color-line: #e7e2d8;
+  --color-line-strong: #d9d2c5;
+  --color-accent-deep: #8f2943;
+  --color-accent-soft: #f7e9ec;
+
+  --radius-card: 1rem;
+  --radius-control: 0.625rem;
+
+  --shadow-card: 0 1px 2px rgb(27 27 29 / 0.05), 0 10px 30px -22px rgb(27 27 29 / 0.35);
+  --shadow-lift: 0 2px 4px rgb(27 27 29 / 0.06), 0 22px 48px -26px rgb(27 27 29 / 0.45);
+  --shadow-float: 0 30px 70px -35px rgb(27 27 29 / 0.5);
 }
 
-html { scroll-behavior: smooth; }
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
 
-/* Visible keyboard focus everywhere */
-:focus-visible { outline: 3px solid #a8324e; outline-offset: 2px; border-radius: 4px; }
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: var(--color-accent-soft);
+    color: var(--color-ink);
+  }
+
+  /* Visible keyboard focus everywhere, tuned for the paper surface. */
+  :focus-visible {
+    outline: 3px solid var(--color-brand-accent);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+
+  h1, h2, h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+}
+
+@layer components {
+  /* Small uppercase label that opens a section or a card. */
+  .kicker {
+    font-size: 0.6875rem;
+    line-height: 1;
+    font-weight: 650;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-brand-accent);
+  }
+
+  /* Editorial headline: tight, confident, never shouting. */
+  .display {
+    font-weight: 650;
+    letter-spacing: -0.035em;
+    line-height: 1.02;
+    color: var(--color-ink);
+  }
+
+  /* Numbers in tables and cards line up. */
+  .tnum {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .rule {
+    border-color: var(--color-line);
+  }
+
+  /* Very quiet dotted paper texture for hero and section shoulders. */
+  .paper-dots {
+    background-image: radial-gradient(circle, rgb(27 27 29 / 0.07) 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+
+  /* Crimson light for the dark hero. */
+  .hero-glow {
+    background:
+      radial-gradient(60% 80% at 85% 10%, rgb(168 50 78 / 0.32), transparent 60%),
+      radial-gradient(50% 60% at 10% 100%, rgb(255 255 255 / 0.07), transparent 60%);
+  }
+
+  .card-lift {
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+
+  .card-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lift);
+    border-color: var(--color-line-strong);
+  }
+}
+
+dialog::backdrop {
+  background: rgb(27 27 29 / 0.55);
+  backdrop-filter: blur(2px);
+}
 
 /* Respect "reduce motion" */
 @media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
-}
+  html {
+    scroll-behavior: auto;
+  }
 
-dialog::backdrop { background: rgb(15 23 42 / 0.55); }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .card-lift:hover {
+    transform: none;
+  }
+}
