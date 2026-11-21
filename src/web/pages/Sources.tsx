@@ -1,7 +1,8 @@
 import { useSources } from '../api';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { PageHeader } from '@/components/PageHeader';
 import { HowToAddSource } from '@/components/HowToAddSource';
 import { ErrorMsg, Loading } from '@/components/Status';
 
@@ -14,10 +15,11 @@ export default function Sources() {
   if (error || !data) return <ErrorMsg />;
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-semibold text-brand">Data sources</h2>
+      <PageHeader title="Data sources" description="Every source behind the numbers, when it was last updated and whether it is up to date." />
       <Card>
         <CardContent className="pt-5">
           <Table>
+            <TableCaption>Data sources and their update status</TableCaption>
             <TableHeader><TableRow><TableHead>Source</TableHead><TableHead>Last update</TableHead><TableHead>Status</TableHead></TableRow></TableHeader>
             <TableBody>
               {data.map((s) => (
