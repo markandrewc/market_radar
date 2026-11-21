@@ -65,3 +65,24 @@ class SyncSummary(BaseModel):
     results: list[SyncResult] = []
     items: int = 0
     errors: int = 0
+
+
+class ConnectorConfigFile(BaseModel):
+    """The current sources.yaml as served to the operator (never the secrets in it)."""
+
+    file: str
+    sha256: str
+    content: str
+
+
+class ConnectorConfigUpdate(BaseModel):
+    """Result of writing a new sources.yaml through the API."""
+
+    file: str
+    sha256: str
+    added: int
+    updated: int
+    disabled: int
+    sourceCount: int
+    errors: list[str] = []
+    persistent: bool = False

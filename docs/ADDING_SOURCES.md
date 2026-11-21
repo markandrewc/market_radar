@@ -91,6 +91,14 @@ python -m app.connectors reload            # YAML -> Postgres (oder POST /api/co
 python -m app.connectors sync --source <id>
 ```
 
+Ohne Repo-/Shell-Zugriff (Railway-Volume): YAML hochladen, wird validiert und sofort angewandt —
+
+```bash
+curl -X PUT https://<deine-domain>/api/connectors/config \
+  -H "Authorization: Bearer $INGEST_TOKEN" --data-binary @sources.yaml
+# aktuelle Datei holen: curl -s .../api/connectors/config -H "..." | jq -r .content
+```
+
 ```bash
 curl -s localhost:8080/api/connectors | jq '.sources[] | {id, enabled, itemCount, lastError}'
 curl -s 'localhost:8080/api/items?category=A&limit=3' | jq

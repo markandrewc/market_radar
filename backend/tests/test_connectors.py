@@ -215,3 +215,66 @@ def test_cli_list(config_file, capsys):
     assert main(["list", "--file", str(config_file)]) == 0
     out = capsys.readouterr().out
     assert "itboard" in out and "csv_url" in out
+
+
+# --- config file over HTTP (volume workflow) --------------------------------
+
+def test_get_config_returns_the_file(config_file, client):
+    body = client.get("/api/connectors/config", headers=TOKEN)
+    assert body.status_code == 200
+    payload = body.json()
+    assert payload["file"] == str(config_file)
+    assert payload["content"] == config_file.read_text()
+    assert payload["sha256"] == sources_config.load(config_file).sha256
+    assert client.get("/api/connectors/config").status_code == 401
+
+
+def test_put_config_writes_and_applies(config_file, client):
+    new_source = {**ITBOARD, "id": "bfs_demo", "name": "BFS Demo"}
+    text = yaml.safe_dump({"version": 1, "defaults": DEFAULTS, "sources": [ITBOARD, POLICY, SKILLS, new_source]},
+                          allow_unicode=True, sort_keys=False)
+
+    response = client.put("/api/connectors/config",
+                          headers={**TOKEN, "Content-Type": "application/x-yaml"}, content=text.encode())
+
+    assert response.status_code == 200
+    result = response.json()
+    assert (result["added"], result["updated"], result["sourceCount"]) == (1, 3, 4)
+    assert result["persistent"] is False  # tmp dir is not a mount point
+    assert config_file.read_text() == text
+    listing = client.get("/api/connectors").json()
+    assert listing["pendingChanges"] is False
+    assert len(listing["sources"]) == 4
+    assert client.get("/api/connectors/config", headers=TOKEN).json()["content"] == text
+
+
+def test_put_config_rejects_broken_files_and_keeps_the_old_one(config_file, client):
+    before = config_file.read_text()
+
+    invalid_yaml = client.put("/api/connectors/config", headers=TOKEN, content=b"sources: [unclosed\n")
+    assert invalid_yaml.status_code == 422
+    assert "invalid YAML" in invalid_yaml.json()["detail"][0]
+
+    broken_block = yaml.safe_dump({"sources": [ITBOARD, {**POLICY, "category": ["F"]}]}, allow_unicode=True)
+    rejected = client.put("/api/connectors/config", headers=TOKEN, content=broken_block.encode())
+    assert rejected.status_code == 422
+    assert any("category" in message for message in rejected.json()["detail"])
+
+    empty = client.put("/api/connectors/config", headers=TOKEN, content=b"   ")
+    assert empty.status_code == 422
+
+    assert config_file.read_text() == before  # nothing was written
+    assert len(client.get("/api/connectors").json()["sources"]) == 3
+    assert client.put("/api/connectors/config", content=b"sources: []").status_code == 401
+
+
+def test_put_config_reports_a_read_only_target(config_file, client, monkeypatch):
+    def boom(*_args, **_kwargs):
+        raise OSError(30, "Read-only file system")
+
+    monkeypatch.setattr(sources_config, "write_file", boom)
+    response = client.put("/api/connectors/config", headers=TOKEN, content=b"sources: []\n")
+
+    assert response.status_code == 409
+    assert "writable volume" in response.json()["detail"]
+    assert sources_config.load(config_file).usable  # old config still readable

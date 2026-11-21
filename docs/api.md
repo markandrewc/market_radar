@@ -198,6 +198,22 @@ A file that cannot be read at all answers `422` and changes nothing: the previou
 active, so a typo on a mounted volume cannot wipe the configuration. Broken single blocks are listed in
 `errors`, the valid ones are applied anyway.
 
+### `GET /api/connectors/config` · `PUT /api/connectors/config`
+
+Token-protected read/replace of the `sources.yaml` that is in effect — typically on a mounted volume, so the file
+can be changed without shell access or a redeploy. `GET` returns `{file, sha256, content}`.
+
+`PUT` takes the YAML as the request body, validates it and applies it in one step:
+
+- a broken file or an invalid block answers `422`; the old file stays untouched
+- a target that cannot be written answers `409` (point `SOURCES_FILE` at a volume)
+- `persistent` reports whether the target sits on a mount point, i.e. survives a redeploy
+
+```sh
+curl -X PUT https://<domain>/api/connectors/config \
+  -H "Authorization: Bearer $INGEST_TOKEN" --data-binary @sources.yaml
+```
+
 ### `GET /api/items`
 
 Normalised records from every connector (shape see [MarketItem](#marketitem-frozen-contract)). Query parameters:

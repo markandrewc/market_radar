@@ -4,17 +4,23 @@ Read endpoints are public; writing (reload, later sync) uses INGEST_TOKEN.
 """
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException
+import hashlib
+import os
+
+from fastapi import APIRouter, Depends, HTTPException, Request
 
 from .. import db
 from ..auth import require_token
 from ..db import Conn, get_conn, iso
-from ..schemas import ConnectorDefaults, ConnectorList, ConnectorSource, MarketItem, ReloadResult, SyncSummary
+from ..schemas import (ConnectorConfigFile, ConnectorConfigUpdate, ConnectorDefaults, ConnectorList, ConnectorSource,
+                       MarketItem, ReloadResult, SyncSummary)
 from ..services import connectors
 from ..services import items as item_store
 from ..connectors import config as sources_config
 
 router = APIRouter()
+
+MAX_CONFIG_BYTES = 256 * 1024
 
 
 def _source(row, item_count: int = 0) -> ConnectorSource:
@@ -96,3 +102,49 @@ def list_items(category: str | None = None, region: str | None = None, source: s
     return item_store.read_items(
         conn, category=category.upper() if category else None, region=region, source=source, q=q,
         order=order, limit=max(1, min(limit, 1000)), offset=max(0, offset))
+
+
+@router.get("/connectors/config", response_model=ConnectorConfigFile, dependencies=[Depends(require_token)])
+def read_config() -> ConnectorConfigFile:
+    """The sources.yaml currently in effect (e.g. on a mounted volume).
+
+    Token-protected: the file contains no secrets itself, but it names the environment variables that hold them.
+    """
+    path = sources_config.ensure_file()
+    if not path.is_file():
+        raise HTTPException(404, f"{path} does not exist")
+    raw = path.read_bytes()
+    return ConnectorConfigFile(file=str(path), sha256=hashlib.sha256(raw).hexdigest(),
+                               content=raw.decode("utf-8", errors="replace"))
+
+
+@router.put("/connectors/config", response_model=ConnectorConfigUpdate, dependencies=[Depends(require_token)])
+async def replace_config(request: Request) -> ConnectorConfigUpdate:
+    """Replace sources.yaml and apply it in one step - the volume workflow without shell access.
+
+    Validates first: a file with a broken block is rejected (`422`) and the old file stays in place.
+    `persistent` says whether the target sits on a mounted volume (survives a redeploy).
+    """
+    raw = await request.body()
+    if not raw.strip():
+        raise HTTPException(422, ["empty body: send the YAML file as the request body"])
+    if len(raw) > MAX_CONFIG_BYTES:
+        raise HTTPException(413, f"config larger than {MAX_CONFIG_BYTES} bytes")
+
+    path = sources_config.ensure_file()
+    loaded = sources_config.parse(raw, path)
+    if not loaded.usable or loaded.errors:
+        raise HTTPException(422, loaded.errors or ["sources.yaml could not be parsed"])
+
+    try:
+        sources_config.write_file(path, raw)
+    except OSError as exc:
+        raise HTTPException(409, f"cannot write {path}: {exc}. Point SOURCES_FILE at a writable volume.") from exc
+
+    with db.connect() as conn:
+        result = connectors.apply_config(conn, loaded)
+    persistent = bool(path.parent.exists()) and os.path.ismount(path.parent)
+    return ConnectorConfigUpdate(file=str(path), sha256=loaded.sha256, added=result.added,
+                                 updated=result.updated, disabled=result.disabled,
+                                 sourceCount=result.source_count, errors=result.errors,
+                                 persistent=persistent)

@@ -118,18 +118,35 @@ Die Datei liegt im Image unter `/app/sources.yaml` und wird beim Start nach `con
 Kein Code-Change, aber ein Redeploy.
 
 **Variante B — Datei auf einem Railway-Volume.** Volume am Service anlegen (Mount-Pfad `/data`), Variable
-`SOURCES_FILE=/data/sources.yaml` setzen. Beim ersten Start kopiert der Service seine mitgelieferte Datei dorthin.
-Danach gilt:
+`SOURCES_FILE=/data/sources.yaml` setzen, neu deployen. Beim ersten Start kopiert der Service seine mitgelieferte
+Datei dorthin; `GET /api/connectors` zeigt danach `"configFile": "/data/sources.yaml"`.
+
+Ändern **ohne Shell-Zugriff** — YAML hochladen, wird validiert und sofort angewandt:
 
 ```sh
-railway ssh                                  # im Service
-vi /data/sources.yaml                        # Block ergänzen
-exit
-curl -X POST https://<deine-domain>/api/connectors/reload \
-  -H "Authorization: Bearer $INGEST_TOKEN"   # -> {added, updated, disabled, sourceCount, errors}
+curl -X PUT https://<deine-domain>/api/connectors/config \
+  -H "Authorization: Bearer $INGEST_TOKEN" --data-binary @sources.yaml
+# -> {file, sha256, added, updated, disabled, sourceCount, errors, persistent}
 ```
 
-Ein Tippfehler ist hier nicht fatal: die Datei wird beim Start nur gelesen, Probleme landen in
+Aktuelle Datei zum Bearbeiten zurückholen:
+
+```sh
+curl -s https://<deine-domain>/api/connectors/config \
+  -H "Authorization: Bearer $INGEST_TOKEN" | jq -r .content > sources.yaml
+```
+
+| Antwort | Bedeutung |
+| --- | --- |
+| `persistent: true` | Ziel liegt auf einem Mount — Änderung überlebt den nächsten Deploy |
+| `persistent: false` | `SOURCES_FILE` zeigt nicht auf ein Volume; die Änderung ist beim Deploy weg |
+| `422` | Datei ungültig — die alte Datei bleibt unverändert |
+| `409` | Ziel nicht beschreibbar (Dateisystem read-only) |
+
+Mit Shell geht es auch: `railway ssh`, Datei z. B. per `cat > /data/sources.yaml` ersetzen, danach
+`POST /api/connectors/reload`. Im Image ist kein Editor installiert.
+
+Ein Tippfehler ist nicht fatal: beim Start wird die Datei gelesen und nur geloggt; Probleme landen in
 `GET /api/connectors` (`configError`), der zuletzt angewandte Stand bleibt aktiv.
 
 **Synchronisieren.** Manuell:

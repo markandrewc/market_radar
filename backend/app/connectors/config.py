@@ -249,7 +249,20 @@ def load(path: Path | None = None) -> LoadedConfig:
     target = Path(path or app_config.SOURCES_FILE)
     if not target.is_file():
         return LoadedConfig(path=target, errors=[f"{target}: not found (set SOURCES_FILE to point at sources.yaml)"])
-    raw = target.read_bytes()
+    return parse(target.read_bytes(), target)
+
+
+def write_file(target: Path, raw: bytes) -> None:
+    """Atomically replace the config file (PUT /api/connectors/config, volume workflow)."""
+    target.parent.mkdir(parents=True, exist_ok=True)
+    temporary = target.with_name(f"{target.name}.tmp")
+    temporary.write_bytes(raw)
+    os.replace(temporary, target)
+
+
+def parse(raw: bytes, target: Path | None = None) -> LoadedConfig:
+    """Validate config bytes without touching the filesystem - used by load() and by the upload route."""
+    target = Path(target or app_config.SOURCES_FILE)
     sha256 = hashlib.sha256(raw).hexdigest()
     try:
         data = yaml.safe_load(raw) or {}
