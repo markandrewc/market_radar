@@ -1,17 +1,55 @@
-import type { PolicyItem } from '../../shared/types';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import type { MarketItem } from '../../shared/types';
+import type { PolicyNote } from '../lib/policy-watch';
+import { formatDate, itemSource } from '../lib/source';
+import { Card, CardContent } from './ui/card';
 import { SourceBadge } from './SourceBadge';
 
-export function PolicyCard({ item }: { item: PolicyItem }) {
+const SUMMARY_LIMIT = 300;
+
+/** Trim to roughly one paragraph without cutting a word in half. */
+function trimSummary(summary: string): string {
+  const text = summary.trim();
+  if (text.length <= SUMMARY_LIMIT) return text;
+  const cut = text.slice(0, SUMMARY_LIMIT);
+  const lastSpace = cut.lastIndexOf(' ');
+  return `${(lastSpace > SUMMARY_LIMIT * 0.5 ? cut.slice(0, lastSpace) : cut).trimEnd()}…`;
+}
+
+/**
+ * One policy item with its provenance. The optional `note` is our curated
+ * reading, rendered apart from the publisher text and labelled as ours.
+ */
+export function PolicyCard({ item, note }: { item: MarketItem; note?: PolicyNote }) {
+  // The record permalink when the source has one, otherwise the source's own page.
+  const href = item.url ?? item.source_url;
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="text-base text-brand">{item.title}</CardTitle>
-        <CardDescription>{new Date(item.date).toLocaleDateString('en-GB')}</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        <p className="text-sm">{item.summary}</p>
-        <SourceBadge source={item.source} />
+      <CardContent className="space-y-3 pt-5">
+        <div>
+          <a
+            href={href}
+            target="_blank"
+            rel="noreferrer"
+            className="text-base font-semibold text-brand underline-offset-2 hover:text-brand-accent hover:underline"
+          >
+            {item.title}
+          </a>
+          <p className="mt-1 text-xs text-slate-500">
+            {item.published_at ? `Published ${formatDate(item.published_at)}` : 'Publisher date not stated'}
+          </p>
+        </div>
+
+        {item.summary && <p className="text-sm text-slate-700">{trimSummary(item.summary)}</p>}
+
+        {note && (
+          <aside className="rounded-md border-l-4 border-amber-400 bg-amber-50 px-3 py-2" aria-label="Our reading, not the source">
+            <p className="text-xs font-semibold uppercase tracking-wide text-amber-800">Our reading, not the source</p>
+            <p className="mt-1 text-xs font-medium text-slate-700">{note.label}</p>
+            <p className="mt-1 text-sm text-slate-700">{note.note}</p>
+          </aside>
+        )}
+
+        <SourceBadge source={itemSource(item)} />
       </CardContent>
     </Card>
   );

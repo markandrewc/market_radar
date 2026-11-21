@@ -11,13 +11,42 @@ export interface DemandResponse { role: Role; current: number; changePct: number
 export interface SkillRow { skill: string; share: number; changePct: number; source: SourceRef; trend?: Trend | null }
 // role.id 'all' = counted over all IT postings, not per role
 export interface SkillsResponse { role: Role; skills: SkillRow[] }
-export interface Employer { name: string; openings: number; topSkill: string }
-export interface EmployersResponse { role: Role; employers: Employer[]; source: SourceRef }
-export interface TargetGroupResponse { groups: { label: string; count: number }[]; source: SourceRef }
-export interface PolicyItem { title: string; summary: string; date: string; source: SourceRef }
-export interface PolicyResponse { items: PolicyItem[] }
-export interface SubscribeBody { email: string; roleIds: string[] }
+export interface Employer { name: string; openings: number; topSkills: string[]; sourceUrl?: string | null }
+// window: the posting period the numbers come from (YYYY-MM-DD), null when the source gives no dates
+export interface EmployersResponse { role: Role; window: { from: string; to: string } | null; employers: Employer[]; source: SourceRef }
 export interface SourceStatus { id: string; name: string; url: string; lastFetchedAt: string; dataAsOf?: string | null; licence?: string | null; licenceUrl?: string | null; status: 'ok' | 'stale' | 'error'; problem?: string | null }
+
+// ---- Level 2: briefings ----------------------------------------------------
+// One bullet = one fact plus the source it came from. The backend appends the citation line, never the model.
+export interface DigestBullet { text: string; source: SourceRef }
+export interface DigestSection { heading: string; bullets: DigestBullet[]; note?: string | null }
+export interface Digest { subject: string; text: string; sections: DigestSection[]; sources: SourceRef[]; generatedAt: string; empty: boolean }
+export interface DigestRequest { roleIds: string[]; includePolicy: boolean; includeTargetGroup: boolean }
+export interface SubscribeBody extends DigestRequest { email: string; cadence: 'weekly' | 'monthly' }
+export interface SubscribeResult { ok: boolean; sent: boolean; error?: string | null; nextRun?: string | null; unsubscribeUrl?: string | null }
+export interface SendOutcome { subscriptionId: string; email: string; status: 'sent' | 'dry_run' | 'error' | 'skipped'; detail?: string | null }
+export interface RunResult { sent: number; failed: number; skipped: number; results: SendOutcome[] }
+
+// ---- Level 4: config-driven connectors ------------------------------------
+export interface ConnectorSource {
+  id: string; name: string; description: string; sourceUrl: string; categories: string[];
+  adapterType: 'rest_api' | 'rss_atom' | 'csv_url'; endpoints: string[]; refreshRate: string;
+  refreshSeconds: number | null; enabled: boolean; inConfig: boolean; authEnv: string[];
+  filterKeywords: string[]; licence?: string | null; licenceUrl?: string | null;
+  lastSyncAt?: string | null; lastError?: string | null; itemCount: number;
+}
+export interface ConnectorDefaults { targetCities: string[]; targetRoles: string[]; policyKeywords: string[] }
+export interface ConnectorList {
+  configFile: string; configError?: string | null; pendingChanges: boolean; appliedAt?: string | null;
+  defaults: ConnectorDefaults; sources: ConnectorSource[];
+}
+export interface SyncResult { source: string; adapter: string; items: number; skipped: boolean; replaced: boolean; reason?: string | null; error?: string | null }
+export interface SyncSummary { results: SyncResult[]; items: number; errors: number }
+export interface ConnectorConfigFile { file: string; sha256: string; content: string }
+export interface ConnectorConfigUpdate {
+  file: string; sha256: string; added: number; updated: number; disabled: number;
+  sourceCount: number; errors: string[]; persistent: boolean;
+}
 
 // Frozen contract for the config-driven connectors (docs/market-item.schema.json).
 // Field names stay snake_case to match the JSON Schema and the Python schemas.

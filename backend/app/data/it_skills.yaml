@@ -1,0 +1,163 @@
+# Curated IT skills for "who is hiring" (Level 3, category C; docs/api.md).
+#
+# Not an ESCO classification: a short, hand-checked list of the tools and topics that
+# actually appear in Swiss web-development, IT-support, data-analysis, cloud/DevOps
+# and UX postings. `name` is the canonical spelling the API returns in `topSkills`;
+# every `aliases` entry is matched case-insensitively on word boundaries against a
+# posting's title and description. Order does not matter.
+#
+# Add a skill by adding one block; no code change is needed.
+skills:
+  # --- web development -------------------------------------------------------
+  - name: Python
+    aliases: ["python", "python3", "python 3"]
+  - name: JavaScript
+    aliases: ["javascript", "ecmascript"]
+  - name: TypeScript
+    aliases: ["typescript"]
+  - name: React
+    aliases: ["react", "react.js", "reactjs", "react js"]
+  - name: Angular
+    aliases: ["angular", "angularjs", "angular.js"]
+  - name: Vue.js
+    aliases: ["vue.js", "vuejs", "vue js"]
+  - name: Node.js
+    aliases: ["node.js", "nodejs", "node js", "node"]
+  - name: Next.js
+    aliases: ["next.js", "nextjs", "next js"]
+  - name: HTML
+    aliases: ["html", "html5"]
+  - name: CSS
+    aliases: ["css", "css3", "sass", "scss"]
+  - name: Tailwind CSS
+    aliases: ["tailwind", "tailwind css", "tailwindcss"]
+  - name: PHP
+    aliases: ["php"]
+  - name: Java
+    aliases: ["java"]
+  - name: C#
+    aliases: ["c#", "csharp", "c sharp"]
+  - name: .NET
+    aliases: [".net", "dotnet", "asp.net"]
+  - name: REST
+    aliases: ["rest", "rest api", "restful", "rest-api", "restful api"]
+  - name: GraphQL
+    aliases: ["graphql", "graph ql"]
+  - name: Django
+    aliases: ["django"]
+  - name: Flask
+    aliases: ["flask"]
+  - name: FastAPI
+    aliases: ["fastapi", "fast api"]
+  - name: Git
+    aliases: ["git", "github", "gitlab"]
+
+  # --- data and databases ----------------------------------------------------
+  - name: SQL
+    aliases: ["sql"]
+  - name: PostgreSQL
+    aliases: ["postgresql", "postgres", "psql"]
+  - name: MySQL
+    aliases: ["mysql"]
+  - name: MongoDB
+    aliases: ["mongodb", "mongo db", "mongo"]
+  - name: Redis
+    aliases: ["redis"]
+  - name: Elasticsearch
+    aliases: ["elasticsearch", "elastic search", "elastic-search"]
+  - name: Pandas
+    aliases: ["pandas", "python pandas"]
+  - name: NumPy
+    aliases: ["numpy", "num py"]
+  - name: Data Analysis
+    aliases: ["data analysis", "data analytics", "data analyse", "datenanalyse", "daten analysis"]
+  - name: Data Visualization
+    aliases: ["data visualization", "data visualisation", "datenvisualisierung", "daten visualisierung"]
+  - name: ETL
+    aliases: ["etl", "extract transform load"]
+  - name: Spark
+    aliases: ["spark", "apache spark", "pyspark"]
+  - name: Airflow
+    aliases: ["airflow", "apache airflow"]
+  - name: Data Warehouse
+    aliases: ["data warehouse", "datawarehouse", "dwh"]
+
+  # --- spreadsheets, BI and business tools -----------------------------------
+  - name: Excel
+    aliases: ["excel", "ms excel", "microsoft excel"]
+  - name: Power BI
+    aliases: ["power bi", "powerbi", "power-bi", "microsoft power bi"]
+  - name: Tableau
+    aliases: ["tableau"]
+  - name: SAP
+    aliases: ["sap"]
+
+  # --- machine learning and AI -----------------------------------------------
+  - name: Machine Learning
+    aliases: ["machine learning", "machine-learning", "maschinelles lernen", "ml"]
+  - name: AI
+    aliases: ["ai", "artificial intelligence", "künstliche intelligenz", "generative ai", "genai", "ki"]
+
+  # --- IT support and infrastructure -----------------------------------------
+  - name: Windows
+    aliases: ["windows", "windows server", "windows 10", "windows 11", "microsoft windows"]
+  - name: Linux
+    aliases: ["linux", "ubuntu", "debian", "red hat", "rhel", "centos"]
+  - name: Active Directory
+    aliases: ["active directory", "active-directory", "ad ds", "ad-ds"]
+  - name: Microsoft 365
+    aliases: ["microsoft 365", "office 365", "m365", "ms365"]
+  - name: TCP/IP
+    aliases: ["tcp/ip", "tcp-ip", "tcp"]
+  - name: VPN
+    aliases: ["vpn", "virtual private network"]
+  - name: PowerShell
+    aliases: ["powershell", "power shell"]
+  - name: Bash
+    aliases: ["bash", "shell scripting", "shell-scripting"]
+  - name: Networking
+    aliases: ["networking", "netzwerk", "netzwerke", "network administration"]
+  - name: Cybersecurity
+    aliases: ["cybersecurity", "cyber security", "it security", "it-security", "it-sicherheit"]
+  - name: ITIL
+    aliases: ["itil"]
+  - name: ServiceNow
+    aliases: ["servicenow", "service now"]
+
+  # --- UX, design and collaboration ------------------------------------------
+  - name: Figma
+    aliases: ["figma"]
+  - name: UX
+    aliases: ["ux", "user experience", "user experience design", "ux design"]
+  - name: Wireframing
+    aliases: ["wireframe", "wireframes", "wireframing"]
+  - name: Photoshop
+    aliases: ["photoshop", "adobe photoshop"]
+  - name: Design Thinking
+    aliases: ["design thinking", "design-thinking"]
+  - name: Jira
+    aliases: ["jira", "atlassian jira"]
+  - name: Confluence
+    aliases: ["confluence", "atlassian confluence"]
+  - name: Scrum
+    aliases: ["scrum"]
+  - name: Agile
+    aliases: ["agile", "agil", "agile arbeitsweise"]
+
+  # --- cloud and DevOps ------------------------------------------------------
+  - name: Azure
+    aliases: ["azure", "microsoft azure"]
+  - name: AWS
+    aliases: ["aws", "amazon web services", "amazon aws"]
+  - name: Google Cloud
+    aliases: ["google cloud", "gcp", "google cloud platform"]
+  - name: Docker
+    aliases: ["docker", "docker container", "containerization", "containerisierung"]
+  - name: Kubernetes
+    aliases: ["kubernetes", "k8s"]
+  - name: Terraform
+    aliases: ["terraform"]
+  - name: CI/CD
+    aliases: ["ci/cd", "ci-cd", "cicd", "continuous integration", "continuous delivery", "continuous deployment"]
+  - name: Jenkins
+    aliases: ["jenkins"]

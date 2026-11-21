@@ -62,6 +62,13 @@ Der Port braucht keine Konfiguration: uvicorn bindet auf `$PORT` (Default 8080).
 | `VITE_USE_MOCKS` | Build-Zeit, Default `1` | `1` = Frontend zeigt Mock-Daten (Demo), `0` = Frontend liest `/api` |
 | `SOURCES_FILE` | optional | Pfad zu `sources.yaml`, z. B. `/data/sources.yaml` auf einem Volume |
 | `ADZUNA_APP_ID` / `ADZUNA_APP_KEY` | optional | Schlüssel für die Adzuna-Quelle; fehlen sie, wird die Quelle übersprungen |
+| `RESEND_API_KEY` | optional | schaltet den E-Mail-Versand der Briefings frei; ohne Key wird jeder Versand als `dry_run` protokolliert (Vorschau funktioniert weiter) |
+| `REPORT_FROM` | optional | verifizierter Absender, z. B. `Market Radar <radar@deine-domain.ch>`; ohne verifizierte Domain liefert Resend nur an die eigene Konto-Adresse |
+| `REPORT_REPLY_TO` | optional | Antwortadresse im Briefing |
+| `PUBLIC_BASE_URL` | für E-Mails nötig | absolute Links (Unsubscribe, Dashboard), z. B. `https://radar.example.ch`; leer = relative Links |
+| `REPORTS_DAILY_CAP` | optional | Obergrenze für Versände pro Tag (Default 100), schützt das Resend-Kontingent |
+| `REPORT_TIMEZONE` | optional | Zeitzone für Woche/Monat der Briefings, Default `Europe/Zurich` |
+| `LLM_BASE_URL` / `LLM_API_KEY` / `LLM_MODEL` | optional | formuliert nur den Text der Briefing-Punkte um; Quellenangaben hängt immer der Code an. Ohne alle drei bleibt alles deterministisch |
 
 **`VITE_*` wirkt nur beim Build.** Vite ersetzt die Variable beim Bauen durch einen
 festen Wert; nach jeder Änderung ist ein Redeploy nötig. Das Dockerfile deklariert
@@ -175,6 +182,34 @@ curl -s 'https://<deine-domain>/api/items?category=E&limit=3' | jq
 
 Im Frontend erscheinen die Datensätze unter **Items** (`/items`), filterbar nach Kategorie, Kanton, Quelle und
 Suchbegriff; die Filter stehen in der URL (`/items?category=E`). Voraussetzung: `VITE_USE_MOCKS=0` beim Build.
+
+## Briefings per E-Mail (Level 2)
+
+Die Seite **Reports** (`/reports`) zeigt eine Vorschau des Briefings und verschickt nach dem Abonnieren sofort
+die erste Ausgabe. Regelmäßig verschickt ein **zweiter Cron-Service** aus demselben Image (kein In-Process-Job):
+
+| Einstellung | Wert |
+| --- | --- |
+| Custom Start Command | `.venv/bin/python -m app.reports run --due` |
+| Cron Schedule | `0 5 * * *` (täglich 05:00 UTC; gefällige Abos werden einmal pro ISO-Woche bzw. pro Monat verschickt) |
+
+Nötige Variablen: `RESEND_API_KEY`, `REPORT_FROM` (verifizierter Absender), `PUBLIC_BASE_URL`; optional
+`REPORT_REPLY_TO`, `REPORT_TIMEZONE`, `REPORTS_DAILY_CAP`. Aufbau, Grenzen und Datenschutz:
+[docs/REPORTS.md](docs/REPORTS.md).
+
+```sh
+# lokal prüfen, ohne etwas zu verschicken:
+cd backend
+DATABASE_URL="$DATABASE_URL" .venv/bin/python -m app.reports preview --role it-support
+DATABASE_URL="$DATABASE_URL" .venv/bin/python -m app.reports run --due
+```
+
+Ohne `RESEND_API_KEY` schreibt der Lauf `dry_run`-Zeilen in `report_sends` — der komplette Ablauf lässt sich
+also ohne Provider demonstrieren. Die E-Mail-Adresse ist das einzige personenbezogene Datum; sie wird nur zum
+Versand gespeichert und beim Abmelden mit dem Abo gelöscht.
+
+Quellen, Zahlenstand und Abrufdatum setzt das Backend an jeden Punkt; der optionale LLM-Feinschliff
+(`LLM_BASE_URL`/`LLM_API_KEY`/`LLM_MODEL`) darf nur den Text umformulieren, die Quellenangabe hängt immer der Code an.
 
 ## Lokal testen
 

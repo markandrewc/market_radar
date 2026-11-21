@@ -1,32 +1,66 @@
+import { useState } from 'react';
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { Link } from 'react-router-dom';
+import type { Trend } from '../../shared/types';
 import { useDemand, useSkills } from '../api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { SourceBadge } from '@/components/SourceBadge';
 import { Change } from '@/components/Change';
+import { Empty, ErrorMsg, Loading } from '@/components/Status';
+
+/** Small direction marker for a trend, shown only when the backend sends one. */
+function TrendMark({ trend }: { trend?: Trend | null }) {
+  if (!trend) return null;
+  const text = trend.direction === 'rising' ? '↑ rising' : trend.direction === 'falling' ? '↓ falling' : '→ stable';
+  const variant = trend.direction === 'rising' ? 'success' : trend.direction === 'falling' ? 'warning' : 'secondary';
+  const slope = `${trend.slopePerMonth > 0 ? '+' : ''}${trend.slopePerMonth}/month, ${trend.months} months`;
+  return (
+    <Badge variant={variant} title={`${trend.basis === 'share' ? 'Share of postings' : 'Postings'}: ${slope}`}>
+      {text}
+    </Badge>
+  );
+}
 
 export default function Home() {
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const demand = useDemand();
-  const skills = useSkills();
+  // The selector defaults to the first role; a stale selection falls back to it.
+  const activeId = demand.data?.find((entry) => entry.role.id === selectedId)?.role.id ?? demand.data?.[0]?.role.id;
+  const skills = useSkills(activeId);
 
-  if (demand.isLoading || skills.isLoading) return <p className="text-slate-500">Loading…</p>;
-  if (demand.error || skills.error || !demand.data || !skills.data) return <p className="text-red-600">Something went wrong.</p>;
+  if (demand.isLoading || skills.isLoading) return <Loading />;
+  if (demand.error || skills.error || !demand.data || !skills.data) return <ErrorMsg />;
+  if (demand.data.length === 0) return <Empty text="No data yet. Sync the sources in the Sources panel." />;
 
-  if (demand.data.length === 0) return <p className="text-slate-500">No data yet.</p>;
+  const main = demand.data.find((entry) => entry.role.id === activeId) ?? demand.data[0];
 
-  const main = demand.data[0];
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-semibold text-brand">Job market overview</h2>
-        <p className="text-sm text-slate-500">Open positions in Switzerland, last 12 months</p>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h2 className="text-2xl font-semibold text-brand">Job market overview</h2>
+          <p className="text-sm text-slate-500">Open positions in Switzerland, last 12 months</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <label htmlFor="home-role" className="text-sm text-slate-600">Role</label>
+          <select
+            id="home-role"
+            value={main.role.id}
+            onChange={(event) => setSelectedId(event.target.value)}
+            className="rounded-md border border-slate-200 px-2 py-1 text-sm text-slate-700"
+          >
+            {demand.data.map((entry) => (
+              <option key={entry.role.id} value={entry.role.id}>{entry.role.name}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
         {demand.data.map((d) => (
-          <Card key={d.role.id}>
+          <Card key={d.role.id} className={d.role.id === main.role.id ? 'ring-1 ring-brand' : undefined}>
             <CardHeader>
               <CardTitle><Link to={`/roles/${d.role.id}`} className="hover:text-brand-accent">{d.role.name} →</Link></CardTitle>
             </CardHeader>
@@ -35,6 +69,7 @@ export default function Home() {
                 <span className="text-3xl font-semibold">{d.current}</span>
                 <Change pct={d.changePct} />
               </div>
+              <TrendMark trend={d.trend} />
               <SourceBadge source={d.source} />
             </CardContent>
           </Card>
@@ -44,7 +79,10 @@ export default function Home() {
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>{main.role.name}: demand trend</CardTitle>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <CardTitle>{main.role.name}: demand trend</CardTitle>
+              <TrendMark trend={main.trend} />
+            </div>
             <CardDescription>Job postings per month</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -64,25 +102,38 @@ export default function Home() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Top skills asked for</CardTitle>
+            <CardTitle>Top skills asked for {main.role.name}</CardTitle>
             <CardDescription>Share of postings mentioning the skill</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Table>
-              <TableHeader>
-                <TableRow><TableHead>Skill</TableHead><TableHead>Share</TableHead><TableHead>Change</TableHead></TableRow>
-              </TableHeader>
-              <TableBody>
-                {skills.data.skills.map((s) => (
-                  <TableRow key={s.skill}>
-                    <TableCell className="font-medium">{s.skill}</TableCell>
-                    <TableCell>{s.share}%</TableCell>
-                    <TableCell><Change pct={s.changePct} /></TableCell>
+            {skills.data.skills.length === 0 ? (
+              <p className="text-sm text-slate-500">
+                No skill data for this role yet. Sync the sources in the{' '}
+                <Link to="/sources" className="text-brand-accent underline">Sources panel</Link>.
+              </p>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Skill</TableHead>
+                    <TableHead>Share</TableHead>
+                    <TableHead>Change</TableHead>
+                    <TableHead>Trend</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            <SourceBadge source={skills.data.skills[0].source} />
+                </TableHeader>
+                <TableBody>
+                  {skills.data.skills.map((s) => (
+                    <TableRow key={s.skill}>
+                      <TableCell className="font-medium">{s.skill}</TableCell>
+                      <TableCell>{s.share}%</TableCell>
+                      <TableCell><Change pct={s.changePct} /></TableCell>
+                      <TableCell><TrendMark trend={s.trend} /></TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+            {skills.data.skills[0] && <SourceBadge source={skills.data.skills[0].source} />}
           </CardContent>
         </Card>
       </div>

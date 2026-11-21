@@ -134,3 +134,39 @@ CREATE INDEX IF NOT EXISTS market_items_tags ON market_items USING GIN (tags);
 CREATE INDEX IF NOT EXISTS market_items_region ON market_items (region);
 ALTER TABLE market_items DROP CONSTRAINT IF EXISTS market_items_source_id_fkey;
 CREATE INDEX IF NOT EXISTS market_items_source ON market_items (source_id);
+
+-- --------------------------------------------------------------------------
+-- Level 2: e-mailed briefings. The e-mail address is the only personal datum:
+-- stored only to deliver, never returned by a read endpoint, and deleted
+-- together with the subscription on unsubscribe (docs/REPORTS.md).
+CREATE TABLE IF NOT EXISTS report_subscriptions (
+    id                  TEXT PRIMARY KEY,           -- generated in Python, no extension needed
+    email               TEXT NOT NULL,
+    role_ids            TEXT[] NOT NULL DEFAULT '{}',
+    include_policy      BOOLEAN NOT NULL DEFAULT true,
+    include_target_group BOOLEAN NOT NULL DEFAULT true,
+    cadence             TEXT NOT NULL DEFAULT 'weekly' CHECK (cadence IN ('weekly', 'monthly')),
+    active              BOOLEAN NOT NULL DEFAULT true,
+    unsubscribe_token   TEXT NOT NULL UNIQUE,
+    created_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
+    last_sent_at        TIMESTAMPTZ,
+    last_error          TEXT
+);
+CREATE UNIQUE INDEX IF NOT EXISTS report_subscriptions_email ON report_subscriptions (lower(email));
+CREATE INDEX IF NOT EXISTS report_subscriptions_due ON report_subscriptions (active, cadence, last_sent_at);
+
+-- What was actually sent, for the team's audit: the same digest text that left the server.
+CREATE TABLE IF NOT EXISTS report_sends (
+    id              BIGSERIAL PRIMARY KEY,
+    subscription_id TEXT REFERENCES report_subscriptions(id) ON DELETE CASCADE,
+    email           TEXT NOT NULL,
+    sent_at         TIMESTAMPTZ NOT NULL DEFAULT now(),
+    status          TEXT NOT NULL CHECK (status IN ('sent', 'dry_run', 'error')),
+    provider        TEXT NOT NULL DEFAULT 'resend',
+    subject         TEXT NOT NULL,
+    digest          TEXT NOT NULL,
+    sources         JSONB NOT NULL DEFAULT '[]'::jsonb,
+    provider_id     TEXT,
+    error           TEXT
+);
+CREATE INDEX IF NOT EXISTS report_sends_email_sent ON report_sends (email, sent_at DESC);

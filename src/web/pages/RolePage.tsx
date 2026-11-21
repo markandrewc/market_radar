@@ -7,26 +7,37 @@ import { FreshnessFooter } from '@/components/FreshnessFooter';
 import { Empty, ErrorMsg, Loading } from '@/components/Status';
 
 export default function RolePage() {
-  const { id = '' } = useParams();
+  // One role id drives both the skills table and the employers card.
+  const { id = '' } = useParams<{ id: string }>();
   const demand = useDemand();
   const skills = useSkills(id);
   const employers = useEmployers(id);
 
   if (demand.isLoading || skills.isLoading || employers.isLoading) return <Loading />;
   if (demand.error || skills.error || employers.error) return <ErrorMsg />;
-  const d = demand.data?.find((x) => x.role.id === id);
-  if (!d || !skills.data || !employers.data) return <Empty text="We have no data for this role yet." />;
+
+  const row = demand.data?.find((entry) => entry.role.id === id);
+  const role = row?.role ?? skills.data?.role ?? employers.data?.role;
+  if (!role || !skills.data || !employers.data) {
+    return (
+      <div className="space-y-4">
+        <Link to="/" className="text-sm text-brand-accent">← All roles</Link>
+        <Empty text="We have no data for this role yet. Sync the sources in the Sources panel, then check again." />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
       <Link to="/" className="text-sm text-brand-accent">← All roles</Link>
-      <h2 className="text-2xl font-semibold text-brand">{d.role.name}</h2>
-      <DemandBlock data={d} />
+      <h2 className="text-2xl font-semibold text-brand">{role.name}</h2>
+      {row && <DemandBlock data={row} />}
       <div className="grid gap-4 lg:grid-cols-2">
         <SkillsBlock data={skills.data} />
+        {/* An empty employers list renders its own "configure Adzuna" state. */}
         <EmployersBlock data={employers.data} />
       </div>
-      <FreshnessFooter fetchedAt={d.source.fetchedAt} />
+      <FreshnessFooter fetchedAt={row?.source.fetchedAt ?? employers.data.source.fetchedAt} />
     </div>
   );
 }

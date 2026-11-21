@@ -243,3 +243,137 @@ Per source: `{source, adapter, items, skipped, replaced, reason, error}`.
 
 Requires `Authorization: Bearer <INGEST_TOKEN>`; without `INGEST_TOKEN` on the server: `503`.
 Data only enters the database through step 2.
+
+## Briefings (Level 2)
+
+A briefing is a `Digest`: a subject, a plain-text version and a list of sections. **Every bullet carries its own
+`source`** (`SourceRef`, see above), and the rendered text ends each bullet with the citation — the backend
+appends it, so it cannot be lost on the way to an inbox.
+
+```json
+{
+  "subject": "Market Radar: weekly briefing, week 47",
+  "text": "Demand\n- IT Support: 41 postings in November 2026, 1.2 % more than in October.\n  — ITBoard · data as of 2026-11-15 · retrieved 2026-11-21 · https://www.itboard.ch/arbeitsmarkt",
+  "sections": [
+    {
+      "heading": "Demand",
+      "bullets": [
+        {
+          "text": "IT Support: 41 postings in November 2026, 1.2 % more than in October.",
+          "source": {
+            "id": "itboard-monthly",
+            "name": "ITBoard · IT-Arbeitsmarkt Schweiz",
+            "url": "https://www.itboard.ch/arbeitsmarkt",
+            "fetchedAt": "2026-11-21T08:00:00Z",
+            "dataAsOf": "2026-11-15",
+            "comparableFrom": "2026-06"
+          }
+        }
+      ],
+      "note": null
+    }
+  ],
+  "sources": [ { "id": "itboard-monthly", "name": "ITBoard · IT-Arbeitsmarkt Schweiz", "...": "..." } ],
+  "generatedAt": "2026-11-21T14:00:00Z",
+  "empty": false
+}
+```
+
+| Section | Built from | Rules |
+|---|---|---|
+| `Demand` | `observations` (`metric = 'demand'`) via `app/services/market_view.py` | one bullet per selected role that has data: latest value, `changePct`, trend direction. `roleIds: []` = all roles with demand data (max. 6). |
+| `Skills` | `observations` (`metric = 'skill'`) | exactly one selected role = that role's skills; otherwise the all-roles series (`role_id = ''`). Top 5 by share plus up to 3 rising and 3 falling. |
+| `Policy watch` (if `includePolicy`) | `market_items` with `'E' = ANY(categories)`, newest `published_at` | max. 5 bullets: title + trimmed summary; each bullet is one item and one source. |
+| `Target group` (if `includeTargetGroup`) | `market_items` with `'D' = ANY(categories)` | max. 3 bullets with the item's key `metrics`. Aggregate statistics only, no personal data. |
+| `Employers` | same aggregation as `GET /api/employers` | only when at least one selected role has category-C data. |
+
+`note` is **our** reading (e.g. a plain-language implication), always shown separately from the source text and
+labelled as ours in the UI and in the e-mail. `empty: true` means there was nothing to report: the text then
+explains why and links to `/sources`; no number is invented. A role without data is skipped, never reported as 0.
+
+### `POST /api/reports/preview`
+
+Public, no storage: body `{"roleIds": ["it-support"], "includePolicy": true, "includeTargetGroup": false}`,
+answer `Digest`. Used by the Reports page and by `python -m app.reports preview`.
+
+### `POST /api/subscriptions`
+
+Public, rate-limited. Body:
+
+```json
+{"email": "team@powercoders.org", "roleIds": ["it-support"], "includePolicy": true,
+ "includeTargetGroup": false, "cadence": "weekly"}
+```
+
+- `email` is lower-cased and upserted: subscribing again updates topics instead of creating a second row.
+- At least one topic is required (`422` otherwise); an invalid address answers `422`.
+- The first briefing is sent immediately so the subscriber sees the format. Limits: one send per address per
+  minute, five per day, and `REPORTS_DAILY_CAP` (default 100) per day for the whole deployment → `429`.
+- Answer `{ok, sent, error?, nextRun, unsubscribeUrl}`. If the provider rejects the mail, the subscription is
+  still stored and the answer is `200` with `sent: false` and the provider message in `error`.
+- Without `RESEND_API_KEY` the send is recorded as `dry_run`; nothing is delivered.
+
+### `POST /api/reports/run`
+
+Requires the token. Body `{"dueOnly": true, "subscriptionId": null}`. Sends every due subscription and answers
+`{sent, failed, skipped, results: [{subscriptionId, email, status, detail}]}`.
+Due rule, compared in `REPORT_TIMEZONE` (default `Europe/Zurich`):
+
+- `weekly`: `last_sent_at` is in an earlier ISO week (or null) — Monday is the intended day, a missed cron run
+  catches up on the next run instead of skipping the week;
+- `monthly`: `last_sent_at` is in an earlier calendar month (or null).
+
+`python -m app.reports run --due` is the cron entry point and uses the same rule; `--no-due` sends everyone.
+The same code path is idempotent: after a send `last_sent_at` is written, so two runs in the same period send once.
+
+### `GET /api/reports/unsubscribe?token=<token>`
+
+Public, answers a small HTML page. Deletes the subscription and its `report_sends` rows (the address is removed
+with it); an unknown or already used token answers `404` HTML. The e-mail carries the same URL in
+`List-Unsubscribe` for one-click unsubscribe.
+
+### Tables
+
+```sql
+report_subscriptions(id TEXT PK, email TEXT, role_ids TEXT[], include_policy BOOL, include_target_group BOOL,
+                     cadence TEXT CHECK IN ('weekly','monthly'), active BOOL, unsubscribe_token TEXT UNIQUE,
+                     created_at, last_sent_at, last_error);
+report_sends(id BIGSERIAL PK, subscription_id TEXT REFERENCES report_subscriptions ON DELETE CASCADE,
+             email TEXT, sent_at, status TEXT CHECK IN ('sent','dry_run','error'), provider TEXT,
+             subject TEXT, digest TEXT, sources JSONB, provider_id TEXT, error TEXT);
+```
+
+The e-mail address is the only personal datum in the database: it is stored only to deliver the briefing, never
+returned by a read endpoint, and deleted with the subscription. `report_sends.digest` keeps the exact text that
+left the server, so the team can check what was sent even if the inbox is gone.
+
+## Employers (Level 3, category C)
+
+### `GET /api/employers?role=<role-id>`
+
+Who is hiring for one role of the `roles` table (`404` for an unknown role). Built only from stored
+`market_items` whose `categories` contain `C` (today: the Adzuna connector), so no extra request is made and the
+numbers are as old as the last sync.
+
+```json
+{
+  "role": { "id": "it-support", "name": "IT Support" },
+  "window": { "from": "2026-09-01", "to": "2026-11-19" },
+  "employers": [
+    { "name": "Swisscom", "openings": 7, "topSkills": ["Windows", "Active Directory", "SQL"],
+      "sourceUrl": "https://www.adzuna.ch/land/ad/…" }
+  ],
+  "source": { "id": "adzuna_ch", "name": "Adzuna Stellenmarkt Schweiz", "url": "https://developer.adzuna.com/",
+              "fetchedAt": "2026-11-21T08:00:00Z", "dataAsOf": "2026-11-19" }
+}
+```
+
+- A posting belongs to the role when its tags contain `role:<role name>` (set by the connector from
+  `defaults.target_roles`) or when its title contains the role name.
+- `openings` is the number of stored postings of that employer for this role; `topSkills` are the three most
+  named skills in those postings (curated IT skill list, `app/data/it_skills.yaml`), not an ESCO classification.
+- `window` is min/max `published_at` of the contributing postings (`YYYY-MM-DD`), `null` when the source dates
+  are unusable. `source` is the connector, with `dataAsOf` = newest posting date.
+- No category-C data (e.g. `ADZUNA_APP_ID`/`ADZUNA_APP_KEY` missing) answers `200` with `employers: []`; the UI
+  explains what to configure instead of showing placeholder numbers.
+- Aggregate only: employer names and counts, no contact persons, no applications.

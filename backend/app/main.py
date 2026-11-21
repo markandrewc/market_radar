@@ -9,7 +9,7 @@ from fastapi.staticfiles import StaticFiles
 from . import config, db
 from .connectors import config as sources_config
 from .routers import connectors as connectors_api
-from .routers import health, market, sources
+from .routers import employers, health, market, reports, sources
 from .services import connectors as connectors_store
 
 log = logging.getLogger("uvicorn.error")
@@ -35,6 +35,8 @@ app.include_router(health.router, prefix="/api")
 app.include_router(market.router, prefix="/api")
 app.include_router(sources.router, prefix="/api")
 app.include_router(connectors_api.router, prefix="/api")
+app.include_router(reports.router, prefix="/api")
+app.include_router(employers.router, prefix="/api")
 
 # Production: serve the built React app (npm run build -> dist/). In dev, Vite serves the frontend.
 if config.STATIC_DIR.is_dir():
