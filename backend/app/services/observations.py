@@ -31,16 +31,20 @@ def check(conn: Conn, roles: list[Role], observations: list[NormalizedObservatio
 
 
 def upsert_source(conn: Conn, source_id: str, name: str, url: str, fetched_at: datetime,
-                  data_as_of: date | None = None, licence: str | None = None, licence_url: str | None = None) -> None:
-    """Creates or updates a source. fetched_at and data_as_of only move forward."""
+                  data_as_of: date | None = None, licence: str | None = None, licence_url: str | None = None,
+                  dataset_url: str | None = None, dataset_modified: date | None = None) -> None:
+    """Creates or updates a source. fetched_at, data_as_of and dataset_modified only move forward."""
     conn.execute(
-        """INSERT INTO sources (id, name, url, fetched_at, data_as_of, licence, licence_url)
-           VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """INSERT INTO sources (id, name, url, fetched_at, data_as_of, licence, licence_url,
+                                dataset_url, dataset_modified)
+           VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
            ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, url = EXCLUDED.url,
                fetched_at = GREATEST(sources.fetched_at, EXCLUDED.fetched_at),
                data_as_of = GREATEST(sources.data_as_of, EXCLUDED.data_as_of),
-               licence = EXCLUDED.licence, licence_url = EXCLUDED.licence_url""",
-        (source_id, name, url, fetched_at, data_as_of, licence, licence_url))
+               licence = EXCLUDED.licence, licence_url = EXCLUDED.licence_url,
+               dataset_url = COALESCE(EXCLUDED.dataset_url, sources.dataset_url),
+               dataset_modified = GREATEST(sources.dataset_modified, EXCLUDED.dataset_modified)""",
+        (source_id, name, url, fetched_at, data_as_of, licence, licence_url, dataset_url, dataset_modified))
 
 
 def merge(conn: Conn, source_id: str, roles: list[Role], observations: list[NormalizedObservation]) -> None:

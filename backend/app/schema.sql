@@ -9,12 +9,16 @@ CREATE TABLE IF NOT EXISTS sources (
     data_as_of   DATE,                     -- the publisher's last update, if stated
     licence      TEXT,
     licence_url  TEXT,
-    comparable_from TEXT                   -- YYYY-MM: the source changed how it counts; earlier months differ
+    comparable_from TEXT,                  -- YYYY-MM: the source changed how it counts; earlier months differ
+    dataset_url  TEXT,                     -- opendata.swiss dataset page for this statistic, if one exists
+    dataset_modified DATE                  -- when that catalogue entry last changed
 );
 ALTER TABLE sources ADD COLUMN IF NOT EXISTS data_as_of DATE;
 ALTER TABLE sources ADD COLUMN IF NOT EXISTS licence TEXT;
 ALTER TABLE sources ADD COLUMN IF NOT EXISTS licence_url TEXT;
 ALTER TABLE sources ADD COLUMN IF NOT EXISTS comparable_from TEXT;
+ALTER TABLE sources ADD COLUMN IF NOT EXISTS dataset_url TEXT;
+ALTER TABLE sources ADD COLUMN IF NOT EXISTS dataset_modified DATE;
 
 -- Step 2 bookkeeping: which raw file of which source was normalized, with what result.
 CREATE TABLE IF NOT EXISTS raw_files (

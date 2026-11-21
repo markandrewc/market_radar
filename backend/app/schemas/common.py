@@ -9,6 +9,9 @@ class SourceRef(BaseModel):
     fetchedAt: str  # ISO 8601, when we last retrieved data from this source
     dataAsOf: str | None = None  # YYYY-MM-DD, the publisher's last update, if known
     comparableFrom: str | None = None  # YYYY-MM: the source changed how it counts; earlier months differ
+    # The opendata.swiss entry of this dataset, when the publisher has one.
+    datasetUrl: str | None = None
+    datasetModified: str | None = None  # YYYY-MM-DD, when the catalogue entry last changed
 
 
 class Point(BaseModel):

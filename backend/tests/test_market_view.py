@@ -53,7 +53,8 @@ def test_demand_numbers_unchanged_and_service_matches_endpoint(client):
     assert rows[1].current == 30 and rows[1].changePct == 50.0   # shares: 10 % -> 15 %
     assert rows[0].source.model_dump(by_alias=True) == {
         "id": "s1", "name": "Test source", "url": "https://example.org",
-        "fetchedAt": "2026-11-01T00:00:00Z", "dataAsOf": None, "comparableFrom": None}
+        "fetchedAt": "2026-11-01T00:00:00Z", "dataAsOf": None, "comparableFrom": None,
+        "datasetUrl": None, "datasetModified": None}
     assert rows[1].shareSeries[0].period == "2026-09" and rows[1].shareSeries[0].value == 10.0
     assert rows[1].shareSeries[1].value == 15.0
     assert rows[0].shareSeries is None

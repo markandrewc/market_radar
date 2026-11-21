@@ -6,8 +6,10 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Interpretation } from '@/components/Interpretation';
 import { SourceBadge } from '@/components/SourceBadge';
+import { TargetGroupSummary } from '@/components/TargetGroupSummary';
 import { Empty, ErrorMsg, Loading } from '@/components/Status';
 import { formatDate, freshness, itemSource } from '../lib/source';
+import { SWISS_CANTONS } from '../lib/cantons';
 
 const MAX_METRICS = 3;
 
@@ -31,18 +33,18 @@ function Metrics({ metrics }: { metrics: MarketItem['metrics'] }) {
 
 export default function Participants() {
   const [canton, setCanton] = useState('');
-  const { data, isLoading, error } = useItems({ category: 'D', limit: 100 });
+  // The canton filter runs in the database: the page used to slice the newest 100 records client-side.
+  const { data, isLoading, error } = useItems({ category: 'D', region: canton || undefined, limit: 200 });
   // Our plain-language reading of the target-group figures; hidden until the API has one.
   const targetInsight = useInsights({ kind: 'target' }).data?.[0];
 
   if (isLoading) return <Loading />;
   if (error) return <ErrorMsg />;
 
-  const allItems = data ?? [];
-  // Only real canton codes: records with region null are Switzerland-wide.
-  const cantons = [...new Set(allItems.map((item) => item.region).filter((region): region is string => Boolean(region)))].sort();
-  const items = canton ? allItems.filter((item) => item.region === canton) : allItems;
-  const fresh = freshness(items.length ? items : allItems);
+  const items = data ?? [];
+  // All 26 cantons are offered; a canton without stored figures shows the empty state instead of disappearing.
+  const cantons = SWISS_CANTONS;
+  const fresh = freshness(items);
 
   const header = (
     <div>
@@ -53,7 +55,7 @@ export default function Participants() {
     </div>
   );
 
-  if (allItems.length === 0) {
+  if (items.length === 0 && !canton) {
     return (
       <div className="space-y-4">
         {header}
@@ -71,6 +73,8 @@ export default function Participants() {
       {header}
 
       {targetInsight && <Interpretation insight={targetInsight} className="p-3" />}
+
+      <TargetGroupSummary region={canton || undefined} />
 
       <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Filter participant statistics by canton">
         <button

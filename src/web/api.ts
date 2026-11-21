@@ -2,11 +2,11 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import type {
   ConnectorConfigFile, ConnectorConfigUpdate, ConnectorList, Digest, DigestRequest, DemandResponse, EmployersResponse,
   Insight, InsightKind, MarketItem, MarketItemCategory, Overview, Role, SkillsResponse, SourceStatus, SubscribeBody,
-  SubscribeResult, SyncSummary, Taxonomy,
+  SubscribeResult, SyncSummary, TargetGroupContext, Taxonomy,
 } from '../shared/types';
 import {
   mockConnectorConfig, mockConnectors, mockDemand, mockDigest, mockEmployers, mockInsights, mockOverview, mockRoles,
-  mockSkills, mockSources, mockSubscribeResult, mockTaxonomy, type Scenario,
+  mockSkills, mockSources, mockSubscribeResult, mockTargetGroup, mockTaxonomy, type Scenario,
 } from './mocks/data';
 import { mockMarketItems } from './mocks/marketItems';
 
@@ -123,6 +123,14 @@ export const useItems = (filter: ItemFilter = {}) =>
       if (filter.limit) items = items.slice(0, filter.limit);
       return mock(() => items);
     },
+  });
+
+// ---- Level 3D: target group at a glance (Question D) -----------------------
+export const useTargetGroup = (region?: string) =>
+  useQuery({
+    queryKey: ['target-group', region ?? 'ch'],
+    queryFn: (): Promise<TargetGroupContext> =>
+      useMocks ? mock(() => mockTargetGroup(region)) : get(`/target-group${region ? `?region=${encodeURIComponent(region)}` : ''}`),
   });
 
 export const useSources = () =>

@@ -19,6 +19,7 @@ export function KpiCard({
   detail,
   changePct,
   insight,
+  note,
   source,
 }: {
   label: string;
@@ -26,6 +27,8 @@ export function KpiCard({
   detail?: string;
   changePct?: number;
   insight?: Insight;
+  /** "What this measures", shown in the source popover. */
+  note?: string;
   source?: SourceRef;
 }) {
   return (
@@ -53,7 +56,7 @@ export function KpiCard({
         </div>
         {detail && <p className="text-sm text-slate-700">{detail}</p>}
         {insight && <Interpretation insight={insight} />}
-        {source && <SourceInfo source={source} />}
+        {source && <SourceInfo source={source} note={note} />}
       </CardContent>
     </Card>
   );

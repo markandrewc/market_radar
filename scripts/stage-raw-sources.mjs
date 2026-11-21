@@ -25,7 +25,12 @@ const sources = [
     discovery_url: bfsAlias, licence: 'OPEN-BY',
     licence_url: 'https://www.bfs.admin.ch/de/nutzungsbedingungen',
     scope: 'BESTA-Quartalswerte zu offenen Stellen nach Wirtschaftsabteilung und Grossregion.',
+    // Provenance on opendata.swiss (checked 2026-11-21: same BESTA publication, quarterly since 1997).
+    dataset_url: 'https://opendata.swiss/de/dataset/offene-stellen-nach-grossregion7',
+    dataset_modified: '2026-11-20',
   },
+  // The SEM monthly tables are published on sem.admin.ch only: no matching opendata.swiss entry exists
+  // (checked 2026-11-21), so `report_url` stays the provenance and `dataset_url` is absent.
   {
     id: 'sem-asylum-applications', name: 'SEM · Asylgesuche (Tabelle 7-21)',
     publisher: 'Staatssekretariat für Migration', extension: 'xlsx',

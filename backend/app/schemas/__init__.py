@@ -1,5 +1,6 @@
 """API schemas (Pydantic). Must match src/shared/types.ts, camelCase field names."""
 from .common import Point, Role, SourceRef
+from .context import ContextKpi, TargetGroupContext
 from .connectors import (ConnectorConfigFile, ConnectorConfigUpdate, ConnectorDefaults, ConnectorList,
                          ConnectorSource, ReloadResult, SyncResult, SyncSummary)
 from .market_item import MarketItem
@@ -15,6 +16,7 @@ from .sources import SourceStatus
 __all__ = [
     "ConnectorConfigFile", "ConnectorConfigUpdate", "ConnectorDefaults", "ConnectorList", "ConnectorSource", "ReloadResult", "SyncResult", "SyncSummary",
     "DemandResponse", "Employer", "ForecastPoint", "Trend", "EmployersResponse", "Window", "NormalizedObservation", "NormalizeResult",
+    "ContextKpi", "TargetGroupContext",
     "Point", "Role", "SkillRow", "SkillsResponse", "SourceRef", "SourceStatus",
     "Digest", "DigestBullet", "DigestRequest", "DigestSection", "MarketItem", "RunRequest", "RunResult", "SendOutcome", "SubscribeBody", "SubscribeResult",
     "Evidence", "Insight", "InsightKind", "Overview", "PolicyGroup", "PolicyNote", "PulseMover", "PulsePostings", "Severity",

@@ -1,6 +1,6 @@
 // fetchedAt: when we last retrieved data (ISO 8601). dataAsOf: the publisher's last update (YYYY-MM-DD), if known.
 // comparableFrom: YYYY-MM, the source changed how it counts; earlier months are not comparable
-export interface SourceRef { id: string; name: string; url: string; fetchedAt: string; dataAsOf?: string | null; comparableFrom?: string | null }
+export interface SourceRef { id: string; name: string; url: string; fetchedAt: string; dataAsOf?: string | null; comparableFrom?: string | null; datasetUrl?: string | null; datasetModified?: string | null }
 export interface Point { period: string; value: number }
 export interface Role { id: string; name: string }
 // Trend: weighted linear trend over the last months with a forecast (95 % range). basis 'share' = % of all postings.
@@ -14,7 +14,7 @@ export interface SkillsResponse { role: Role; skills: SkillRow[] }
 export interface Employer { name: string; openings: number; topSkills: string[]; sourceUrl?: string | null }
 // window: the posting period the numbers come from (YYYY-MM-DD), null when the source gives no dates
 export interface EmployersResponse { role: Role; window: { from: string; to: string } | null; employers: Employer[]; source: SourceRef }
-export interface SourceStatus { id: string; name: string; url: string; lastFetchedAt: string; dataAsOf?: string | null; licence?: string | null; licenceUrl?: string | null; status: 'ok' | 'stale' | 'error'; problem?: string | null }
+export interface SourceStatus { id: string; name: string; url: string; lastFetchedAt: string; dataAsOf?: string | null; datasetUrl?: string | null; datasetModified?: string | null; licence?: string | null; licenceUrl?: string | null; status: 'ok' | 'stale' | 'error'; problem?: string | null }
 
 // ---- Insights: our plain-language reading of a number or an item -----------
 // Evidence is the only place numbers may come from: the text never introduces a number
@@ -117,4 +117,30 @@ export interface MarketItem {
   published_at: string | null;
   /** When the connector retrieved the data. */
   fetched_at: string;
+}
+
+// ---- Level 3D: target group (Question D) ------------------------------------
+// One headline figure of the SEM monthly tables, with the provenance of that record.
+export interface ContextKpi {
+  id: string;
+  label: string;
+  value: number;
+  unit: string;
+  secondary?: number | null;
+  secondaryLabel?: string | null;
+  /** Compared with the month before; null when no earlier month is stored (never guessed). */
+  changePct?: number | null;
+  /** "What this measures", shown in the source popover. */
+  note?: string | null;
+  source: SourceRef;
+}
+export interface TargetGroupContext {
+  /** null = Switzerland-wide. */
+  region: string | null;
+  /** YYYY-MM of the newest record, null when nothing is stored. */
+  period: string | null;
+  kpis: ContextKpi[];
+  /** Indicators without a stored record, never filled with an estimate. */
+  missing: string[];
+  stale: boolean;
 }

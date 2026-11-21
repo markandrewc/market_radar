@@ -143,6 +143,20 @@ entscheidet, welche Quelle dabei fällig ist (`static` nur mit ausdrücklichem A
 Liegt die Datei auf einem Volume (`SOURCES_FILE=/data/sources.yaml`), genügt nach dem Editieren ein
 `reload` — kein Redeploy.
 
+## Herkunft: opendata.swiss-Dataset (Pipeline)
+
+Für Pipeline-Quellen (Excel/CSV über `scripts/stage-raw-sources.mjs`) trägt der Quelldatensatz zwei optionale
+Felder, die bis in die API und den Quellen-Popover durchgereicht werden:
+
+```js
+dataset_url: 'https://opendata.swiss/de/dataset/offene-stellen-nach-grossregion7',
+dataset_modified: '2026-11-20',
+```
+
+Nur setzen, wenn der opendata.swiss-Eintrag **dieselbe Statistik** beschreibt (z. B. BFS BESTA). Gibt es keinen
+Eintrag — die SEM-Monatstabellen erscheinen nicht im Katalog — bleiben die Felder weg; als Herkunft dient dann
+`report_url` (die Verlagsseite). Der Stand des Katalogeintrags wird nicht geschätzt, sondern beim Prüfen eingetragen.
+
 ## Connector oder Parser?
 
 | Datenlage | Weg |

@@ -28,11 +28,13 @@ ALL_ROLES = Role(id="all", name="All IT roles")
 
 def source_ref(conn: Conn, source_id: str) -> SourceRef:
     """The SourceRef of one pipeline source (the citation of a bullet)."""
-    r = conn.execute("SELECT id, name, url, fetched_at, data_as_of, comparable_from FROM sources WHERE id = %s",
-                     (source_id,)).fetchone()
+    r = conn.execute(
+        """SELECT id, name, url, fetched_at, data_as_of, comparable_from, dataset_url, dataset_modified
+           FROM sources WHERE id = %s""", (source_id,)).fetchone()
     return SourceRef(id=r["id"], name=r["name"], url=r["url"], fetchedAt=iso(r["fetched_at"]),
                      dataAsOf=r["data_as_of"].isoformat() if r["data_as_of"] else None,
-                     comparableFrom=r["comparable_from"])
+                     comparableFrom=r["comparable_from"], datasetUrl=r["dataset_url"],
+                     datasetModified=r["dataset_modified"].isoformat() if r["dataset_modified"] else None)
 
 
 def pct(new: float, old: float) -> float:

@@ -62,6 +62,18 @@ export function SourceInfo({ source, note }: { source: SourceRef; note?: string 
           Open {source.name} in a new tab
           <ExternalLink className="h-3 w-3 shrink-0" aria-hidden />
         </a>
+        {source.datasetUrl && (
+          <a
+            href={source.datasetUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-1 flex items-center gap-1 font-medium text-brand-accent underline underline-offset-2 hover:text-brand"
+          >
+            Dataset on opendata.swiss
+            {source.datasetModified ? ` (catalogue updated ${formatDate(source.datasetModified)})` : ''}
+            <ExternalLink className="h-3 w-3 shrink-0" aria-hidden />
+          </a>
+        )}
       </div>
     </details>
   );

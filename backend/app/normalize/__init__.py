@@ -78,7 +78,8 @@ def run_entry(conn: Conn, raw_dir: Path, entry: dict) -> NormalizeResult:
         observations.upsert_source(
             conn, sid, entry.get("name") or entry.get("publisher") or sid,
             entry.get("report_url") or entry.get("source_url") or "", f.fetched_at,
-            _date(entry.get("report_date")), entry.get("licence"), entry.get("licence_url"))
+            _date(entry.get("report_date")), entry.get("licence"), entry.get("licence_url"),
+            entry.get("dataset_url"), _date(entry.get("dataset_modified")))
         try:
             if not path.is_relative_to(raw_dir.resolve()) or not path.is_file():
                 raise FileNotFoundError(f"{entry['relative_path']} is missing in the raw folder")

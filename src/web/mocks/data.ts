@@ -1,6 +1,7 @@
 import type {
   ConnectorConfigFile, ConnectorList, Digest, DigestRequest, DemandResponse, EmployersResponse, Evidence, Insight,
-  InsightKind, Overview, Role, SkillsResponse, SourceRef, SourceStatus, SubscribeBody, SubscribeResult, Taxonomy,
+  ContextKpi, InsightKind, Overview, Role, SkillsResponse, SourceRef, SourceStatus, SubscribeBody, SubscribeResult,
+  Taxonomy, TargetGroupContext,
 } from '../../shared/types';
 
 // Demo data for designing and testing the screens. Clearly labelled, never presented as real.
@@ -226,4 +227,41 @@ export const mockOverview = (): Overview => ({
   targetGroupItems: 6,
   sources: { ok: 2, stale: 1, error: 0 },
   insights: mockInsights(),
+});
+
+// ---- Level 3D: target group (demo figures, same shape as GET /api/target-group) ----
+const targetSource = (id: string, name: string): SourceRef => ({
+  id, name, url: source.url, fetchedAt: source.fetchedAt, dataAsOf: '2026-10-01',
+});
+
+const targetKpis = (region?: string): ContextKpi[] => {
+  const factor = region ? 0.09 : 1; // one canton is roughly a tenth of the country, for the demo
+  const scale = (value: number) => Math.round(value * factor);
+  return [
+    { id: 'asylum', label: 'Asylum applications', value: scale(2210), unit: 'persons',
+      secondary: scale(1881), secondaryLabel: 'first applications', changePct: region ? null : 4.2,
+      note: 'New asylum applications in the month, by canton of registration.',
+      source: targetSource('demo-asylum', 'Demo data (not real) · 7-21') },
+    { id: 'status-s', label: 'Requests for protection status S', value: scale(987), unit: 'persons',
+      secondary: scale(932), secondaryLabel: 'protections granted', changePct: null,
+      note: 'Requests, completed cases and protection grants for temporary protection (status S).',
+      source: targetSource('demo-status-s', 'Demo data (not real) · 7-70') },
+    { id: 'status-f', label: 'Provisionally admitted (status F)', value: scale(42151), unit: 'persons',
+      secondary: 47.3, secondaryLabel: 'employment rate (%)', changePct: 0.8,
+      note: 'People admitted provisionally and how many of them are employed.',
+      source: targetSource('demo-status-f', 'Demo data (not real) · 6-22') },
+    { id: 'immigration', label: 'Immigration of foreign residents', value: scale(17255), unit: 'persons',
+      secondary: scale(16294), secondaryLabel: 'permit B', changePct: -1.4,
+      note: 'Immigration of permanent foreign residents, by canton and month.',
+      source: { ...targetSource('demo-immigration', 'Demo data (not real) · 3-25'),
+        datasetUrl: 'https://opendata.swiss/de/dataset/offene-stellen-nach-grossregion7', datasetModified: '2026-11-20' } },
+  ];
+};
+
+export const mockTargetGroup = (region?: string): TargetGroupContext => ({
+  region: region ?? null,
+  period: '2026-10',
+  kpis: targetKpis(region),
+  missing: [],
+  stale: false,
 });

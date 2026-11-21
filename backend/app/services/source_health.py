@@ -35,6 +35,8 @@ def statuses(conn: Conn, now: datetime | None = None) -> list[SourceStatus]:
             status, problem = "ok", None
         out.append(SourceStatus(id=r["id"], name=r["name"], url=r["url"], lastFetchedAt=iso(r["fetched_at"]),
                                 dataAsOf=r["data_as_of"].isoformat() if r["data_as_of"] else None,
+                                datasetUrl=r["dataset_url"],
+                                datasetModified=r["dataset_modified"].isoformat() if r["dataset_modified"] else None,
                                 licence=r["licence"], licenceUrl=r["licence_url"], status=status, problem=problem))
     return out
 

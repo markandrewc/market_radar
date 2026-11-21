@@ -40,7 +40,7 @@ def test_demand(client):
     assert d[1]["current"] == 30 and d[1]["changePct"] == 50.0   # base: share 10 % -> 15 %, not +200 %
     assert d[0]["source"] == {"id": "s1", "name": "Test source", "url": "https://example.org",
                               "fetchedAt": "2026-11-01T00:00:00Z", "dataAsOf": None,
-                              "comparableFrom": None}
+                              "comparableFrom": None, "datasetUrl": None, "datasetModified": None}
 
 
 def test_skills(client):

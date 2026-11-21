@@ -58,6 +58,7 @@ Step 1 downloads originals without changing them and writes `latest.json`:
 | `name` | Source name shown next to every number |
 | `report_url` (else `source_url`) | The link the team clicks to check the original |
 | `report_date` | `dataAsOf`: the publisher's last update |
+| `dataset_url`, `dataset_modified` | Optional: the opendata.swiss page of the statistic and when that catalogue entry changed. Shown in the source popover; absent when the publisher has no catalogue entry (the SEM monthly tables). |
 | `fetched_at` | `fetchedAt`: our last successful download |
 | `licence`, `licence_url` | Shown on the Sources page (attribution) |
 | `relative_path`, `sha256` | The file to parse; step 2 refuses a file whose checksum does not match |
@@ -137,6 +138,7 @@ the Python and TypeScript definitions one-to-one.
 | GET | `/api/skills?role=<id>&horizon=3` | `SkillsResponse` for one role; empty `skills` if the role has no skill data; `404` for an unknown role |
 | GET | `/api/connectors` | `ConnectorList`: the sources from `sources.yaml`, the `defaults` (roles, cities, keywords), `configError`, `pendingChanges` |
 | GET | `/api/items?category=&region=&source=&q=&order=&limit=&offset=` | `MarketItem[]` from all connectors, newest `published_at` first |
+| GET | `/api/target-group?region=<canton>` | `TargetGroupContext`: the four Question-D figures (asylum, status S, status F, immigration) for Switzerland or one canton |
 
 `months` (1–120): history returned in `series`. `horizon` (0–12): months of forecast in `trend.forecast`.
 
@@ -221,6 +223,38 @@ Normalised records from every connector **and** from the pipeline parsers that p
 `category` (A–E, matches `categories`), `region` (canton code), `source` (connector id), `q` (title/summary
 contains), `order` (`published_at`, default, or `fetched_at`), `limit` (1–1000, default 100), `offset`.
 An unknown `category` or `order` answers `422`.
+
+### `GET /api/target-group`
+
+The four Question-D figures from the SEM monthly tables, for Switzerland (`region` omitted) or one canton
+(`region=ZH`, two-letter code; anything else answers `422`):
+
+```json
+{
+  "region": "ZH",
+  "period": "2026-10",
+  "kpis": [
+    {
+      "id": "asylum", "label": "Asylum applications", "value": 179, "unit": "persons",
+      "secondary": 116, "secondaryLabel": "first applications",
+      "changePct": null,
+      "note": "New asylum applications in the month, by canton of registration.",
+      "source": {"id": "sem-asylum-applications", "name": "SEM · Asylgesuche (Tabelle 7-21)",
+                 "url": "https://www.sem.admin.ch/de/asylstatistik-oktober-2026",
+                 "fetchedAt": "2026-11-21T13:32:54.845Z", "dataAsOf": "2026-10-01",
+                 "datasetUrl": null, "datasetModified": null}
+    }
+  ],
+  "missing": ["status-s", "status-f", "immigration"],
+  "stale": false
+}
+```
+
+- One record per indicator: the newest stored month for the requested region. **Nothing is estimated** —
+  indicators without a record are listed in `missing`.
+- `changePct` is the change to the month before; it stays `null` until an earlier month is stored.
+- `stale` is true when a record used here is older than `SOURCE_STALE_DAYS`.
+- `source.datasetUrl` is the opendata.swiss page of the statistic when the publisher has one.
 
 ### `POST /api/connectors/sync?source=<id>&due_only=true`
 

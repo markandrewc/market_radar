@@ -113,7 +113,8 @@ def test_employers_aggregate_company_counts_skills_window_and_source(client):
     assert body["employers"][3]["topSkills"] == ["Figma", "Jira"]
     assert body["source"] == {"id": "adzuna_ch", "name": SOURCE_NAME, "url": SOURCE_URL,
                               "fetchedAt": "2026-11-21T09:30:00Z",  # max(fetched_at) of the postings
-                              "dataAsOf": "2026-11-19", "comparableFrom": None}
+                              "dataAsOf": "2026-11-19", "comparableFrom": None,
+                              "datasetUrl": None, "datasetModified": None}
 
 
 def test_company_string_fallback_and_column_fallbacks(client):
@@ -143,7 +144,8 @@ def test_no_category_c_data_answers_empty_list_with_the_configured_source(client
     assert body["window"] is None
     assert body["employers"] == []
     assert body["source"] == {"id": "adzuna_ch", "name": SOURCE_NAME, "url": SOURCE_URL,
-                              "fetchedAt": "2026-11-20T10:00:00Z", "dataAsOf": None, "comparableFrom": None}
+                              "fetchedAt": "2026-11-20T10:00:00Z", "dataAsOf": None, "comparableFrom": None,
+                              "datasetUrl": None, "datasetModified": None}
 
 
 def test_role_without_category_c_postings_is_empty_but_keeps_provenance(client):
@@ -182,7 +184,7 @@ def test_source_falls_back_to_the_item_source_without_a_connector_row(client):
 
     assert body["source"] == {"id": "jobs_ch", "name": "Jobs Board", "url": "https://jobs.test/feed",
                               "fetchedAt": "2026-11-21T08:00:00Z", "dataAsOf": "2026-11-10",
-                              "comparableFrom": None}
+                              "comparableFrom": None, "datasetUrl": None, "datasetModified": None}
 
 
 def test_at_most_ten_employers_sorted_by_openings_then_name(client):
