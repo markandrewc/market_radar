@@ -35,3 +35,41 @@ export const mockSkills = (): SkillsResponse => ({
     { skill: 'Docker', share: 29, changePct: 11, source },
   ],
 });
+
+import type { EmployersResponse, PolicyResponse, SourceStatus, TargetGroupResponse } from '../../shared/types';
+
+export const mockRoles = () => roles;
+
+export const mockEmployers = (roleId: string): EmployersResponse => ({
+  role: roles.find((r) => r.id === roleId) ?? roles[0],
+  employers: [
+    { name: 'Swisscom', openings: 24, topSkill: 'TypeScript' },
+    { name: 'SBB', openings: 18, topSkill: 'React' },
+    { name: 'UBS', openings: 15, topSkill: 'SQL' },
+    { name: 'Migros', openings: 11, topSkill: 'Node.js' },
+  ],
+  source,
+});
+
+export const mockParticipants = (): TargetGroupResponse => ({
+  groups: [
+    { label: 'Open to full-time work', count: 120 },
+    { label: 'Need German B1+', count: 48 },
+    { label: 'Ready for internship', count: 36 },
+  ],
+  source,
+});
+
+export const mockPolicy = (): PolicyResponse => ({
+  items: [
+    { title: 'New funding for IT retraining', summary: 'Cantons expand support for career changers in digital roles.', date: '2026-10-28', source },
+    { title: 'Skilled-worker quota update', summary: 'Permit quotas for IT specialists stay unchanged for 2027.', date: '2026-10-02', source },
+  ],
+});
+
+const ago = (d: number) => new Date(Date.now() - d * 864e5).toISOString();
+export const mockSources = (): SourceStatus[] => [
+  { id: 'jobs', name: 'Job postings feed', url: 'https://example.com/jobs', lastFetchedAt: ago(1), status: 'ok' },
+  { id: 'stats', name: 'Federal statistics', url: 'https://example.com/stats', lastFetchedAt: ago(9), status: 'stale' },
+  { id: 'policy', name: 'Policy news', url: 'https://example.com/policy', lastFetchedAt: ago(30), status: 'error' },
+];
