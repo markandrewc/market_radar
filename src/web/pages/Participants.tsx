@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 import type { MarketItem } from '../../shared/types';
 import { useInsights, useItems } from '../api';
 import { Badge } from '@/components/ui/badge';
@@ -18,6 +19,10 @@ const MAX_METRICS = 3;
 /** Quiet inline link in supporting sentences. */
 const linkClass =
   'font-medium text-brand-accent underline decoration-brand-accent/30 underline-offset-2 transition-colors hover:text-accent-deep';
+
+/** Quiet way back to the Level 3 hub the page belongs to. */
+const backLinkClass =
+  'inline-flex items-center gap-1.5 text-sm text-ink-soft underline decoration-line-strong underline-offset-4 transition-colors hover:text-ink hover:decoration-ink';
 
 /** At most three figures per tile, formatted the Swiss way. */
 function Metrics({ metrics }: { metrics: MarketItem['metrics'] }) {
@@ -46,9 +51,15 @@ export default function Participants() {
 
   const header = (
     <PageHeader
-      kicker="TARGET GROUP"
+      kicker="LEVEL 3 · QUESTION D"
       title="Participants"
       description="Context for our participants — aggregate statistics only, no personal data."
+      actions={
+        <Link to="/context" className={backLinkClass}>
+          <ArrowLeft className="h-3.5 w-3.5" aria-hidden />
+          Part of the Level 3 overview
+        </Link>
+      }
     />
   );
 

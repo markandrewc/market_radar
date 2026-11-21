@@ -24,6 +24,7 @@ import { FreshnessFooter } from '@/components/FreshnessFooter';
 import { Glossary } from '@/components/Glossary';
 import { Interpretation } from '@/components/Interpretation';
 import { KpiCard } from '@/components/KpiCard';
+import { ProvenanceFooter } from '@/components/ProvenanceFooter';
 import { RoleCard } from '@/components/RoleCard';
 import { SectionHeader } from '@/components/SectionHeader';
 import { SkillBars } from '@/components/SkillBars';
@@ -34,6 +35,10 @@ import { monthLabel } from '@/components/DemandBlock';
 import { formatPeriod, itemSource } from '../lib/source';
 
 const TOP = 3;
+// The compact role strip under the hero: "All roles" plus the busiest roles, because
+// every chart below answers one question for one role at a time.
+const STRIP = 6;
+const ALL_ROLES = 'all';
 const SKILL_LIMIT = 8;
 const numberFormat = new Intl.NumberFormat('en-GB');
 
@@ -87,18 +92,23 @@ export default function Home({ onHelp }: { onHelp: () => void }) {
   usePageTitle('Job market');
   const demand = useDemand();
   const overview = useOverview();
-  const [selectedRoleId, setSelectedRoleId] = useState<string | null>(null);
+  // "All roles" is the default: the skills question then covers every posting and the
+  // hiring-volume question keeps the busiest role (the monthly series is always per role).
+  const [selectedRole, setSelectedRole] = useState<string>(ALL_ROLES);
 
-  // The chart's role: the most open role by default. A choice the visitor made stays
-  // put when React Query refetches, because it is looked up by id, not by position.
+  // The chart's role: the selected role, or the most open role in the "All roles" view.
+  // A choice the visitor made stays put when React Query refetches, because it is looked
+  // up by id, not by position.
   const demandSorted = demand.data ? [...demand.data].sort((a, b) => b.current - a.current) : [];
-  const active = demandSorted.find((d) => d.role.id === selectedRoleId) ?? demandSorted[0];
+  const active = demandSorted.find((d) => d.role.id === selectedRole) ?? demandSorted[0];
   const activeId = active?.role.id ?? '';
 
   const demandInsight = useInsights(activeId ? { role: activeId, kind: 'demand' } : { kind: 'demand' });
-  const roleSkillsInsight = useInsights(activeId ? { role: activeId, kind: 'skills' } : { kind: 'skills' });
+  const roleSkillsInsight = useInsights(
+    selectedRole === ALL_ROLES ? { kind: 'skills' } : { role: selectedRole, kind: 'skills' },
+  );
   const allSkillsInsight = useInsights({ kind: 'skills' });
-  const skills = useSkills(activeId || undefined);
+  const skills = useSkills(selectedRole === ALL_ROLES ? undefined : selectedRole);
   // A few more than three, so picking the three newest is right even when the
   // records arrive in another order (the live API already sorts by publisher date).
   const policy = useItems({ category: 'E', limit: 10 });
@@ -106,6 +116,11 @@ export default function Home({ onHelp }: { onHelp: () => void }) {
   const latest = demand.data?.map((d) => d.source.fetchedAt).sort().at(-1);
   const top = demand.data ? demandSorted.slice(0, TOP) : [];
   const roleCount = demand.data?.length ?? 0;
+  // The strip drives both chart sections; "All roles" is always the first choice.
+  const roleOptions = [
+    { value: ALL_ROLES, label: 'All roles' },
+    ...demandSorted.slice(0, STRIP).map((d) => ({ value: d.role.id, label: d.role.name })),
+  ];
 
   // ---- This week's pulse: four headline numbers, all from useOverview() ----
   const pulse = overview.data;
@@ -180,6 +195,10 @@ export default function Home({ onHelp }: { onHelp: () => void }) {
 
   // ---- Regions: only when the overview carries a regional insight (never invented) ----
   const regionInsight = pulse?.insights.find((insight) => insight.kind === 'regions');
+  // The regional ledger cites the sources of its own evidence rows, and dates the
+  // footer with the newest retrieval among them.
+  const regionSources = regionInsight ? regionInsight.evidence.map((row) => row.source) : [];
+  const regionUpdatedAt = regionSources.map((source) => source.fetchedAt).sort().at(-1);
 
   // Plain-language "Explain simply" targets; the server resolves them to the same facts.
   const demandInsightItem = demandInsight.data?.[0];
@@ -246,6 +265,27 @@ export default function Home({ onHelp }: { onHelp: () => void }) {
               </div>
             )}
           </aside>
+        </div>
+
+        {/* Role strip, directly under the hero CTAs: one choice drives Question A and B below.
+            It sits on a paper inset so the pills stay readable on the graphite hero. */}
+        <div className="relative px-6 pb-6 sm:px-10 sm:pb-8">
+          <div className="rounded-card border border-line bg-surface p-3 text-ink shadow-card sm:p-4">
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+              <div className="min-w-0 space-y-0.5">
+                <p className="kicker">Level 1 · Questions A &amp; B</p>
+                <p className="meta">Switzerland-wide · updated {latest ? formatDate(latest) : 'date not available yet'}</p>
+              </div>
+              <div className="min-w-0 flex-1">
+                <FilterPills
+                  label="Choose the role both questions follow"
+                  options={roleOptions}
+                  value={selectedRole}
+                  onChange={setSelectedRole}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -350,7 +390,7 @@ export default function Home({ onHelp }: { onHelp: () => void }) {
       </section>
 
       {/* 3. Job market by role: three cards, then the whole list. */}
-      <section id="roles" aria-labelledby="roles-title" className="scroll-mt-24 space-y-6">
+      <section id="roles" aria-labelledby="roles-title" className="scroll-mt-32 space-y-6">
         <SectionHeader
           id="roles-title"
           kicker="ROLES"
@@ -384,71 +424,73 @@ export default function Home({ onHelp }: { onHelp: () => void }) {
         {latest && <FreshnessFooter fetchedAt={latest} />}
       </section>
 
-      {/* 4. Demand chart — unchanged logic, framed as a chart section. */}
-      {active && (
-        <section aria-label="Demand for the roles we train for">
-          <ChartFrame
-            kicker="DEMAND"
-            title="Demand for the roles we train for"
-            description="Monthly job postings in Switzerland for one role. The dashed part is a forecast."
-            filters={
-              <div className="w-72 max-w-full sm:w-80">
-                <FilterPills
-                  label="Choose a role"
-                  options={demandSorted.map((d) => ({ value: d.role.id, label: d.role.name }))}
-                  value={active.role.id}
-                  onChange={setSelectedRoleId}
-                />
+      {/* 4 + 5. The two questions, side by side from xl: hiring volume and skill momentum.
+          One role strip above drives both, so the two charts always tell the same story. */}
+      <div className="grid gap-6 xl:grid-cols-2 xl:items-start">
+        {active && (
+          <section aria-label="Demand for the roles we train for">
+            <ChartFrame
+              kicker="Question A · Hiring volume"
+              title="Demand for the roles we train for"
+              description="Monthly job postings in Switzerland for one role. The dashed part is a forecast."
+              badge={
+                <span className="inline-flex items-center rounded-full border border-line bg-brand-soft px-2.5 py-1 text-xs font-medium text-ink">
+                  {selectedRole === ALL_ROLES ? `Busiest role · ${active.role.name}` : `Selected role · ${active.role.name}`}
+                </span>
+              }
+              numbers={{
+                caption: 'Reported postings per month',
+                head: ['Month', 'Reported postings'],
+                rows: demandRows,
+              }}
+              sources={[active.source]}
+            >
+              <div className="space-y-5">
+                <ForecastChart series={active.series} forecast={active.trend?.forecast} label={`${active.role.name} demand`} />
+                {demandInsightItem && (
+                  <Interpretation insight={demandInsightItem} explain={{ kind: 'insight', insightId: demandInsightItem.id }} />
+                )}
               </div>
+            </ChartFrame>
+          </section>
+        )}
+
+        <section aria-label="Skills employers ask for">
+          <ChartFrame
+            kicker="Question B · Skill momentum"
+            title="Skills employers ask for"
+            description="Share of postings that mention the skill; the change is compared with the previous month."
+            badge={
+              <span className="inline-flex items-center rounded-full border border-line bg-brand-soft px-2.5 py-1 text-xs font-medium text-ink">
+                {selectedRole === ALL_ROLES ? 'All IT postings' : active ? `Role · ${active.role.name}` : 'One role'}
+              </span>
             }
-            numbers={{
-              caption: 'Reported postings per month',
-              head: ['Month', 'Reported postings'],
-              rows: demandRows,
-            }}
-            sources={[active.source]}
+            numbers={
+              skillRows.length > 0
+                ? {
+                    caption: 'Skills and their share of postings',
+                    head: ['Skill', 'Share of postings', 'Change vs. previous month'],
+                    rows: skillRows.map((skill) => [skill.skill, sharePercent(skill.share), signedPercent(skill.changePct)]),
+                  }
+                : undefined
+            }
+            sources={firstSkill ? [firstSkill.source] : undefined}
           >
             <div className="space-y-5">
-              <ForecastChart series={active.series} forecast={active.trend?.forecast} label={`${active.role.name} demand`} />
-              {demandInsightItem && (
-                <Interpretation insight={demandInsightItem} explain={{ kind: 'insight', insightId: demandInsightItem.id }} />
+              {skills.isLoading ? (
+                <Skeleton className="h-48" />
+              ) : skillsFailed ? (
+                <ErrorMsg onRetry={() => skills.refetch()} />
+              ) : (
+                <SkillBars skills={skills.data?.skills ?? []} limit={SKILL_LIMIT} />
+              )}
+              {skillsInsight && (
+                <Interpretation insight={skillsInsight} explain={{ kind: 'insight', insightId: skillsInsight.id }} />
               )}
             </div>
           </ChartFrame>
         </section>
-      )}
-
-      {/* 5. Skills chart */}
-      <section aria-label="Skills employers ask for">
-        <ChartFrame
-          kicker="SKILLS"
-          title="Skills employers ask for"
-          description="Share of postings that mention the skill; the change is compared with the previous month."
-          numbers={
-            skillRows.length > 0
-              ? {
-                  caption: 'Skills and their share of postings',
-                  head: ['Skill', 'Share of postings', 'Change vs. previous month'],
-                  rows: skillRows.map((skill) => [skill.skill, sharePercent(skill.share), signedPercent(skill.changePct)]),
-                }
-              : undefined
-          }
-          sources={firstSkill ? [firstSkill.source] : undefined}
-        >
-          <div className="space-y-5">
-            {skills.isLoading ? (
-              <Skeleton className="h-48" />
-            ) : skillsFailed ? (
-              <ErrorMsg onRetry={() => skills.refetch()} />
-            ) : (
-              <SkillBars skills={skills.data?.skills ?? []} limit={SKILL_LIMIT} />
-            )}
-            {skillsInsight && (
-              <Interpretation insight={skillsInsight} explain={{ kind: 'insight', insightId: skillsInsight.id }} />
-            )}
-          </div>
-        </ChartFrame>
-      </section>
+      </div>
 
       {/* 6. Regions: an open editorial list, not another card. */}
       {regionInsight && (
@@ -480,6 +522,7 @@ export default function Home({ onHelp }: { onHelp: () => void }) {
             <p className="max-w-3xl text-sm leading-relaxed text-ink-soft">
               BFS publishes these figures quarterly, so they move more slowly than the monthly series.
             </p>
+            <ProvenanceFooter sources={regionSources} updatedAt={regionUpdatedAt} />
           </div>
         </section>
       )}

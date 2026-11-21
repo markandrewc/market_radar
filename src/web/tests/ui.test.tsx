@@ -27,7 +27,7 @@ async function noViolations() {
 describe('accessibility (axe) on every page', () => {
   for (const [name, path, heading] of [
     ['Job market', '/', /Job market by role/], ['Role page', '/roles/web-developer', /^Web Developer$/],
-    ['Policy', '/policy', /Policy news/], ['Participants', '/participants', /Participants/], ['Reports', '/reports', /Weekly report/], ['Sources', '/sources', /Data sources/], ['Ask', '/ask', /Ask the radar/], ['All roles', '/roles', /^All roles$/], ['Items', '/items', /Market items/],
+    ['Policy', '/policy', /Policy news/], ['Participants', '/participants', /Participants/], ['Reports', '/reports', /Weekly report/], ['Sources', '/sources', /Data sources/], ['Ask', '/ask', /Ask the radar/], ['All roles', '/roles', /^All roles$/], ['Items', '/items', /Market items/], ['Level 3 hub', '/context', /People, employers & policy/],
   ] as const) {
     it(`${name} has no violations`, async () => {
       show(path);
@@ -39,6 +39,14 @@ describe('accessibility (axe) on every page', () => {
 });
 
 describe('guidance', () => {
+  it('shows the four challenge levels in the header', async () => {
+    show('/');
+    const levels = await screen.findByRole('navigation', { name: 'Levels' });
+    for (const name of [/Market & skills/, /Weekly briefing/, /People, employers & policy/, /Data sources/]) {
+      expect(within(levels).getByRole('link', { name })).toBeTruthy();
+    }
+  });
+
   it('has a skip link, a main area and a labelled navigation', async () => {
     show('/');
     expect(screen.getByRole('link', { name: /skip to the main content/i })).toBeTruthy();
@@ -51,8 +59,8 @@ describe('guidance', () => {
     show('/');
     await user.click(screen.getByRole('button', { name: 'How to use' }));
     const dialog = await screen.findByRole('dialog');
-    expect(within(dialog).getByText(/Step 1 of 6/)).toBeTruthy();
-    for (let i = 2; i <= 6; i++) { await user.click(within(dialog).getByRole('button', { name: 'Next' })); expect(within(dialog).getByText(new RegExp(`Step ${i} of 6`))).toBeTruthy(); }
+    expect(within(dialog).getByText(/Step 1 of 7/)).toBeTruthy();
+    for (let i = 2; i <= 7; i++) { await user.click(within(dialog).getByRole('button', { name: 'Next' })); expect(within(dialog).getByText(new RegExp(`Step ${i} of 7`))).toBeTruthy(); }
     await user.click(within(dialog).getByRole('button', { name: 'Done' }));
   });
 

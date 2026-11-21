@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 import type { MarketItem, PolicyGroup, PolicyNote } from '../../shared/types';
 import { useItems, useTaxonomy } from '../api';
 import { usePaged } from '../hooks';
@@ -56,6 +57,10 @@ const PAGE = 8;
 const linkClass =
   'font-medium text-brand-accent underline decoration-brand-accent/30 underline-offset-2 transition-colors hover:text-accent-deep';
 
+/** Quiet way back to the Level 3 hub the page belongs to. */
+const backLinkClass =
+  'inline-flex items-center gap-1.5 text-sm text-ink-soft underline decoration-line-strong underline-offset-4 transition-colors hover:text-ink hover:decoration-ink';
+
 export default function Policy() {
   const [topic, setTopic] = useState<string>(ALL_TOPICS);
   const { data, isLoading, error } = useItems({ category: 'E', limit: 100 });
@@ -82,9 +87,15 @@ export default function Policy() {
 
   const header = (
     <PageHeader
-      kicker="POLICY WATCH"
+      kicker="LEVEL 3 · QUESTION E"
       title="Policy news"
       description="New laws, motions and reporting duties that can change what we teach or who we can place."
+      actions={
+        <Link to="/context" className={backLinkClass}>
+          <ArrowLeft className="h-3.5 w-3.5" aria-hidden />
+          Part of the Level 3 overview
+        </Link>
+      }
     />
   );
 
