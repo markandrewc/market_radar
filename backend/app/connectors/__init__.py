@@ -5,10 +5,9 @@
 - adapters     ``rest_api``, ``rss_atom``, ``csv_url`` - each returns normalised MarketItems
 """
 from collections.abc import Callable
-from datetime import datetime
 
 from ..schemas import MarketItem
-from . import csv_url
+from . import csv_url, rss_atom
 from .base import ConnectorError
 from .config import Defaults, SourceConfig
 
@@ -16,6 +15,7 @@ Adapter = Callable[..., list[MarketItem]]
 
 ADAPTERS: dict[str, Adapter] = {
     "csv_url": csv_url.fetch_items,
+    "rss_atom": rss_atom.fetch_items,
 }
 
 
