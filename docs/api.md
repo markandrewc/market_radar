@@ -135,6 +135,7 @@ the Python and TypeScript definitions one-to-one.
 | GET | `/api/demand?months=12&horizon=3` | `DemandResponse[]`, one per role and source, largest first |
 | GET | `/api/skills?horizon=3` | `SkillsResponse` over all postings (`role.id = "all"`) |
 | GET | `/api/skills?role=<id>&horizon=3` | `SkillsResponse` for one role; empty `skills` if the role has no skill data; `404` for an unknown role |
+| GET | `/api/connectors` | `ConnectorList`: the sources from `sources.yaml`, the `defaults` (roles, cities, keywords), `configError`, `pendingChanges` |
 
 `months` (1–120): history returned in `series`. `horizon` (0–12): months of forecast in `trend.forecast`.
 
@@ -165,6 +166,36 @@ the Python and TypeScript definitions one-to-one.
   - `ok`
 
 Errors: `{"detail": "..."}` with an HTTP status.
+
+## Connectors (sources.yaml)
+
+Sources are configuration, not code: `sources.yaml` (repo root, `SOURCES_FILE`, or a Railway volume such as
+`/data/sources.yaml`) is applied into `connector_sources` on start and by `POST /api/connectors/reload`.
+Adding a source is a six-line block — see [ADDING_SOURCES.md](ADDING_SOURCES.md). Its records are normalised
+to MarketItem (above).
+
+### `GET /api/connectors`
+
+Returns `configFile`, `configError`, `pendingChanges` (the file changed since the last apply), `appliedAt`,
+`defaults` (`targetCities`, `targetRoles`, `policyKeywords`) and `sources`:
+
+| Field | Meaning |
+|---|---|
+| `categories` | Categories A–E this source feeds; the first one becomes the item's `category`. |
+| `adapterType` | `rest_api`, `rss_atom` or `csv_url`. |
+| `endpoints` | One or more URLs the adapter reads (`rss_policy` merges several feeds). |
+| `refreshRate` / `refreshSeconds` | `refreshSeconds` is `null` for `static`: only a manual sync runs it. |
+| `enabled` / `inConfig` | `inConfig: false` = removed from the file; already stored items stay. |
+| `authEnv` | Names of required environment variables — never their values. |
+| `lastSyncAt` / `lastError` | Outcome of the last sync of this source. |
+
+### `POST /api/connectors/reload`
+
+Requires `Authorization: Bearer <INGEST_TOKEN>`. Applies the file and returns
+`{added, updated, disabled, sourceCount, configSha256, errors}`.
+A file that cannot be read at all answers `422` and changes nothing: the previously applied sources stay
+active, so a typo on a mounted volume cannot wipe the configuration. Broken single blocks are listed in
+`errors`, the valid ones are applied anyway.
 
 ## Write
 

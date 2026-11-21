@@ -37,6 +37,8 @@ COPY backend/pyproject.toml backend/uv.lock ./
 RUN uv sync --frozen --no-dev --no-install-project
 
 COPY backend/app ./app
+# Declarative sources. Keep the baked copy: it seeds a fresh volume (SOURCES_FILE).
+COPY sources.yaml /app/sources.yaml
 COPY --from=web /app/dist /app/dist
 
 RUN useradd --create-home --uid 10001 app && chown -R app:app /app

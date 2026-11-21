@@ -1,0 +1,229 @@
+# ==============================================================================
+# Powercoders Market Radar — Datenquellen (Level 1–4)
+# ==============================================================================
+# Neue Quelle = ein Block hier. Backend und Frontend brauchen keine Änderung:
+#   python -m app.connectors reload     (oder POST /api/connectors/reload)
+# Anleitung mit allen Feldern: docs/ADDING_SOURCES.md
+#
+# Kategorien
+#   A = Nachfrage / Stellenmarkt      D = Bevölkerung & Bewilligungen
+#   B = Skills & Berufe               E = Politik & Regulierung
+#   C = Arbeitgeber
+#
+# adapter_type: rest_api | rss_atom | csv_url
+# refresh_rate: daily | weekly | monthly | yearly | static | <n>h
+# Jeder Block braucht: id, name, source_url, category, adapter_type, endpoint(s).
+# "geprüft 2026-11-21" heißt: Endpoint wurde an diesem Tag mit 200 beantwortet.
+version: 1
+
+defaults:
+  # Eine Stelle im YAML: hier ändern, wenn die Challenge-Owner die Rollen/Kantone schärfen.
+  target_cities:
+    - "Zürich"
+    - "Bern"
+    - "Basel"
+    - "Luzern"
+    - "Zug"
+    - "Lausanne"
+    - "Genève"
+  target_roles:
+    - "Web Developer"
+    - "IT Support"
+    - "Data Analyst"
+    - "Software Engineer"
+    - "Data Science"
+    - "AI Specialist"
+  policy_keywords:
+    - "Asyl"
+    - "Ausländer"
+    - "Integration"
+    - "Status S"
+    - "Status F"
+    - "Stellenmeldepflicht"
+    - "Erwerbstätigkeit"
+    - "Berufsbildung"
+    - "Migration"
+
+sources:
+  # ----------------------------------------------------------------------------
+  # 1. NACHFRAGE, SKILLS & ARBEITGEBER (Kategorien A, B, C)
+  # ----------------------------------------------------------------------------
+  - id: adzuna_ch
+    name: "Adzuna Stellenmarkt Schweiz"
+    source_url: "https://developer.adzuna.com/"
+    description: "Offene IT- und AI-Stellenangebote in der Schweiz inkl. Standort und Arbeitgeber."
+    category: ["A", "B", "C"]
+    adapter_type: "rest_api"
+    endpoint: "https://api.adzuna.com/v1/api/jobs/ch/search/{page}"
+    pages: 3
+    auth_env: ["ADZUNA_APP_ID", "ADZUNA_APP_KEY"]
+    params:
+      results_per_page: 50
+      app_id: "${ADZUNA_APP_ID}"
+      app_key: "${ADZUNA_APP_KEY}"
+      what_or: "{target_roles}"
+    items_path: "results"
+    field_map:
+      id: "id"
+      title: "title"
+      summary: "description"
+      region: "location.display_name"
+      url: "redirect_url"
+      published_at: "created"
+      tags: "category.label"
+      metrics:
+        salary_min: "salary_min"
+        salary_max: "salary_max"
+    refresh_rate: "weekly"
+    licence: "Adzuna ToS (Attribution, Rate-Limits)"
+
+  - id: itboard
+    name: "ITBoard Arbeitsmarkt"
+    source_url: "https://www.itboard.ch/arbeitsmarkt"
+    description: "Monatliche Kennzahlen der ITBoard-Stelleninserate (Long-Format CSV)."
+    category: ["A"]
+    adapter_type: "csv_url"
+    endpoint: "https://www.itboard.ch/arbeitsmarkt/daten.csv"   # geprüft 2026-11-21: 200
+    delimiter: ","
+    field_map:
+      id: "{monat}:{kennzahl}:{auspraegung}"
+      title: "{kennzahl} {auspraegung} ({monat})"
+      summary: "ITBoard {kennzahl} {auspraegung}: {anzahl} (Basis {basis})."
+      published_at: "{monat}-01T00:00:00Z"
+      tags: "{kennzahl},{auspraegung}"
+      metrics:
+        anzahl: "anzahl"
+        basis: "basis"
+    refresh_rate: "weekly"
+    licence: "CC BY 4.0"
+    licence_url: "https://creativecommons.org/licenses/by/4.0/"
+
+  - id: esco_skills_taxonomy
+    name: "ESCO – Europäische Klassifikation für Fähigkeiten und Berufe"
+    source_url: "https://esco.ec.europa.eu/de/classification/skill_main"
+    description: "Standardisierte IT-Kompetenzen zur einheitlichen Erkennung steigender/fallender Skills."
+    category: ["B"]
+    adapter_type: "rest_api"
+    endpoint: "https://ec.europa.eu/esco/api/search"   # geprüft 2026-11-21: 200
+    params:
+      type: "skill"
+      language: "de"
+      isInScheme: "http://data.europa.eu/esco/concept-scheme/skills"
+      limit: 20
+    items_path: "_embedded.results"
+    field_map:
+      id: "uri"
+      title: "{preferredLabel.de}"
+      summary: "ESCO {className} · {title}"
+      tags: "ESCO,{className}"
+    refresh_rate: "monthly"
+    licence: "CC BY 4.0 (EU)"
+
+  # ----------------------------------------------------------------------------
+  # 2. BEVÖLKERUNG & BEWILLIGUNGEN (Kategorie D)
+  # ----------------------------------------------------------------------------
+  - id: owid_net_migration
+    name: "OWID – Nettomigration"
+    source_url: "https://ourworldindata.org/grapher/net-migration-metrics"
+    description: "Jahreswerte zur Nettomigration, gefiltert auf die Schweiz (UN World Population Prospects via OWID)."
+    category: ["D"]
+    adapter_type: "csv_url"
+    endpoint: "https://ourworldindata.org/grapher/net-migration-metrics.csv?csvType=full&useColumnShortNames=false"   # geprüft 2026-11-21: 200
+    filter_keywords: ["Switzerland"]
+    field_map:
+      id: "{Entity}:{Year}:net-migration"
+      title: "Nettomigration {Entity} {Year}"
+      summary: "Nettomigration {Entity} im Jahr {Year}: {Annual net migration} Personen."
+      region: "{Entity}"
+      published_at: "{Year}-01T00:00:00Z"
+      tags: "migration,owid"
+      metrics:
+        net_migration: "Annual net migration"
+    refresh_rate: "yearly"
+    licence: "CC BY 4.0 (OWID)"
+    licence_url: "https://ourworldindata.org/about#citation"
+
+  - id: sem_auslaender_erwerb
+    name: "SEM – Ausländerstatistik (Bestand & Erwerbstätigkeit)"
+    source_url: "https://www.sem.admin.ch/de/auslaenderstatistik"
+    description: "Aggregierte SEM-Daten zu Bewilligungsarten, Aufenthalt und Erwerbsbeteiligung nach Sektor."
+    category: ["D"]
+    adapter_type: "csv_url"
+    # TODO 2026-11-21: die vom Team notierte Datei-URL antwortet 404. Aktuellen Export
+    # unter https://www.sem.admin.ch/de/auslaenderstatistik heraussuchen und hier eintragen.
+    endpoint: "https://www.sem.admin.ch/dam/sem/de/data/publiservice/statistik/auslaenderstatistik/2025/2-50-Bestand-nicht-staendige-Erwerb-2025.csv"
+    delimiter: ";"
+    enabled: false
+    field_map:
+      id: "{Kanton}:{Jahr}:{Bewilligung}"
+      title: "Bestand nichtständige Erwerbstätige {Kanton} {Jahr}"
+      summary: "SEM-Ausländerstatistik, Bewilligungsart {Bewilligung}."
+      region: "{Kanton}"
+      tags: "sem,ausländerstatistik"
+      metrics: auto
+    refresh_rate: "monthly"
+    licence: "OGD SEM"
+
+  - id: sem_asylstatistik_portal
+    name: "SEM – Monatliche Asyl- und Schutzstatus-Statistik"
+    source_url: "https://www.sem.admin.ch/de/statistiken"
+    description: "Aktuelle Zahlen zu Asylgesuchen, Status S/F und Kantonsverteilung."
+    category: ["D"]
+    adapter_type: "rss_atom"
+    # TODO 2026-11-21: https://www.news.admin.ch/news/de/home.rss.html antwortet 404.
+    # Ersatz: offiziellen Feed suchen oder SEM-Meldungen über Fedlex/Medienmitteilungen beziehen.
+    endpoint: "https://www.news.admin.ch/news/de/home.rss.html"
+    filter_keywords: ["Asylstatistik", "Staatssekretariat für Migration", "SEM", "Schutzstatus"]
+    enabled: false
+    refresh_rate: "weekly"
+
+  # ----------------------------------------------------------------------------
+  # 3. POLITIK & REGULIERUNG (Kategorie E)
+  # ----------------------------------------------------------------------------
+  - id: rss_policy
+    name: "Fedlex – Amtliche Sammlung & Bundesblatt"
+    source_url: "https://www.fedlex.admin.ch/de/oc"
+    description: "Neu in Kraft tretende Gesetze und Verordnungen sowie Bundesblatt-Meldungen zu Migration, Asyl und Arbeitsrecht."
+    category: ["E"]
+    adapter_type: "rss_atom"
+    endpoints:                                              # geprüft 2026-11-21: beide 200
+      - "https://fedlex.data.admin.ch/api/rss-oc-de.xml"
+      - "https://fedlex.data.admin.ch/api/rss-fga-de.xml"
+    filter_keywords: ["Asyl", "Ausländer", "Integration", "Status S", "Status F", "Stellenmeldepflicht", "Erwerbstätigkeit"]
+    refresh_rate: "daily"
+
+  - id: parliament_curia_vista
+    name: "Schweizer Parlament – Curia Vista (Open Data)"
+    source_url: "https://www.parlament.ch/de/%C3%BCber-das-parlament/fakten-und-zahlen/open-data-web-services"
+    description: "Parlamentarische Vorstösse (Motionen, Postulate) zu Migration, Integration und IT-Arbeitsmarkt."
+    category: ["E"]
+    adapter_type: "rest_api"
+    endpoint: "https://ws.parlament.ch/odata.svc/Business"   # geprüft 2026-11-21: 200 (HTTP/1.1)
+    params:
+      "$top": 30
+      "$orderby": "Modified desc"
+      "$format": "json"
+    items_path: "d"
+    filter_keywords: ["Asyl", "Status S", "Status F", "Integration", "Fachkräftemangel", "Stellenmeldepflicht"]
+    field_map:
+      id: "BusinessShortNumber"
+      title: "{Title}"
+      summary: "{Abstract}"
+      url: "https://www.parlament.ch/de/ratsbetrieb/suche-curia-vista/geschaeft?AffairId={ID}"
+      published_at: "Modified"
+      tags: "Parlament,{SubmissionTypeName}"
+    refresh_rate: "weekly"
+
+  # ----------------------------------------------------------------------------
+  # 4. LEVEL-4-DEMO (standardmäßig aus — auf der Bühne einschalten, kein Code)
+  # ----------------------------------------------------------------------------
+  - id: fedlex_all_publications_demo
+    name: "Fedlex – Gesamtpublikationen (Live-Erweiterung)"
+    source_url: "https://www.fedlex.admin.ch/"
+    description: "Beispiel-Quelle für den Live-Test: 6 Zeilen YAML, kein Code-Change."
+    category: ["E"]
+    adapter_type: "rss_atom"
+    endpoint: "https://fedlex.data.admin.ch/api/rss-de.xml"   # geprüft 2026-11-21: 200
+    filter_keywords: ["Digitalisierung", "Künstliche Intelligenz", "Arbeitsmarkt"]
+    refresh_rate: "daily"
+    enabled: false
