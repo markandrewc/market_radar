@@ -5,15 +5,20 @@ import type {
 } from '../shared/types';
 import {
   mockConnectorConfig, mockConnectors, mockDemand, mockDigest, mockEmployers, mockRoles, mockSkills, mockSources,
-  mockSubscribeResult,
+  mockSubscribeResult, type Scenario,
 } from './mocks/data';
 import { mockMarketItems } from './mocks/marketItems';
 
-// VITE_USE_MOCKS=0 -> real backend for every endpoint below (Vite proxies /api/ to FastAPI on :8787).
-// Anything else -> labelled demo data. The banner in App.tsx marks mock mode.
+// VITE_USE_MOCKS=0 -> real backend (Vite proxies /api/ to FastAPI on :8787). Anything else -> labelled demo data.
 export const useMocks = import.meta.env.VITE_USE_MOCKS !== '0';
+// With mocks: VITE_MOCK_SCENARIO = normal | empty | short | error, to see every screen state.
+const scenario = (import.meta.env.VITE_MOCK_SCENARIO ?? 'normal') as Scenario;
 
-const wait = <T,>(v: T) => new Promise<T>((r) => setTimeout(() => r(v), 300));
+export class ApiError extends Error {
+  constructor(message: string, public status: number) {
+    super(message);
+  }
+}
 
 const auth = (token?: string): Record<string, string> => (token ? { Authorization: `Bearer ${token}` } : {});
 
@@ -25,8 +30,10 @@ async function call<T>(method: string, path: string, body?: unknown, token?: str
   });
   if (!res.ok) {
     const payload = await res.json().catch(() => ({}));
-    const detail = Array.isArray(payload.detail) ? payload.detail.map((d: { msg?: string }) => d.msg).join('; ') : payload.detail;
-    throw new Error(detail || `${res.status} ${res.statusText}`);
+    const detail = Array.isArray(payload.detail)
+      ? payload.detail.map((d: { msg?: string }) => d.msg).join('; ')
+      : payload.detail;
+    throw new ApiError(typeof detail === 'string' && detail ? detail : res.statusText, res.status);
   }
   return res.json() as Promise<T>;
 }
@@ -40,26 +47,51 @@ async function putYaml(path: string, yaml: string, token: string): Promise<Conne
   const payload = await res.json().catch(() => ({}));
   if (!res.ok) {
     const detail = Array.isArray(payload.detail) ? payload.detail.join(' ') : payload.detail ?? payload.errors?.join?.(' ');
-    throw new Error(detail || `${res.status} ${res.statusText}`);
+    throw new ApiError(typeof detail === 'string' && detail ? detail : res.statusText, res.status);
   }
   return payload as ConnectorConfigUpdate;
 }
 
-// ---- Level 1: demand and skills -------------------------------------------
+async function mock<T>(value: () => T): Promise<T> {
+  await new Promise((r) => setTimeout(r, 300));
+  if (scenario === 'error') throw new ApiError('Mock error', 500);
+  return value();
+}
+
+/** One entry per role. If several sources have the same role, the one with the longest history wins. */
+export function bestPerRole(list: DemandResponse[]): DemandResponse[] {
+  const best = new Map<string, DemandResponse>();
+  for (const d of list) {
+    const cur = best.get(d.role.id);
+    if (!cur || d.series.length > cur.series.length) best.set(d.role.id, d);
+  }
+  return [...best.values()];
+}
+
+// ---- Level 1: roles, demand and skills -------------------------------------
 export const useRoles = () =>
-  useQuery({ queryKey: ['roles'], queryFn: (): Promise<Role[]> => (useMocks ? wait(mockRoles()) : get('/roles')) });
+  useQuery({ queryKey: ['roles'], queryFn: (): Promise<Role[]> => (useMocks ? mock(mockRoles) : get('/roles')) });
 
-export const useDemand = () =>
-  useQuery({ queryKey: ['demand'], queryFn: (): Promise<DemandResponse[]> => (useMocks ? wait(mockDemand()) : get('/demand')) });
+export const useDemand = (months = 12) =>
+  useQuery({
+    queryKey: ['demand', months],
+    queryFn: async (): Promise<DemandResponse[]> =>
+      bestPerRole(useMocks ? await mock(() => mockDemand(scenario, months)) : await get<DemandResponse[]>(`/demand?months=${months}`)),
+  });
 
+// No role id = all postings together (the backend's pseudo role "all").
 export const useSkills = (roleId?: string) =>
   useQuery({
     queryKey: ['skills', roleId],
-    queryFn: (): Promise<SkillsResponse> =>
-      useMocks ? wait(mockSkills()) : get(`/skills${roleId ? `?role=${encodeURIComponent(roleId)}` : ''}`),
+    retry: (count, err) => !(err instanceof ApiError && err.status === 404) && count < 1,
+    queryFn: async (): Promise<SkillsResponse> => {
+      if (useMocks) return mock(() => mockSkills(roleId ?? 'web-developer'));
+      const r = await get<SkillsResponse>(`/skills${roleId ? `?role=${encodeURIComponent(roleId)}` : ''}`);
+      return { ...r, skills: r.skills.slice(0, 10) };
+    },
   });
 
-// ---- Level 1/3: normalised items (categories A-E) ---------------------------
+// ---- Items: the normalised records of every source (categories A-E) --------
 export interface ItemFilter {
   category?: MarketItemCategory;
   /** Canton code such as ZH or BE. */
@@ -88,38 +120,38 @@ export const useItems = (filter: ItemFilter = {}) =>
         items = items.filter((item) => `${item.title} ${item.summary}`.toLowerCase().includes(needle));
       }
       if (filter.limit) items = items.slice(0, filter.limit);
-      return wait(items);
+      return mock(() => items);
     },
   });
 
 export const useSources = () =>
-  useQuery({ queryKey: ['sources'], queryFn: (): Promise<SourceStatus[]> => (useMocks ? wait(mockSources()) : get('/sources')) });
+  useQuery({ queryKey: ['sources'], queryFn: (): Promise<SourceStatus[]> => (useMocks ? mock(mockSources) : get('/sources')) });
 
 // ---- Level 3: who is hiring (category C) -----------------------------------
 export const useEmployers = (roleId: string) =>
   useQuery({
     queryKey: ['employers', roleId],
     queryFn: (): Promise<EmployersResponse> =>
-      useMocks ? wait(mockEmployers(roleId)) : get(`/employers?role=${encodeURIComponent(roleId)}`),
+      useMocks ? mock(() => mockEmployers(roleId)) : get(`/employers?role=${encodeURIComponent(roleId)}`),
   });
 
 // ---- Level 2: briefings ----------------------------------------------------
 export const useDigestPreview = () =>
   useMutation({
-    mutationFn: (body: DigestRequest): Promise<Digest> => (useMocks ? wait(mockDigest(body)) : post('/reports/preview', body)),
+    mutationFn: (body: DigestRequest): Promise<Digest> => (useMocks ? mock(() => mockDigest(body)) : post('/reports/preview', body)),
   });
 
 export const useSubscribe = () =>
   useMutation({
     mutationFn: (body: SubscribeBody): Promise<SubscribeResult> =>
-      useMocks ? wait(mockSubscribeResult(body)) : post('/subscriptions', body),
+      useMocks ? mock(() => mockSubscribeResult(body)) : post('/subscriptions', body),
   });
 
 // ---- Level 4: connectors and the operator panel ----------------------------
 export const useConnectors = () =>
   useQuery({
     queryKey: ['connectors'],
-    queryFn: (): Promise<ConnectorList> => (useMocks ? wait(mockConnectors()) : get('/connectors')),
+    queryFn: (): Promise<ConnectorList> => (useMocks ? mock(mockConnectors) : get('/connectors')),
     refetchInterval: 60_000,
   });
 
@@ -128,19 +160,21 @@ export const useConnectorConfig = (token: string) =>
     queryKey: ['connector-config', token],
     enabled: Boolean(token),
     retry: false,
-    queryFn: (): Promise<ConnectorConfigFile> => (useMocks ? wait(mockConnectorConfig()) : get('/connectors/config', token)),
+    queryFn: (): Promise<ConnectorConfigFile> => (useMocks ? mock(mockConnectorConfig) : get('/connectors/config', token)),
   });
 
 export const useApplyConnectorConfig = (token: string) =>
   useMutation({
     mutationFn: (yaml: string): Promise<ConnectorConfigUpdate> =>
-      useMocks ? wait({ ...mockConnectorConfig(), sha256: 'demo', added: 0, updated: 0, disabled: 0, sourceCount: 0, errors: [], persistent: false } as unknown as ConnectorConfigUpdate) : putYaml('/connectors/config', yaml, token),
+      useMocks
+        ? mock(() => ({ ...mockConnectorConfig(), sha256: 'demo', added: 0, updated: 0, disabled: 0, sourceCount: 0, errors: [], persistent: false }))
+        : putYaml('/connectors/config', yaml, token),
   });
 
 export const useSyncConnectors = (token: string) =>
   useMutation({
     mutationFn: (options: { dueOnly: boolean; source?: string }): Promise<SyncSummary> => {
-      if (useMocks) return wait({ results: [], items: 0, errors: 0 });
+      if (useMocks) return mock(() => ({ results: [], items: 0, errors: 0 }));
       const params = new URLSearchParams();
       if (options.dueOnly) params.set('due_only', 'true');
       if (options.source) params.set('source', options.source);
@@ -151,5 +185,8 @@ export const useSyncConnectors = (token: string) =>
 
 export const useReloadConnectors = (token: string) =>
   useMutation({
-    mutationFn: () => (useMocks ? wait({ added: 0, updated: 0, disabled: 0, sourceCount: 0, configSha256: 'demo', errors: [] }) : post('/connectors/reload', undefined, token)),
+    mutationFn: () =>
+      useMocks
+        ? mock(() => ({ added: 0, updated: 0, disabled: 0, sourceCount: 0, configSha256: 'demo', errors: [] as string[] }))
+        : post('/connectors/reload', undefined, token),
   });

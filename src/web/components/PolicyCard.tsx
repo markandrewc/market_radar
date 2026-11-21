@@ -23,30 +23,34 @@ export function PolicyCard({ item, note }: { item: MarketItem; note?: PolicyNote
   // The record permalink when the source has one, otherwise the source's own page.
   const href = item.url ?? item.source_url;
   return (
-    <Card>
+    <Card className="h-full">
       <CardContent className="space-y-3 pt-5">
         <div>
+          <p className="text-xs text-slate-600">
+            {item.published_at ? (
+              <time dateTime={item.published_at}>{formatDate(item.published_at)}</time>
+            ) : (
+              'Publisher date not stated'
+            )}
+          </p>
           <a
             href={href}
             target="_blank"
             rel="noreferrer"
-            className="text-base font-semibold text-brand underline-offset-2 hover:text-brand-accent hover:underline"
+            className="mt-1 block text-base font-semibold text-brand underline-offset-2 hover:text-brand-accent hover:underline"
           >
             {item.title}
           </a>
-          <p className="mt-1 text-xs text-slate-500">
-            {item.published_at ? `Published ${formatDate(item.published_at)}` : 'Publisher date not stated'}
-          </p>
         </div>
 
         {item.summary && <p className="text-sm text-slate-700">{trimSummary(item.summary)}</p>}
 
         {note && (
-          <aside className="rounded-md border-l-4 border-amber-400 bg-amber-50 px-3 py-2" aria-label="Our reading, not the source">
+          <div className="rounded-md border-l-4 border-amber-400 bg-amber-50 px-3 py-2">
             <p className="text-xs font-semibold uppercase tracking-wide text-amber-800">Our reading, not the source</p>
             <p className="mt-1 text-xs font-medium text-slate-700">{note.label}</p>
             <p className="mt-1 text-sm text-slate-700">{note.note}</p>
-          </aside>
+          </div>
         )}
 
         <SourceBadge source={itemSource(item)} />

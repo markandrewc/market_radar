@@ -3,6 +3,7 @@ import type { FormEvent } from 'react';
 import { useDigestPreview, useRoles, useSubscribe } from '../api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { DigestPreview } from '@/components/DigestPreview';
+import { PageHeader } from '@/components/PageHeader';
 import { Empty, Loading } from '@/components/Status';
 
 type Cadence = 'weekly' | 'monthly';
@@ -129,12 +130,10 @@ export default function Reports() {
 
   return (
     <div className="space-y-6">
-      <header>
-        <h2 className="text-2xl font-semibold text-brand">Weekly briefing</h2>
-        <p className="text-sm text-slate-500">
-          A short e-mail that tells you what changed in the Swiss IT job market for the topics you choose.
-        </p>
-      </header>
+      <PageHeader
+        title="Weekly report"
+        description="A short e-mail that tells you what changed in the Swiss IT job market for the topics you choose. We only store your e-mail address and your choices, and every e-mail carries an unsubscribe link."
+      />
 
       <div className="grid items-start gap-4 lg:grid-cols-2">
         <div className="space-y-4">
@@ -206,7 +205,7 @@ export default function Reports() {
               <form className="space-y-4" onSubmit={submit}>
                 <div>
                   <label htmlFor="subscribe-email" className="block text-sm font-medium text-slate-700">
-                    E-mail address
+                    Your email address
                   </label>
                   <input
                     id="subscribe-email"

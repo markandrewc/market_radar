@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { MarketItem } from '../../shared/types';
 import { useItems } from '../api';
+import { PageHeader } from '@/components/PageHeader';
 import { PolicyCard } from '@/components/PolicyCard';
 import { Empty, ErrorMsg, Loading } from '@/components/Status';
 import { POLICY_WATCH, matchesKeyword, noteFor } from '../lib/policy-watch';
@@ -51,12 +52,10 @@ export default function Policy() {
   const groups = sourceGroups(items);
 
   const header = (
-    <div>
-      <h2 className="text-2xl font-semibold text-brand">Policy news</h2>
-      <p className="text-sm text-slate-500">
-        New laws, motions and reporting duties that can change what we teach or who we can place.
-      </p>
-    </div>
+    <PageHeader
+      title="Policy news"
+      description="New laws, motions and reporting duties that can change what we teach or who we can place."
+    />
   );
 
   if (allItems.length === 0) {
@@ -122,7 +121,7 @@ export default function Policy() {
           {groups.map((group) => (
             <section key={group.name} aria-label={`Policy items from ${group.name}`} className="space-y-3">
               <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-slate-200 pb-2">
-                <h3 className="font-semibold text-brand">
+                <h2 className="font-semibold text-brand">
                   <a
                     href={group.items[0].source_url}
                     target="_blank"
@@ -131,7 +130,7 @@ export default function Policy() {
                   >
                     {group.name}
                   </a>
-                </h3>
+                </h2>
                 <p className="text-xs text-slate-500">
                   {group.items.length} item(s) · newest {group.newest ? formatDate(group.newest) : 'date not stated'}
                 </p>

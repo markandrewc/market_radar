@@ -2,8 +2,9 @@ import { useConnectors, useSources } from '../api';
 import type { ReactNode } from 'react';
 import type { ConnectorSource } from '../../shared/types';
 import { Badge } from '@/components/ui/badge';
+import { PageHeader } from '@/components/PageHeader';
 import { Card, CardContent } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { HowToAddSource } from '@/components/HowToAddSource';
 import { OperatorPanel } from '@/components/OperatorPanel';
 import { Empty, ErrorMsg, Loading } from '@/components/Status';
@@ -35,13 +36,10 @@ export default function Sources() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-semibold text-brand">Data sources</h2>
-        <p className="text-sm text-slate-500">
-          Two kinds of sources feed Market Radar: the Python pipeline (official statistics) and the configurable
-          connectors in <code className="rounded bg-slate-100 px-1">sources.yaml</code>.
-        </p>
-      </div>
+      <PageHeader
+        title="Data sources"
+        description="Two kinds of sources feed Market Radar: the Python pipeline (official statistics) and the configurable connectors in sources.yaml. Every number in the app links back to one of them."
+      />
 
       {connectors.data?.pendingChanges && (
         <Banner tone="warning">
@@ -57,7 +55,7 @@ export default function Sources() {
       )}
 
       <section className="space-y-3">
-        <h3 className="text-lg font-semibold text-brand">Pipeline sources</h3>
+        <h2 className="text-lg font-semibold text-brand">Pipeline sources</h2>
         {sources.isLoading ? (
           <Loading />
         ) : sources.error || !sources.data ? (
@@ -68,6 +66,7 @@ export default function Sources() {
           <Card>
             <CardContent className="pt-5">
               <Table>
+                <TableCaption>Data sources and their update status</TableCaption>
                 <TableHeader>
                   <TableRow>
                     <TableHead>Source</TableHead>
@@ -101,7 +100,7 @@ export default function Sources() {
 
       <section className="space-y-3">
         <div>
-          <h3 className="text-lg font-semibold text-brand">Connector sources</h3>
+          <h2 className="text-lg font-semibold text-brand">Connector sources</h2>
           <p className="text-sm text-slate-500">
             Configured in <code className="rounded bg-slate-100 px-1">sources.yaml</code>
             {connectors.data?.configFile ? (
@@ -122,6 +121,7 @@ export default function Sources() {
           <Card>
             <CardContent className="pt-5">
               <Table>
+                <TableCaption>Configured connectors, their refresh rate and last sync</TableCaption>
                 <TableHeader>
                   <TableRow>
                     <TableHead>Source</TableHead>

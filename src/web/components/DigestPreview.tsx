@@ -42,7 +42,7 @@ export function DigestPreview({ digest }: { digest: Digest }) {
   return (
     <article aria-label="Briefing preview" className="space-y-4 rounded-lg border border-slate-200 bg-brand-soft p-4">
       <header className="space-y-1">
-        <h4 className="text-base font-semibold text-brand">{digest.subject}</h4>
+        <h3 className="text-base font-semibold text-brand">{digest.subject}</h3>
         <p className="text-xs text-slate-500">generated {formatDateTime(digest.generatedAt)}</p>
       </header>
 
@@ -57,7 +57,7 @@ export function DigestPreview({ digest }: { digest: Digest }) {
         <div className="space-y-5">
           {digest.sections.map((section, index) => (
             <section key={`${section.heading}-${index}`} className="space-y-2">
-              <h5 className="text-sm font-semibold text-brand">{section.heading}</h5>
+              <h4 className="text-sm font-semibold text-brand">{section.heading}</h4>
               <ul className="space-y-3">
                 {section.bullets.map((bullet, bulletIndex) => (
                   <li key={`${bullet.text}-${bulletIndex}`} className="text-sm">
@@ -79,7 +79,7 @@ export function DigestPreview({ digest }: { digest: Digest }) {
 
       {uniqueSources.length > 0 && (
         <footer className="space-y-1 border-t border-slate-200 pt-3">
-          <h5 className="text-xs font-medium uppercase tracking-wide text-slate-500">Sources in this briefing</h5>
+          <h4 className="text-xs font-medium uppercase tracking-wide text-slate-500">Sources in this briefing</h4>
           <ul className="space-y-1 text-xs text-slate-600">
             {uniqueSources.map((source) => (
               <li key={source.id || source.url}>
