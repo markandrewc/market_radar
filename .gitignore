@@ -4,3 +4,13 @@ dist
 .dev.vars
 .env.local
 .DS_Store
+
+# Python backend
+.venv
+__pycache__
+*.pyc
+.pytest_cache
+backend/data/
+*.db
+*.db-wal
+*.db-shm

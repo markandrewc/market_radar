@@ -1,0 +1,7 @@
+"""Settings from environment variables (see .env.example in the repo root)."""
+import os
+from pathlib import Path
+
+DB_PATH = Path(os.environ.get("DB_PATH", Path(__file__).resolve().parents[1] / "data" / "market-radar.db"))
+# Built frontend (npm run build writes to <repo>/dist). Served by FastAPI if it exists.
+STATIC_DIR = Path(os.environ.get("STATIC_DIR", Path(__file__).resolve().parents[2] / "dist"))
