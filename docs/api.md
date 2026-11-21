@@ -81,6 +81,50 @@ Parsers registered: `itboard-monthly`. Staged without parser yet: `bfs-besta-reg
 
 Only aggregated or public data, no personal data. No scraping where a site's terms forbid it.
 
+## MarketItem (frozen contract)
+
+Every connector normalises its raw data into this one structure, so adding a data source never changes code.
+The schema lives in [market-item.schema.json](market-item.schema.json), the TypeScript mirror in
+`src/shared/types.ts`, the 30 reference records in `src/web/mocks/market-items.json`.
+`npm run check:contract` validates the mocks against the schema; the backend returns exactly this shape.
+
+```json
+{
+  "id": "itboard:2026-11:inserate:aktiv",
+  "category": "A",
+  "categories": ["A"],
+  "title": "Inserate aktiv (2026-11)",
+  "summary": "ITBoard zählt 41 aktive IT-Inserate im November 2026, drei mehr als im Vormonat.",
+  "metrics": { "anzahl": 41, "basis": null },
+  "tags": ["inserate", "aktiv", "monat"],
+  "region": null,
+  "source_name": "ITBoard Arbeitsmarkt",
+  "source_url": "https://www.itboard.ch/arbeitsmarkt",
+  "url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+  "published_at": "2026-11-01T00:00:00Z",
+  "fetched_at": "2026-11-21T09:15:00Z"
+}
+```
+
+| Field | Type | Meaning |
+|---|---|---|
+| `id` | string | Stable within its source. |
+| `category` | `"A"`–`"E"` | Primary category: A = demand/job market, B = skills, C = employers, D = population/permits, E = policy/regulation. |
+| `categories` | string[] | All categories the source feeds; always contains `category`. |
+| `title` | string | Headline for the UI. |
+| `summary` | string | Plain text, HTML stripped. |
+| `metrics` | `{ [name]: number \| null }` | Numbers that belong to the record; the key names the meaning. |
+| `tags` | string[] | Free-form tags and skills, e.g. `role:IT Support`. |
+| `region` | string \| null | Canton code (`ZH`, `BE`, …) when recognisable, else the raw location, `null` for Switzerland-wide. |
+| `source_name` | string | Shown next to every number (provenance). |
+| `source_url` | string | Link to the original data of the source. |
+| `url` | string \| null | Permalink of the single record; `null` for aggregates. |
+| `published_at` | string \| null | RFC 3339 in UTC; period start for monthly/yearly figures. |
+| `fetched_at` | string | RFC 3339 in UTC, when the connector retrieved the record. |
+
+Field names are deliberately `snake_case` here, unlike the older camelCase endpoints, so the JSON matches
+the Python and TypeScript definitions one-to-one.
+
 ## Read (frontend)
 
 | Method | Path | Response |

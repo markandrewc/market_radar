@@ -18,3 +18,29 @@ export interface PolicyItem { title: string; summary: string; date: string; sour
 export interface PolicyResponse { items: PolicyItem[] }
 export interface SubscribeBody { email: string; roleIds: string[] }
 export interface SourceStatus { id: string; name: string; url: string; lastFetchedAt: string; dataAsOf?: string | null; licence?: string | null; licenceUrl?: string | null; status: 'ok' | 'stale' | 'error'; problem?: string | null }
+
+// Frozen contract for the config-driven connectors (docs/market-item.schema.json).
+// Field names stay snake_case to match the JSON Schema and the Python schemas.
+export type MarketItemCategory = 'A' | 'B' | 'C' | 'D' | 'E';
+export type MarketItemMetrics = Record<string, number | null>;
+export interface MarketItem {
+  id: string;
+  /** Primary category, used for filtering (A-E). */
+  category: MarketItemCategory;
+  /** All categories the source feeds; always contains `category`. */
+  categories: MarketItemCategory[];
+  title: string;
+  summary: string;
+  metrics: MarketItemMetrics;
+  /** Tags and skills, e.g. "role:IT Support". */
+  tags: string[];
+  /** Canton code (ZH, BE, ...) when recognisable, otherwise raw text or null. */
+  region: string | null;
+  source_name: string;
+  source_url: string;
+  /** Permalink of the single record, null for aggregates. */
+  url: string | null;
+  published_at: string | null;
+  /** When the connector retrieved the data. */
+  fetched_at: string;
+}

@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/markandrewc/market_radar/docs/market-item.schema.json",
+  "title": "MarketItem",
+  "description": "Unified record every connector normalises into. Frozen contract between ingestion, backend, AI and frontend: field names are snake_case here even though the older endpoints use camelCase. Timestamps are RFC 3339 in UTC, dates always with a time part.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "category",
+    "categories",
+    "title",
+    "summary",
+    "metrics",
+    "tags",
+    "region",
+    "source_name",
+    "source_url",
+    "url",
+    "published_at",
+    "fetched_at"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable id within its source, e.g. '2026-11:inserate:aktiv'. Unique per source."
+    },
+    "category": {
+      "$ref": "#/$defs/category",
+      "description": "Primary category of the item, used for filtering (A-E)."
+    },
+    "categories": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/category" },
+      "description": "All categories the source feeds. category must be one of them."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Short, human readable headline as shown in the UI."
+    },
+    "summary": {
+      "type": "string",
+      "description": "One to three sentences of plain text, HTML already stripped."
+    },
+    "metrics": {
+      "type": "object",
+      "description": "Numeric values that belong to this record. The key names the meaning, e.g. {\"anzahl\": 41, \"basis\": null}.",
+      "additionalProperties": { "type": ["number", "null"] }
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "description": "Free-form tags and skills, e.g. [\"inserate\", \"role:IT Support\"]."
+    },
+    "region": {
+      "type": ["string", "null"],
+      "description": "Canton code (ZH, BE, ...) when recognisable, otherwise the raw location text, or null for Switzerland-wide records."
+    },
+    "source_name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Shown next to every number so the origin is always visible."
+    },
+    "source_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "Link to the original data of this source (provenance)."
+    },
+    "url": {
+      "type": ["string", "null"],
+      "format": "uri",
+      "description": "Permalink of this single record; null for aggregate records that have none."
+    },
+    "published_at": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "When the data was published (period start for monthly/ yearly figures), null if unknown."
+    },
+    "fetched_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the connector retrieved the data. Drives the 'Last updated' badge."
+    }
+  },
+  "$defs": {
+    "category": {
+      "enum": ["A", "B", "C", "D", "E"],
+      "description": "A = demand/ job market, B = skills, C = employers, D = population/ permits, E = policy/ regulation."
+    }
+  }
+}

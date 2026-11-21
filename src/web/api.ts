@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import type { DemandResponse, EmployersResponse, PolicyResponse, SkillsResponse, SourceStatus, SubscribeBody, TargetGroupResponse } from '../shared/types';
+import type { DemandResponse, EmployersResponse, MarketItem, MarketItemCategory, PolicyResponse, SkillsResponse, SourceStatus, SubscribeBody, TargetGroupResponse } from '../shared/types';
 import { mockDemand, mockEmployers, mockParticipants, mockPolicy, mockSkills, mockSources } from './mocks/data';
+import { mockMarketItems } from './mocks/marketItems';
 
 // VITE_USE_MOCKS=0 -> real backend for the endpoints it already has (Vite proxies /api/ to FastAPI on :8787).
 // Anything else -> mock data. Endpoints without a backend yet always use mocks.
@@ -30,3 +31,33 @@ export const useParticipants = () => useQuery({ queryKey: ['participants'], quer
 export const usePolicy = () => useQuery({ queryKey: ['policy'], queryFn: (): Promise<PolicyResponse> => wait(mockPolicy()) });
 export const useSources = () => useQuery({ queryKey: ['sources'], queryFn: (): Promise<SourceStatus[]> => wait(mockSources()) });
 export const useSubscribe = () => useMutation({ mutationFn: (b: SubscribeBody) => wait({ ok: true, ...b }) });
+
+// Config-driven connectors. Contract: docs/market-item.schema.json.
+// Backend: GET /api/items?category=&region=&source=&q=&limit= (see docs/api.md)
+export interface ItemFilter {
+  category?: MarketItemCategory;
+  /** Canton code such as ZH or BE. */
+  region?: string;
+  source?: string;
+  q?: string;
+  limit?: number;
+}
+
+export const useItems = (filter: ItemFilter = {}) =>
+  useQuery({
+    queryKey: ['items', filter],
+    queryFn: (): Promise<MarketItem[]> => {
+      if (!useMocks) {
+        const params = new URLSearchParams();
+        for (const [key, value] of Object.entries(filter)) if (value !== undefined && value !== '') params.set(key, String(value));
+        const query = params.toString();
+        return get(`/items${query ? `?${query}` : ''}`);
+      }
+      let items = mockMarketItems();
+      if (filter.category) items = items.filter((item) => item.categories.includes(filter.category!));
+      if (filter.region) items = items.filter((item) => item.region === filter.region);
+      if (filter.source) items = items.filter((item) => item.source_name === filter.source);
+      if (filter.limit) items = items.slice(0, filter.limit);
+      return wait(items);
+    },
+  });
