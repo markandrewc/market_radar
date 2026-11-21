@@ -4,8 +4,10 @@ import userEvent from '@testing-library/user-event';
 import axe from 'axe-core';
 import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import App from '../App';
+import { mockDigest } from '../mocks/data';
+import { buildDigestPdf } from '../lib/digestPdf';
 import { mockSkills } from '../mocks/data';
 
 beforeEach(() => { localStorage.setItem('mr-tour-seen', '1'); }); // skip the first-visit tour unless a test wants it
@@ -187,5 +189,34 @@ describe('reports form', () => {
     // Demo mode has no mail provider: the page must say so instead of claiming a send.
     await user.click(screen.getByRole('button', { name: 'Subscribe' }));
     expect(await screen.findByText(/Saved, but the e-mail was not sent|Sent — check your inbox/, {}, { timeout: 4000 })).toBeTruthy();
+  });
+});
+
+describe('weekly report: topics and PDF', () => {
+  it('starts with no role selected, pages through the roles and keeps the choice', async () => {
+    const user = userEvent.setup();
+    show('/reports');
+    await ready(/Weekly report/);
+    await screen.findByText(/0 of 33 roles selected/, {}, { timeout: 4000 });
+    expect(screen.getAllByRole('checkbox').filter((c) => (c as HTMLInputElement).checked)).toHaveLength(0);
+    await user.click(screen.getAllByRole('checkbox')[0]);
+    await user.click(screen.getByRole('button', { name: 'Next page' }));
+    expect(await screen.findByText(/Showing 7–12 of 33/)).toBeTruthy();
+    expect(screen.getByText(/1 of 33 roles selected/)).toBeTruthy();
+  });
+
+  it('offers a PDF download of the preview', async () => {
+    show('/reports');
+    await ready(/Weekly report/);
+    const btn = await screen.findByRole('button', { name: 'Download as PDF' });
+    await waitFor(() => expect((btn as HTMLButtonElement).disabled).toBe(false), { timeout: 4000 });
+  });
+
+  it('builds a real PDF document from a briefing', async () => {
+    const doc = await buildDigestPdf(mockDigest());
+    const bytes = new Uint8Array(doc.output('arraybuffer'));
+    expect(String.fromCharCode(...bytes.slice(0, 5))).toBe('%PDF-');
+    expect(bytes.length).toBeGreaterThan(1500);
+    expect(doc.getNumberOfPages()).toBeGreaterThan(0);
   });
 });

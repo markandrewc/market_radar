@@ -1,12 +1,18 @@
 import { useEffect, useId, useState } from 'react';
+import { Download } from 'lucide-react';
 import type { FormEvent } from 'react';
 import { useDigestPreview, useRoles, useSubscribe } from '../api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { DigestPreview } from '@/components/DigestPreview';
 import { PageHeader } from '@/components/PageHeader';
 import { Empty, Loading } from '@/components/Status';
+import { Pagination } from '@/components/ui/pagination';
+import { usePaged } from '../hooks';
+import { downloadDigestPdf } from '../lib/digestPdf';
 
 type Cadence = 'weekly' | 'monthly';
+
+const ROLES_PER_PAGE = 6;
 
 const formatDateTime = (value: string) => {
   const date = new Date(value);
@@ -72,25 +78,20 @@ export default function Reports() {
   const [includeTargetGroup, setIncludeTargetGroup] = useState(false);
   const [cadence, setCadence] = useState<Cadence>('weekly');
   const [email, setEmail] = useState('');
-  const [topicsReady, setTopicsReady] = useState(false);
+  const [pdfBusy, setPdfBusy] = useState(false);
+  const [pdfError, setPdfError] = useState(false);
 
   const roleList = roles.data;
-
-  // Start with every role selected so the first preview already shows a real briefing.
-  useEffect(() => {
-    if (topicsReady || !roleList) return;
-    setSelectedRoleIds(roleList.map((role) => role.id));
-    setTopicsReady(true);
-  }, [roleList, topicsReady]);
+  const rolePages = usePaged(roleList ?? [], ROLES_PER_PAGE);
 
   const hasTopic = selectedRoleIds.length > 0 || includePolicy || includeTargetGroup;
 
   // Live preview: refresh whenever the chosen topics change (and once the roles are known).
   useEffect(() => {
-    if (!topicsReady || !hasTopic) return;
+    if (!hasTopic) return;
     preview.mutate({ roleIds: selectedRoleIds, includePolicy, includeTargetGroup });
     // preview.mutate is stable; the effect is meant to run only when the topics change.
-  }, [topicsReady, hasTopic, selectedRoleIds, includePolicy, includeTargetGroup]);
+  }, [hasTopic, selectedRoleIds, includePolicy, includeTargetGroup]);
 
   if (roles.isLoading) return <Loading />;
   if (roles.error || !roleList) {
@@ -128,6 +129,12 @@ export default function Reports() {
 
   const result = subscribe.data;
 
+  const downloadPdf = async () => {
+    if (!preview.data) return;
+    setPdfBusy(true); setPdfError(false);
+    try { await downloadDigestPdf(preview.data); } catch { setPdfError(true); } finally { setPdfBusy(false); }
+  };
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -146,7 +153,7 @@ export default function Reports() {
               <fieldset className="space-y-2">
                 <legend className="text-sm font-medium text-slate-700">Roles</legend>
                 <div className="space-y-1.5">
-                  {roleList.map((role) => (
+                  {rolePages.slice.map((role) => (
                     <label key={role.id} className="flex items-center gap-2 text-sm text-slate-700">
                       <input
                         type="checkbox"
@@ -158,6 +165,8 @@ export default function Reports() {
                     </label>
                   ))}
                 </div>
+                <Pagination label="Roles pages" page={rolePages.page} pageCount={rolePages.pageCount} total={rolePages.total} size={ROLES_PER_PAGE} onChange={rolePages.setPage} />
+                <p className="text-xs text-slate-600" aria-live="polite">{selectedRoleIds.length} of {roleList.length} roles selected{selectedRoleIds.length > 0 && (<> · <button type="button" onClick={() => setSelectedRoleIds([])} className="underline">Clear</button></>)}</p>
               </fieldset>
 
               <fieldset className="space-y-2 border-t border-slate-100 pt-3">
@@ -280,7 +289,16 @@ export default function Reports() {
               >
                 Refresh preview
               </button>
+              <button
+                type="button"
+                onClick={downloadPdf}
+                disabled={!hasTopic || !preview.data || preview.isPending || pdfBusy}
+                className="inline-flex items-center gap-1.5 rounded-md bg-brand-accent px-3 py-1.5 text-xs font-medium text-white hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <Download className="h-3.5 w-3.5" aria-hidden />{pdfBusy ? 'Preparing PDF…' : 'Download as PDF'}
+              </button>
             </div>
+            {pdfError && <p role="alert" className="text-xs text-red-700">The PDF could not be created. Please try again.</p>}
 
             {!hasTopic ? (
               <Empty text="Choose at least one topic to see a preview." />
