@@ -20,6 +20,7 @@ export function ChartFrame({
   numbers,
   interpretation,
   sources,
+  tourId,
   className,
 }: {
   title: string;
@@ -32,6 +33,8 @@ export function ChartFrame({
   numbers?: { caption: string; head: string[]; rows: (string | number)[][] };
   interpretation?: Insight;
   sources?: SourceRef[];
+  /** Optional data-tour anchor for the source footer (guided tour). */
+  tourId?: string;
   className?: string;
 }) {
   return (
@@ -82,7 +85,7 @@ export function ChartFrame({
         )}
 
         {sources && sources.length > 0 && (
-          <div className="flex flex-wrap items-center gap-2 border-t border-line pt-4">
+          <div data-tour={tourId} className="flex flex-wrap items-center gap-2 border-t border-line pt-4">
             <span className="text-xs font-medium text-ink-soft">{sources.length > 1 ? 'Sources' : 'Source'}</span>
             {sources.map((source, index) => (
               <SourceInfo key={`${source.id}-${index}`} source={source} />

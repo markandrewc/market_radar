@@ -323,7 +323,7 @@ export default function Context() {
         title="People, employers & policy"
         description="Who is hiring, who our participants are, and which rules are changing — with the same sources as the rest of the radar."
       />
-      <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+      <div data-tour="context-cards" className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
         <EmployersCard />
         <TargetGroupCard />
         <PolicyNewsCard />

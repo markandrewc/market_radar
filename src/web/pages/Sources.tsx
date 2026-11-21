@@ -204,7 +204,7 @@ export default function Sources() {
       <StepsBand />
 
       <div className="grid gap-8 lg:grid-cols-12 lg:items-start">
-        <div className="space-y-10 lg:col-span-7">
+        <div data-tour="source-feeds" className="space-y-10 lg:col-span-7">
           <section aria-labelledby="pipeline-sources" className="space-y-4">
             <SectionHeader
               id="pipeline-sources"
@@ -299,7 +299,7 @@ export default function Sources() {
           </section>
         </div>
 
-        <div className="space-y-6 lg:col-span-5">
+        <div data-tour="source-wizard" className="space-y-6 lg:col-span-5">
           <AddSourceWizard />
           <DataRules onOpenAdvanced={openAdvanced} />
         </div>

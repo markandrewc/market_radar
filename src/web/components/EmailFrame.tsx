@@ -10,17 +10,21 @@ export function EmailFrame({
   to,
   subject,
   date,
+  tourId,
   children,
 }: {
   from: string;
   to?: string;
   subject: string;
   date: string;
+  /** Optional data-tour anchor (guided tour). */
+  tourId?: string;
   children: ReactNode;
 }) {
   return (
     <section
       aria-label="E-mail preview"
+      data-tour={tourId}
       className="overflow-hidden rounded-card border border-line bg-surface shadow-float"
     >
       <div className="flex items-center justify-between gap-3 border-b border-line bg-brand-soft/70 px-4 py-2.5">

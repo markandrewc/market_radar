@@ -271,7 +271,7 @@ export default function Home({ onHelp }: { onHelp: () => void }) {
       </section>
 
       {/* 1. This week's pulse */}
-      <section aria-labelledby="pulse-title" className="space-y-6">
+      <section id="pulse" data-tour="pulse" aria-labelledby="pulse-title" className="space-y-6">
         <SectionHeader
           id="pulse-title"
           kicker="WEEKLY PULSE"
@@ -407,7 +407,7 @@ export default function Home({ onHelp }: { onHelp: () => void }) {
 
       {/* 4 + 5. Hiring volume and skill momentum side by side; one role choice above drives both. */}
       <section aria-label="Hiring volume and skill momentum" className="space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-card border border-line bg-surface px-3 py-2.5 shadow-card sm:px-4">
+        <div data-tour="role-filter" className="flex flex-wrap items-center justify-between gap-3 rounded-card border border-line bg-surface px-3 py-2.5 shadow-card sm:px-4">
           <FilterPills
             label="Choose the role both charts follow"
             options={roleOptions}
@@ -418,7 +418,7 @@ export default function Home({ onHelp }: { onHelp: () => void }) {
         </div>
         <div className="grid gap-6 xl:grid-cols-2 xl:items-start">
         {active && (
-          <section aria-label="Demand for the roles we train for">
+          <section data-tour="demand" aria-label="Demand for the roles we train for">
             <ChartFrame
               kicker="Hiring volume"
               title="Demand for the roles we train for"
@@ -428,6 +428,7 @@ export default function Home({ onHelp }: { onHelp: () => void }) {
                   {selectedRole === ALL_ROLES ? `Busiest role · ${active.role.name}` : `Selected role · ${active.role.name}`}
                 </span>
               }
+              tourId="chart-source"
               numbers={{
                 caption: 'Reported postings per month',
                 head: ['Month', 'Reported postings'],

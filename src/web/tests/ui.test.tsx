@@ -10,7 +10,7 @@ import { mockDigest } from '../mocks/data';
 import { buildDigestPdf } from '../lib/digestPdf';
 import { mockSkills } from '../mocks/data';
 
-beforeEach(() => { localStorage.setItem('mr-tour-seen', '1'); }); // skip the first-visit tour unless a test wants it
+beforeEach(() => { localStorage.setItem('mr-tour-seen', 'v2'); }); // skip the first-visit prompt unless a test wants it
 afterEach(cleanup);
 
 function show(path: string) {
@@ -54,21 +54,62 @@ describe('guidance', () => {
     expect(screen.getByRole('navigation', { name: 'Main' })).toBeTruthy();
   });
 
-  it('opens the tour from the header and walks through every step', async () => {
+  it('starts the quick tour and moves through the spotlight steps', async () => {
     const user = userEvent.setup();
     show('/');
     await user.click(screen.getByRole('button', { name: 'How to use' }));
-    const dialog = await screen.findByRole('dialog');
-    expect(within(dialog).getByText(/Step 1 of 7/)).toBeTruthy();
-    for (let i = 2; i <= 7; i++) { await user.click(within(dialog).getByRole('button', { name: 'Next' })); expect(within(dialog).getByText(new RegExp(`Step ${i} of 7`))).toBeTruthy(); }
-    await user.click(within(dialog).getByRole('button', { name: 'Done' }));
+    await user.click(await screen.findByRole('button', { name: /Start quick tour/ }));
+    expect(await screen.findByText('1 of 5')).toBeTruthy();
+    expect(screen.getByText('A radar, not another report')).toBeTruthy();
+    await user.click(screen.getByRole('button', { name: 'Next' }));
+    expect(await screen.findByText('2 of 5')).toBeTruthy();
+    await user.keyboard('{Escape}');
+    expect(screen.queryByText('2 of 5')).toBeNull();
   });
 
-  it('offers the tour automatically on the first visit only', async () => {
+  it('advances a practice step when the highlighted control is used', async () => {
+    const user = userEvent.setup();
+    show('/');
+    await user.click(screen.getByRole('button', { name: 'How to use' }));
+    await user.click(await screen.findByRole('button', { name: /Start quick tour/ }));
+    for (let step = 1; step <= 3; step += 1) {
+      await user.click(await screen.findByRole('button', { name: 'Next' }));
+    }
+    expect(await screen.findByText('4 of 5')).toBeTruthy();
+    const roles = screen.getByRole('group', { name: 'Choose the role both charts follow' });
+    await user.click(within(roles).getAllByRole('button')[0]);
+    expect(await screen.findByText('5 of 5')).toBeTruthy();
+  });
+
+  it('offers the tour once per version, not as an intrusive overlay', async () => {
+    const user = userEvent.setup();
     localStorage.removeItem('mr-tour-seen');
     show('/');
-    expect(await screen.findByRole('dialog')).toBeTruthy();
-    expect(localStorage.getItem('mr-tour-seen')).toBe('1');
+    const dialog = await screen.findByRole('dialog');
+    expect(within(dialog).getByText('How to use Market Radar')).toBeTruthy();
+    expect(localStorage.getItem('mr-tour-seen')).toBe('v2');
+    await user.click(within(dialog).getByRole('button', { name: 'Not now' }));
+    cleanup();
+    show('/');
+    expect(screen.queryByRole('dialog')).toBeNull();
+  });
+
+  it('keeps the tour overlay accessible', async () => {
+    const user = userEvent.setup();
+    show('/');
+    await user.click(screen.getByRole('button', { name: 'How to use' }));
+    await user.click(await screen.findByRole('button', { name: /Start quick tour/ }));
+    await screen.findByText('1 of 5');
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    await noViolations();
+  });
+
+  it('can start the full tour', async () => {
+    const user = userEvent.setup();
+    show('/');
+    await user.click(screen.getByRole('button', { name: 'How to use' }));
+    await user.click(await screen.findByRole('button', { name: /Full tour/ }));
+    expect(await screen.findByText('1 of 10')).toBeTruthy();
   });
 
   it('explains terms in "Quick answers"', async () => {

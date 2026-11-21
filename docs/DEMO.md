@@ -3,6 +3,7 @@
 The demo must show five things in this order: the market (Level 1), the briefing e-mail (Level 2), the people and
 the employers (Level 3), the policy watch (Level 3), and adding a source without a developer (Level 4).
 Everything on screen names its source — point at the source line once and let the judges see it everywhere.
+The header also opens a guided tour (Quick: 5 steps, Full: 10) that spotlights the real elements.
 The header now carries the four challenge levels (Market & skills · Weekly briefing · People, employers & policy ·
 Data sources), so the demo can follow the levels instead of jumping between pages.
 

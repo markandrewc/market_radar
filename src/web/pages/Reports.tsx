@@ -373,6 +373,7 @@ export default function Reports() {
             </div>
 
             <EmailFrame
+              tourId="report-preview"
               from="Market Radar"
               to={email.trim() || 'you@example.com'}
               subject={digest?.subject ?? 'Market Radar: your weekly briefing'}

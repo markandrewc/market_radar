@@ -17,7 +17,8 @@ import { HelpDialog } from './components/HelpDialog';
 import { Button } from './components/ui/button';
 import { formatDate } from './components/SourceInfo';
 import { useDemand, useMocks, useSources } from './api';
-import { useLocalFlag } from './hooks';
+import { TourProvider, markTourOffered, shouldOfferTour, useTour } from './tour/TourContext';
+import { TourOverlay } from './tour/TourOverlay';
 import { cn } from '@/lib/utils';
 
 const DAY_MS = 86_400_000;
@@ -50,6 +51,7 @@ function SyncChip() {
   return (
     <Link
       to="/sources"
+      data-tour="sync"
       className="hidden min-h-9 items-center gap-1.5 rounded-full border border-line bg-surface px-2.5 py-1 text-[11px] font-medium text-ink-soft transition-colors hover:border-line-strong hover:text-ink sm:inline-flex"
     >
       <span
@@ -76,24 +78,30 @@ function SyncChip() {
   );
 }
 
-export default function App() {
+function AppShell() {
   const demand = useDemand();
   const { pathname } = useLocation();
   const main = useRef<HTMLElement>(null);
   const first = useRef(true);
   const [menu, setMenu] = useState(false);
   const [help, setHelp] = useState(false);
-  const [seen, setSeen] = useLocalFlag('mr-tour-seen');
+  const tour = useTour();
   // Opening the tour from the mobile sheet closes the sheet first.
   const openHelp = () => { setMenu(false); setHelp(true); };
+  const startTour = (mode: 'quick' | 'full') => { setHelp(false); setMenu(false); tour.start(mode); };
 
   // Banner while sample or estimated numbers are on screen, so nobody mistakes them for exact counts.
   const isSample = useMocks || Boolean(demand.data?.some((d) => d.source.id === 'sample'));
   const isEstimate = Boolean(demand.data?.some((d) => d.source.name.startsWith('Estimate')));
   const banner = isSample ? 'Demo data: these numbers are samples, not real' : isEstimate ? 'Estimated figures based on public 2026 reports, not exact counts. See the source under each number.' : null;
 
-  // First visit: offer the guided tour once.
-  useEffect(() => { if (!seen) { setHelp(true); setSeen(true); } }, [seen, setSeen]);
+  // First visit: offer the tour once per tour version (not as an intrusive overlay).
+  useEffect(() => {
+    if (shouldOfferTour()) {
+      setHelp(true);
+      markTourOffered();
+    }
+  }, []);
 
   // After moving to another page, send focus to the content (keyboard and screen-reader users) and close the menu.
   useEffect(() => {
@@ -139,6 +147,7 @@ export default function App() {
             </Button>
             <NavLink
               to="/ask"
+              data-tour="ask"
               className={({ isActive }) =>
                 cn(
                   'inline-flex items-center gap-1.5 rounded-control bg-brand-accent px-3.5 py-2 text-sm font-semibold text-white shadow-card transition-colors hover:bg-accent-deep',
@@ -174,7 +183,7 @@ export default function App() {
           )}
         >
           <div className="mx-auto flex max-w-[1180px] flex-col gap-2 px-0 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-6 sm:py-1.5">
-            <LevelTabs className="min-w-0 flex-1" />
+            <div data-tour="levels" className="min-w-0 flex-1"><LevelTabs /></div>
             <nav
               aria-label="Main"
               className="flex flex-col gap-1 border-t border-line pt-3 sm:flex-row sm:items-center sm:gap-1 sm:border-0 sm:pt-0"
@@ -186,6 +195,7 @@ export default function App() {
                 variant="ghost"
                 size="sm"
                 onClick={openHelp}
+                data-tour="tour-button"
                 className="justify-start rounded-control sm:justify-center"
               >
                 Tour
@@ -241,7 +251,21 @@ export default function App() {
           </nav>
         </div>
       </footer>
-      <HelpDialog open={help} onClose={() => setHelp(false)} />
+      <HelpDialog
+        open={help}
+        onClose={() => setHelp(false)}
+        onStartQuick={() => startTour('quick')}
+        onStartFull={() => startTour('full')}
+      />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <TourProvider>
+      <AppShell />
+      <TourOverlay />
+    </TourProvider>
   );
 }

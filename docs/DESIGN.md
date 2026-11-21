@@ -114,6 +114,22 @@ Crimson stay; Plus Jakarta Sans was added for display headlines.
 - Charts never start without an explanation panel and a source line.
 - Nothing may rely on colour alone; every delta has a sign and text.
 
+## Guided tour
+
+The tour is a spotlight over the real interface (`src/web/tour/`), not a text dialog. `TourProvider` holds the
+state, `TourOverlay` dims the page except the current target and positions a small card next to it.
+
+- Steps live in `tour/steps.ts`: Quick (5) covers the levels, pulse, the role filter and a source; Full (10) adds
+  the Level 3 hub, the briefing preview and the data-source wizard.
+- Targets are marked with `data-tour="…"` on the real elements (levels, sync chip, pulse, role filter, chart
+  source footer, context cards, detail page header, report preview, feeds, wizard). No CSS-selector guessing.
+- Two steps are practical: the role filter and a Level 3 card advance when the visitor actually clicks; "Skip
+  this step" still moves on.
+- Keyboard: Esc ends the tour, arrow keys move between steps; the card takes focus on each step and focus returns
+  to the opener. The overlay is deliberately not modal so practice targets stay clickable.
+- The first-visit prompt is offered once per `TOUR_VERSION` (`mr-tour-seen`); the HelpDialog is the chooser.
+- If a target is missing (empty data, page not ready), the card shows centred with a short note instead of failing.
+
 ## Accessibility
 
 - Text contrast ≥ 4.5:1 (crimson `#a8324e` on white ≈ 5.7:1; on paper similar). Kickers only at ≥ 11 px / 650.
