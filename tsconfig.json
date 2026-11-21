@@ -1,0 +1,7 @@
+{
+  "files": [],
+  "references": [{ "path": "./src/web" }],
+  "compilerOptions": {
+    "paths": { "@/*": ["./src/web/*"] }
+  }
+}
