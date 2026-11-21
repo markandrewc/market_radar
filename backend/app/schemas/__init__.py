@@ -5,7 +5,6 @@ from .connectors import (ConnectorConfigFile, ConnectorConfigUpdate, ConnectorDe
 from .market_item import MarketItem
 from .employers import Employer, EmployersResponse
 from .market import DemandResponse, ForecastPoint, SkillRow, SkillsResponse, Trend
-from .participants import TargetGroup, TargetGroupResponse
 from .policy import PolicyItem, PolicyResponse
 from .normalize import NormalizedObservation, NormalizeResult
 from .sources import SourceStatus
@@ -15,5 +14,5 @@ __all__ = [
     "ConnectorConfigFile", "ConnectorConfigUpdate", "ConnectorDefaults", "ConnectorList", "ConnectorSource", "MarketItem", "ReloadResult", "SyncResult", "SyncSummary",
     "DemandResponse", "Employer", "ForecastPoint", "Trend", "EmployersResponse", "NormalizedObservation", "NormalizeResult",
     "Point", "PolicyItem", "PolicyResponse", "Role", "SkillRow", "SkillsResponse", "SourceRef", "SourceStatus",
-    "SubscribeBody", "SubscribeResult", "TargetGroup", "TargetGroupResponse",
+    "SubscribeBody", "SubscribeResult", 
 ]
