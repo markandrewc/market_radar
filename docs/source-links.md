@@ -2,6 +2,8 @@
 
 Die 17 unterschiedlichen Adressen aus Teil 1 und Teil 2 sind unten im ursprünglichen Wortlaut erfasst. Beide Mails nannten den BFS-Katalog. Der Abruf am 21. November 2026 speicherte 22 erfolgreiche öffentliche Antworten auf dem Acer, darunter CSV-Dateien, JSON, Webseiten und die Adzuna-Spezifikation. Die Abfragen mit Suchparametern liefern die jeweils beschriebene Auswahl.
 
+Die vier Fotos und die Hinweise zu den Austauschformaten stehen beim Connector-Entwurf. [Connector-Fotos](connector-notes/README.md)
+
 ## Adressen und Abruf
 
 ### BFS-PxWeb-Katalog · Teil 1 und 2
