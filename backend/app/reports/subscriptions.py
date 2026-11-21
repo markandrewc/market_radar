@@ -181,13 +181,13 @@ def check_rate_limits(conn: Conn, email: str, now: datetime | None = None) -> No
 # --- sending ------------------------------------------------------------------
 
 def _store_send(conn: Conn, subscription: dict, now: datetime, status: str, subject: str, digest: Digest,
-                provider_id: str | None, error: str | None) -> None:
+                provider_id: str | None, error: str | None, provider: str) -> None:
     conn.execute(
         """INSERT INTO report_sends
-               (subscription_id, email, sent_at, status, subject, digest, sources, provider_id, error)
-           VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+               (subscription_id, email, sent_at, status, subject, digest, sources, provider, provider_id, error)
+           VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
         (subscription["id"], subscription["email"], now, status, subject, digest.text,
-         Jsonb([source.model_dump() for source in digest.sources]), provider_id, error))
+         Jsonb([source.model_dump() for source in digest.sources]), provider, provider_id, error))
 
 
 def send_briefing(conn: Conn, subscription: dict, now: datetime | None = None) -> SendAttempt:
@@ -222,13 +222,15 @@ def send_briefing(conn: Conn, subscription: dict, now: datetime | None = None) -
     else:
         status = "dry_run"  # nothing delivered; recorded so the cron run is still auditable
 
-    _store_send(conn, subscription, now, status, subject, digest, provider_id, error)
+    _store_send(conn, subscription, now, status, subject, digest, provider_id, error,
+                mailer.provider_name())
     if status == "error":
         conn.execute("UPDATE report_subscriptions SET last_error = %s WHERE id = %s", (error, subscription["id"]))
     else:
         conn.execute("UPDATE report_subscriptions SET last_sent_at = %s, last_error = NULL WHERE id = %s",
                      (now, subscription["id"]))
-    detail = "Dry run: RESEND_API_KEY is not set, nothing was delivered." if status == "dry_run" else error
+    detail = ("Dry run: no mail provider is configured (set BREVO_API_KEY, RESEND_API_KEY or SMTP_*), "
+              "nothing was delivered.") if status == "dry_run" else error
     return SendAttempt(status=status, subject=subject, digest=digest, provider_id=provider_id, error=error,
                        detail=detail)
 

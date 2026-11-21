@@ -1,7 +1,7 @@
 """Level 2: e-mailed briefings (docs/api.md, "Briefings (Level 2)").
 
     digest        build_digest(conn, DigestRequest, now=None) -> Digest
-    mailer        render_html(digest, unsubscribe_url) / send_email(...) via Resend
+    mailer        render_html(digest, unsubscribe_url) / send_email(...) via Brevo, SMTP or Resend
     subscriptions upsert, due dates, rate limits, send_briefing, run
 
 The router (app/routers/reports.py) and the cron CLI (`python -m app.reports`) are

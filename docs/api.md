@@ -345,7 +345,7 @@ Public, rate-limited. Body:
   minute, five per day, and `REPORTS_DAILY_CAP` (default 100) per day for the whole deployment → `429`.
 - Answer `{ok, sent, error?, nextRun, unsubscribeUrl}`. If the provider rejects the mail, the subscription is
   still stored and the answer is `200` with `sent: false` and the provider message in `error`.
-- Without `RESEND_API_KEY` the send is recorded as `dry_run`; nothing is delivered.
+- Without a configured mail provider (`BREVO_API_KEY`, `RESEND_API_KEY` or `SMTP_*`) the send is recorded as `dry_run`; nothing is delivered.
 
 ### `POST /api/reports/run`
 

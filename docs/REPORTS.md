@@ -37,7 +37,7 @@ available, `empty: true` and the text says why and links to `/sources`; the brie
 
 ```
 POST /api/reports/preview  ─┐
-python -m app.reports ...   ├─▶ app/reports/digest.py  ──▶ app/reports/mailer.py ──▶ Resend
+python -m app.reports ...   ├─▶ app/reports/digest.py  ──▶ app/reports/mailer.py ──▶ provider
 POST /api/subscriptions    ─┤        │                                              │
 POST /api/reports/run      ─┘        └──────────────▶ report_sends (audit row) ◀────┘
 ```
@@ -45,8 +45,10 @@ POST /api/reports/run      ─┘        └────────────
 - `app/services/market_view.py`: demand and skills calculations, shared with `GET /api/demand` and `/api/skills`,
   so the briefing and the dashboard can never disagree.
 - `app/reports/digest.py`: builds the `Digest` (subject, sections, bullets with sources, plain text).
-- `app/reports/mailer.py`: sends through the Resend HTTP API (`POST https://api.resend.com/emails`) with stdlib
-  `urllib`; no extra dependency. Without `RESEND_API_KEY` the send is a recorded dry run.
+- `app/reports/mailer.py`: sends through one of three providers with stdlib only — **Brevo** transactional API
+  (`POST https://api.brevo.com/v3/smtp/email`, header `api-key`), **SMTP** (any relay, e.g.
+  `smtp-relay.brevo.com:587`) or **Resend** (`POST https://api.resend.com/emails`). Without credentials the send
+  is a recorded dry run. The provider actually used is stored in `report_sends.provider`.
 - `app/reports/subscriptions.py`: storage, rate limits, due dates, the send itself.
 - `app/reports/__main__.py`: the cron entry point.
 
@@ -56,7 +58,7 @@ POST /api/reports/run      ─┘        └────────────
 (`weekly` | `monthly`). The address is lower-cased and upserted, so subscribing again changes topics instead of
 creating a duplicate. The first briefing is sent immediately, which is the moment the subscriber sees the format.
 
-Limits (protect the Resend quota, a public endpoint):
+Limits (protect the provider quota, a public endpoint):
 
 | Limit | Value |
 |---|---|
@@ -65,8 +67,9 @@ Limits (protect the Resend quota, a public endpoint):
 | whole deployment per day | `REPORTS_DAILY_CAP` (default 100) |
 | behaviour when exceeded | `429` with a plain message |
 
-If Resend rejects the mail, the subscription is kept, `sent: false` and the provider message are returned, and the
-error is stored — the subscriber can fix the address or the operator can fix the domain.
+If the provider rejects the mail, the subscription is kept, `sent: false` and the provider message are returned,
+and the error is stored — the subscriber can fix the address or the operator can fix the sender/domain. The
+Reports page shows the message verbatim (amber state), so a Brevo sender problem is visible without server logs.
 
 ## When it sends
 
@@ -101,14 +104,41 @@ on; the code rejects unknown ids and falls back to the template on any error. Ci
 a hallucinated URL cannot reach an inbox. Without the three variables the briefing is fully deterministic —
 this is the default, and it is what the demo runs on.
 
-## Resend setup (5 minutes)
+## Choosing the provider
 
-1. Create an API key at resend.com and set `RESEND_API_KEY`.
-2. Set `REPORT_FROM` to a verified sender. **Without a verified domain Resend only delivers to the account owner's
-   address** — for a hackathon demo either verify a domain or use that address as the demo recipient.
-3. Set `PUBLIC_BASE_URL` (e.g. `https://radar.example.ch`) so unsubscribe and dashboard links are absolute.
-4. Optional: `REPORT_REPLY_TO`.
-5. Test: `POST /api/reports/preview` (no mail), then subscribe yourself and check the inbox and `report_sends`.
+One provider per deployment. `MAIL_PROVIDER` selects it explicitly; otherwise the first configured one wins:
+**brevo** (`BREVO_API_KEY`) → **resend** (`RESEND_API_KEY`) → **smtp** (`SMTP_HOST`). With none of them every
+attempt is a `dry_run` in `report_sends`.
+
+### Brevo (recommended)
+
+1. In Brevo: **Senders & IP → Senders** — add and verify the sender address you want to send from.
+2. **Settings → API keys** — create a key and set `BREVO_API_KEY` (starts with `xkeysib-`).
+3. Set `REPORT_FROM` to that verified address, e.g. `Market Radar <radar@your-domain.ch>`. The Resend demo
+   default (`onboarding@resend.dev`) is rejected by Brevo with a clear error: set a real sender.
+4. Set `PUBLIC_BASE_URL` so unsubscribe and dashboard links are absolute.
+5. Optional: `REPORT_REPLY_TO`. If a test still fails, `report_sends.error` contains Brevo's own message
+   (e.g. `sender not valid`, `unauthorized`); the Reports page shows it too.
+
+Brevo's API is called with `sender {name,email}`, `to`, `subject`, `htmlContent`, `textContent`, the
+`List-Unsubscribe` headers and `replyTo`. The provider returns a `messageId`, stored as `provider_id`.
+
+### Brevo SMTP relay (or any SMTP)
+
+Set `SMTP_HOST=smtp-relay.brevo.com`, `SMTP_PORT=587`, `SMTP_USER` and `SMTP_PASSWORD` (Brevo: SMTP & API →
+SMTP keys), `SMTP_STARTTLS=1` (default). `MAIL_PROVIDER=smtp` is optional — a host is enough for auto-detection.
+`REPORT_FROM` must still be a verified sender.
+
+### Resend
+
+`RESEND_API_KEY` + `REPORT_FROM` from a verified domain. Without a verified domain Resend only delivers to the
+account owner's address — for a hackathon demo verify a domain or use that address as the recipient.
+
+### Checking a send
+
+`POST /api/reports/preview` renders the text without sending. Subscribing yourself sends the first briefing;
+then look at `GET /api/sources` for feed health and `report_sends` (status, provider, provider_id, error) for the
+delivery result.
 
 ## Local check without a provider
 

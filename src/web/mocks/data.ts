@@ -107,7 +107,7 @@ export const mockDigest = (request: DigestRequest = { roleIds: [], includePolicy
 export const mockSubscribeResult = (_body: SubscribeBody): SubscribeResult => ({
   ok: true,
   sent: false,
-  error: 'Demo mode: no e-mail is sent. Build with VITE_USE_MOCKS=0 and set RESEND_API_KEY.',
+  error: 'Demo mode: no e-mail is sent. Build with VITE_USE_MOCKS=0 and configure a mail provider (BREVO_API_KEY).',
   nextRun: null,
   unsubscribeUrl: null,
 });

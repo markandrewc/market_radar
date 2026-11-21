@@ -16,8 +16,8 @@ from ..schemas import Digest, DigestRequest, RunRequest, RunResult, SubscribeBod
 
 router = APIRouter()
 
-_DRY_RUN = ("RESEND_API_KEY is not set on the server: the briefing was recorded as a dry run "
-            "and nothing was delivered.")
+_DRY_RUN = ("No mail provider is configured on the server (set BREVO_API_KEY, RESEND_API_KEY or SMTP_*): "
+            "the briefing was recorded as a dry run and nothing was delivered.")
 
 _UNSUBSCRIBED_PAGE = """<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><title>Unsubscribed · Market Radar</title></head>
@@ -52,7 +52,7 @@ def subscribe(body: SubscribeBody, conn: Conn = Depends(get_conn)) -> SubscribeR
 
     The address is lower-cased and upserted. The subscription is kept even when the
     provider rejects the mail: the answer is 200 with `sent: false` and the provider
-    message in `error`; without RESEND_API_KEY the attempt is a dry run.
+    message in `error`; without a configured mail provider the attempt is a dry run.
     """
     try:
         # Check the public rate limits before storing anything: a 429 must not create a hidden subscription.

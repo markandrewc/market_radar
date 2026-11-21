@@ -11,7 +11,7 @@ Data sources), so the demo can follow the levels instead of jumping between page
 
 1. **Build the frontend against the API** (the demo build never uses mock data):
    `VITE_USE_MOCKS=0 npm run build`
-2. **Environment**: `DATABASE_URL`, `INGEST_TOKEN`, `RESEND_API_KEY`, `REPORT_FROM`, `PUBLIC_BASE_URL`
+2. **Environment**: `DATABASE_URL`, `INGEST_TOKEN`, `BREVO_API_KEY` (or `RESEND_API_KEY`/`SMTP_*`), `REPORT_FROM`, `PUBLIC_BASE_URL`
    (see [DEPLOY.md](../DEPLOY.md) and [REPORTS.md](REPORTS.md)).
 3. **Data in place**: `npm run pipeline` (ITBoard + BFS + SEM tables) and
    `curl -X POST "$HOST/api/connectors/sync" -H "Authorization: Bearer $INGEST_TOKEN"`
@@ -68,7 +68,7 @@ The source appears in the connector table with its last sync time; `/items?categ
 
 | Problem | What to do on stage |
 |---|---|
-| Resend rejects the mail (domain unverified) | show the amber "saved, but not sent" state and the preview — the flow and the citations are visible; mention the provider message is shown verbatim |
+| Brevo/Resend rejects the mail (sender or domain not verified) | show the amber "saved, but not sent" state and the preview — the flow and the citations are visible; the provider message is shown verbatim |
 | No Adzuna key | `/roles/<id>` shows "No employer data yet" with the exact fix; say the source is configured but the key is not in this environment |
 | A feed is down | `/sources` shows the source as stale with the error; the stored records stay and are still cited |
 | Live YAML edit fails | the `422` message is displayed and the previous configuration stays active — that is the safety property, not a bug |

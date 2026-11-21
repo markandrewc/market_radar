@@ -1,76 +1,182 @@
-"""Resend delivery (stdlib only) and the HTML version of a digest.
+"""Mail delivery (stdlib only) and the HTML version of a digest.
 
-`send_email` POSTs to https://api.resend.com/emails. Without RESEND_API_KEY it does
-not call anything (`configured()` is the dry-run signal); the subscription layer then
-records the send as `dry_run`. A non-2xx answer raises `MailerError` carrying the
-provider's message, so the caller can store it verbatim.
+Providers: **brevo** (transactional HTTP API), **smtp** (any relay, including
+Brevo's SMTP relay) and **resend**. `MAIL_PROVIDER` selects one explicitly;
+without it the first configured provider wins (brevo → resend → smtp). With no
+credentials at all `configured()` is False and the subscription layer records a
+dry run instead of calling anything.
 
-`render_html` escapes every source-controlled string (bullet text, source names,
-URLs, headings, notes) with html.escape, because market_items summaries and feed
-titles are external data.
+A provider error raises `MailerError` carrying the provider's own message, so the
+Reports page and `report_sends` can show exactly why a mail was rejected.
+
+The HTML renderer escapes every source-controlled string (bullet text, source
+names, URLs, headings, notes) because market_items summaries and feed titles are
+external data.
 """
 from __future__ import annotations
 
 import html as html_lib
 import json
+import smtplib
+import ssl
 import urllib.error
 import urllib.request
+from email.message import EmailMessage
+from email.utils import parseaddr
 
 from .. import config
 from ..schemas import Digest, DigestSection, SourceRef
 
 RESEND_URL = "https://api.resend.com/emails"
+BREVO_URL = "https://api.brevo.com/v3/smtp/email"
 TIMEOUT = 15
-PROVIDER = "resend"
+PROVIDERS = ("brevo", "resend", "smtp")
 
 
 class MailerError(Exception):
     """The provider refused the mail or could not be reached. The message is safe to show/store."""
 
 
+def _ready(provider: str) -> bool:
+    if provider == "brevo":
+        return bool(config.BREVO_API_KEY)
+    if provider == "resend":
+        return bool(config.RESEND_API_KEY)
+    if provider == "smtp":
+        return bool(config.SMTP_HOST)
+    return False
+
+
+def provider() -> str | None:
+    """The mail provider in use: MAIL_PROVIDER when set, else the first configured one."""
+    explicit = (config.MAIL_PROVIDER or "").strip().lower()
+    if explicit in PROVIDERS:
+        return explicit if _ready(explicit) else None
+    for candidate in PROVIDERS:
+        if _ready(candidate):
+            return candidate
+    return None
+
+
+def provider_name() -> str:
+    return provider() or "none"
+
+
 def configured() -> bool:
-    """True when a provider key exists. False = record the send as a dry run, deliver nothing."""
-    return bool(config.RESEND_API_KEY)
+    """True when a provider is ready. False = record the send as a dry run, deliver nothing."""
+    return provider() is not None
 
 
-def send_email(to: str, subject: str, text: str, html: str, unsubscribe_url: str) -> str | None:
-    """Send one briefing. Returns the provider message id (or None); raises MailerError on failure."""
-    if not configured():  # dry run: no network call at all
-        return None
-    payload = {
-        "from": config.REPORT_FROM,
-        "to": [to],
-        "subject": subject,
-        "text": text,
-        "html": html,
-        "headers": {
-            "List-Unsubscribe": f"<{unsubscribe_url}>",
-            "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
-        },
-    }
-    if config.REPORT_REPLY_TO:
-        payload["reply_to"] = [config.REPORT_REPLY_TO]
+def _sender() -> tuple[str, str]:
+    name, email = parseaddr(config.REPORT_FROM or "")
+    if not email or "@" not in email:
+        raise MailerError(
+            'REPORT_FROM must name a sender address, e.g. "Market Radar <radar@example.org>".')
+    return name.strip(), email.strip()
+
+
+def _post_json(url: str, payload: dict, headers: dict[str, str], label: str) -> dict:
     request = urllib.request.Request(
-        RESEND_URL,
+        url,
         data=json.dumps(payload).encode("utf-8"),
-        headers={"Authorization": f"Bearer {config.RESEND_API_KEY}", "Content-Type": "application/json"},
+        headers={"Content-Type": "application/json", **headers},
         method="POST")
     try:
         with urllib.request.urlopen(request, timeout=TIMEOUT) as response:  # noqa: S310 - fixed provider URL
             body = response.read()
     except urllib.error.HTTPError as exc:
         message = _provider_message(exc.read(), str(exc))
-        raise MailerError(f"{PROVIDER} rejected the mail ({exc.code}): {message}") from exc
+        raise MailerError(f"{label} rejected the mail ({exc.code}): {message}") from exc
     except urllib.error.URLError as exc:
-        raise MailerError(f"Could not reach {PROVIDER}: {exc.reason}") from exc
+        raise MailerError(f"Could not reach {label}: {exc.reason}") from exc
     except TimeoutError as exc:
-        raise MailerError(f"{PROVIDER} did not answer within {TIMEOUT} s.") from exc
+        raise MailerError(f"{label} did not answer within {TIMEOUT} s.") from exc
     try:
         data = json.loads(body)
     except (TypeError, ValueError):
+        return {}
+    return data if isinstance(data, dict) else {}
+
+
+def _headers(unsubscribe_url: str) -> dict[str, str]:
+    return {
+        "List-Unsubscribe": f"<{unsubscribe_url}>",
+        "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+    }
+
+
+def send_email(to: str, subject: str, text: str, html: str, unsubscribe_url: str) -> str | None:
+    """Send one briefing. Returns the provider message id (or None); raises MailerError on failure."""
+    active = provider()
+    if active is None:  # dry run: no network call at all
         return None
-    provider_id = data.get("id") if isinstance(data, dict) else None
+    if active == "brevo":
+        return _send_brevo(to=to, subject=subject, text=text, html=html, unsubscribe_url=unsubscribe_url)
+    if active == "smtp":
+        return _send_smtp(to=to, subject=subject, text=text, html=html, unsubscribe_url=unsubscribe_url)
+    return _send_resend(to=to, subject=subject, text=text, html=html, unsubscribe_url=unsubscribe_url)
+
+
+def _send_resend(*, to: str, subject: str, text: str, html: str, unsubscribe_url: str) -> str | None:
+    payload = {
+        "from": config.REPORT_FROM,
+        "to": [to],
+        "subject": subject,
+        "text": text,
+        "html": html,
+        "headers": _headers(unsubscribe_url),
+    }
+    if config.REPORT_REPLY_TO:
+        payload["reply_to"] = [config.REPORT_REPLY_TO]
+    data = _post_json(RESEND_URL, payload, {"Authorization": f"Bearer {config.RESEND_API_KEY}"}, "resend")
+    provider_id = data.get("id")
     return str(provider_id) if provider_id else None
+
+
+def _send_brevo(*, to: str, subject: str, text: str, html: str, unsubscribe_url: str) -> str | None:
+    name, email = _sender()
+    if email.endswith("@resend.dev"):
+        raise MailerError(
+            "REPORT_FROM still points at the Resend demo sender. Brevo only sends from a verified "
+            "sender address in your Brevo account — set REPORT_FROM to it.")
+    payload = {
+        "sender": {"email": email, **({"name": name} if name else {})},
+        "to": [{"email": to}],
+        "subject": subject,
+        "htmlContent": html,
+        "textContent": text,
+        "headers": _headers(unsubscribe_url),
+    }
+    if config.REPORT_REPLY_TO:
+        payload["replyTo"] = {"email": config.REPORT_REPLY_TO}
+    data = _post_json(BREVO_URL, payload,
+                      {"api-key": config.BREVO_API_KEY or "", "Accept": "application/json"}, "brevo")
+    provider_id = data.get("messageId") or data.get("messageIds")
+    return str(provider_id) if provider_id else None
+
+
+def _send_smtp(*, to: str, subject: str, text: str, html: str, unsubscribe_url: str) -> str | None:
+    _sender()  # validate REPORT_FROM, even though the header may carry a display name
+    message = EmailMessage()
+    message["From"] = config.REPORT_FROM
+    message["To"] = to
+    message["Subject"] = subject
+    for key, value in _headers(unsubscribe_url).items():
+        message[key] = value
+    message.set_content(text)
+    message.add_alternative(html, subtype="html")
+    try:
+        with smtplib.SMTP(config.SMTP_HOST or "", config.SMTP_PORT, timeout=TIMEOUT) as smtp:
+            smtp.ehlo()
+            if config.SMTP_STARTTLS:
+                smtp.starttls(context=ssl.create_default_context())
+                smtp.ehlo()
+            if config.SMTP_USER:
+                smtp.login(config.SMTP_USER, config.SMTP_PASSWORD or "")
+            smtp.send_message(message)
+    except (smtplib.SMTPException, OSError) as exc:
+        raise MailerError(f"smtp could not send the mail: {exc}") from exc
+    return None
 
 
 def _provider_message(body: bytes, fallback: str) -> str:
@@ -79,7 +185,7 @@ def _provider_message(body: bytes, fallback: str) -> str:
     except (TypeError, ValueError):
         return fallback
     if isinstance(data, dict):
-        for key in ("message", "error", "name"):
+        for key in ("message", "error", "name", "code"):
             value = data.get(key)
             if isinstance(value, str) and value:
                 return value

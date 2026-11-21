@@ -1,4 +1,4 @@
-"""Level 2: digest, subscriptions, Resend mailer, cron run and unsubscribe (docs/api.md).
+"""Level 2: digest, subscriptions, mail providers (Brevo/SMTP/Resend), cron run and unsubscribe.
 
 Runs against the real Postgres from TEST_DATABASE_URL; the provider is always
 monkeypatched, so no network call leaves the test suite.
@@ -30,7 +30,14 @@ ISO_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 @pytest.fixture(autouse=True)
 def report_settings(monkeypatch):
     """Every test starts without a provider, without an LLM and with relative links."""
+    monkeypatch.setattr(config, "MAIL_PROVIDER", "")
     monkeypatch.setattr(config, "RESEND_API_KEY", None)
+    monkeypatch.setattr(config, "BREVO_API_KEY", None)
+    monkeypatch.setattr(config, "SMTP_HOST", None)
+    monkeypatch.setattr(config, "SMTP_PORT", 587)
+    monkeypatch.setattr(config, "SMTP_USER", None)
+    monkeypatch.setattr(config, "SMTP_PASSWORD", None)
+    monkeypatch.setattr(config, "SMTP_STARTTLS", True)
     monkeypatch.setattr(config, "REPORT_FROM", "Market Radar <onboarding@resend.dev>")
     monkeypatch.setattr(config, "REPORT_REPLY_TO", None)
     monkeypatch.setattr(config, "PUBLIC_BASE_URL", "")
@@ -283,6 +290,105 @@ def test_send_email_posts_the_resend_payload(monkeypatch):
     assert captured["headers"]["authorization"] == "Bearer re_key"
 
 
+def test_send_email_posts_the_brevo_payload(monkeypatch):
+    monkeypatch.setattr(config, "BREVO_API_KEY", "xkeysib-brevo")
+    monkeypatch.setattr(config, "REPORT_FROM", "Market Radar <radar@example.org>")
+    monkeypatch.setattr(config, "REPORT_REPLY_TO", "reply@example.org")
+    captured = {}
+
+    def fake_urlopen(request, timeout):
+        captured["url"] = request.full_url
+        captured["body"] = json.loads(request.data.decode())
+        captured["timeout"] = timeout
+        captured["headers"] = {key.lower(): value for key, value in request.header_items()}
+        return FakeResponse(b'{"messageId": "brevo_1"}')
+
+    monkeypatch.setattr(mailer.urllib.request, "urlopen", fake_urlopen)
+    provider_id = mailer.send_email("team@x.ch", "Subject", "text body", "<p>html</p>", "https://x.ch/u?t=1")
+
+    assert provider_id == "brevo_1"
+    assert captured["url"] == "https://api.brevo.com/v3/smtp/email" and captured["timeout"] == 15
+    body = captured["body"]
+    assert body["sender"] == {"email": "radar@example.org", "name": "Market Radar"}
+    assert body["to"] == [{"email": "team@x.ch"}]
+    assert body["subject"] == "Subject" and body["textContent"] == "text body" and body["htmlContent"] == "<p>html</p>"
+    assert body["headers"]["List-Unsubscribe"] == "<https://x.ch/u?t=1>"
+    assert body["replyTo"] == {"email": "reply@example.org"}
+    assert captured["headers"]["api-key"] == "xkeysib-brevo"
+
+
+def test_brevo_refuses_the_resend_demo_sender(monkeypatch):
+    monkeypatch.setattr(config, "BREVO_API_KEY", "xkeysib-brevo")
+    with pytest.raises(mailer.MailerError, match="verified"):
+        mailer.send_email("team@x.ch", "Subject", "text", "<p>html</p>", "/u")
+
+
+def test_brevo_error_message_is_surfaced(monkeypatch):
+    monkeypatch.setattr(config, "BREVO_API_KEY", "xkeysib-brevo")
+    monkeypatch.setattr(config, "REPORT_FROM", "Market Radar <radar@example.org>")
+
+    def failing(*args, **kwargs):
+        raise urllib.error.HTTPError("https://api.brevo.com/v3/smtp/email", 400, "Bad Request", {},
+                                     io.BytesIO(b'{"code":"invalid_parameter","message":"sender not valid"}'))
+
+    monkeypatch.setattr(mailer.urllib.request, "urlopen", failing)
+    with pytest.raises(mailer.MailerError) as error:
+        mailer.send_email("team@x.ch", "Subject", "text", "<p>html</p>", "/u")
+    assert "sender not valid" in str(error.value) and "400" in str(error.value)
+
+
+def test_provider_selection_prefers_brevo_then_explicit_choice(monkeypatch):
+    assert mailer.provider() is None and mailer.configured() is False
+    monkeypatch.setattr(config, "BREVO_API_KEY", "xkeysib-brevo")
+    assert mailer.provider() == "brevo" and mailer.provider_name() == "brevo"
+    monkeypatch.setattr(config, "RESEND_API_KEY", "re_key")
+    assert mailer.provider() == "brevo"  # auto: Brevo before Resend
+    monkeypatch.setattr(config, "MAIL_PROVIDER", "resend")
+    assert mailer.provider() == "resend"
+    monkeypatch.setattr(config, "RESEND_API_KEY", None)
+    assert mailer.provider() is None  # explicit but not configured
+
+
+def test_smtp_provider_sends_an_html_alternative(monkeypatch):
+    monkeypatch.setattr(config, "SMTP_HOST", "smtp-relay.brevo.com")
+    monkeypatch.setattr(config, "SMTP_USER", "user@example.org")
+    monkeypatch.setattr(config, "SMTP_PASSWORD", "smtp-key")
+    monkeypatch.setattr(config, "REPORT_FROM", "Market Radar <radar@example.org>")
+    captured = {}
+
+    class FakeSmtp:
+        def __init__(self, host, port, timeout):
+            captured["server"] = (host, port, timeout)
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *exc):
+            return False
+
+        def ehlo(self):
+            return None
+
+        def starttls(self, context):
+            captured["starttls"] = True
+
+        def login(self, user, password):
+            captured["login"] = (user, password)
+
+        def send_message(self, message):
+            captured["message"] = message
+
+    monkeypatch.setattr(mailer.smtplib, "SMTP", FakeSmtp)
+    assert mailer.send_email("team@x.ch", "Subject", "text body", "<p>html</p>", "https://x.ch/u") is None
+    assert captured["server"] == ("smtp-relay.brevo.com", 587, 15)
+    assert captured["starttls"] is True and captured["login"] == ("user@example.org", "smtp-key")
+    message = captured["message"]
+    assert message["To"] == "team@x.ch" and message["Subject"] == "Subject"
+    assert message["List-Unsubscribe"] == "<https://x.ch/u>"
+    assert "text body" in message.get_body(("plain",)).get_content()
+    assert "<p>html</p>" in message.get_body(("html",)).get_content()
+
+
 def test_send_email_dry_run_without_key_and_provider_error(monkeypatch):
     def no_call(*args, **kwargs):
         raise AssertionError("no network call without RESEND_API_KEY")
@@ -301,6 +407,24 @@ def test_send_email_dry_run_without_key_and_provider_error(monkeypatch):
     with pytest.raises(mailer.MailerError) as error:
         mailer.send_email("team@x.ch", "Subject", "text", "<p>html</p>", "/u")
     assert "domain not verified" in str(error.value)
+
+
+def test_subscribe_with_brevo_records_the_provider(client, monkeypatch):
+    seed()
+    monkeypatch.setattr(config, "BREVO_API_KEY", "xkeysib-brevo")
+    monkeypatch.setattr(config, "REPORT_FROM", "Market Radar <radar@example.org>")
+
+    def fake_urlopen(request, timeout):
+        return FakeResponse(b'{"messageId": "brevo_42"}')
+
+    monkeypatch.setattr(mailer.urllib.request, "urlopen", fake_urlopen)
+    answer = subscribe(client)
+    assert answer.status_code == 200, answer.text
+    assert answer.json()["sent"] is True
+    _, sends = counts()
+    assert len(sends) == 1
+    send = sends[0]
+    assert send["provider"] == "brevo" and send["provider_id"] == "brevo_42" and send["status"] == "sent"
 
 
 def test_render_html_escapes_every_source_controlled_string(client):
@@ -327,7 +451,7 @@ def test_subscribe_is_dry_run_upsert_and_rate_limited(client):
     assert answer.status_code == 200, answer.text
     body = answer.json()
     assert body["ok"] is True and body["sent"] is False
-    assert "dry run" in (body["error"] or "").lower() and "RESEND_API_KEY" in body["error"]
+    assert "dry run" in (body["error"] or "").lower() and "BREVO_API_KEY" in body["error"]
     assert ISO_DATE.match(body["nextRun"])
     assert "token=" in body["unsubscribeUrl"]
     subscriptions_rows, sends = counts()

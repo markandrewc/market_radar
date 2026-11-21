@@ -62,8 +62,11 @@ Der Port braucht keine Konfiguration: uvicorn bindet auf `$PORT` (Default 8080).
 | `VITE_USE_MOCKS` | Build-Zeit, Default `1` | `1` = Frontend zeigt Mock-Daten (Demo), `0` = Frontend liest `/api` |
 | `SOURCES_FILE` | optional | Pfad zu `sources.yaml`, z. B. `/data/sources.yaml` auf einem Volume |
 | `ADZUNA_APP_ID` / `ADZUNA_APP_KEY` | optional | Schlüssel für die Adzuna-Quelle; fehlen sie, wird die Quelle übersprungen |
-| `RESEND_API_KEY` | optional | schaltet den E-Mail-Versand der Briefings frei; ohne Key wird jeder Versand als `dry_run` protokolliert (Vorschau funktioniert weiter) |
-| `REPORT_FROM` | optional | verifizierter Absender, z. B. `Market Radar <radar@deine-domain.ch>`; ohne verifizierte Domain liefert Resend nur an die eigene Konto-Adresse |
+| `MAIL_PROVIDER` | optional | `brevo` (Default bei vorhandenem Key), `smtp` oder `resend`; leer = automatisch aus den Keys |
+| `BREVO_API_KEY` | optional | Brevo Transactional API (Header `api-key`); der empfohlene Weg für den Briefing-Versand |
+| `RESEND_API_KEY` | optional | Resend HTTP API als Alternative |
+| `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASSWORD` | optional | beliebiger SMTP-Relay, z. B. `smtp-relay.brevo.com:587`; `SMTP_STARTTLS=1` (Default) |
+| `REPORT_FROM` | für Versand nötig | verifizierter Absender, z. B. `Market Radar <radar@deine-domain.ch>`; bei Brevo muss die Adresse im Brevo-Konto verifiziert sein |
 | `REPORT_REPLY_TO` | optional | Antwortadresse im Briefing |
 | `PUBLIC_BASE_URL` | für E-Mails nötig | absolute Links (Unsubscribe, Dashboard), z. B. `https://radar.example.ch`; leer = relative Links |
 | `REPORTS_DAILY_CAP` | optional | Obergrenze für Versände pro Tag (Default 100), schützt das Resend-Kontingent |
@@ -197,7 +200,7 @@ die erste Ausgabe. Regelmäßig verschickt ein **zweiter Cron-Service** aus dems
 | Custom Start Command | `.venv/bin/python -m app.reports run --due` |
 | Cron Schedule | `0 5 * * *` (täglich 05:00 UTC; gefällige Abos werden einmal pro ISO-Woche bzw. pro Monat verschickt) |
 
-Nötige Variablen: `RESEND_API_KEY`, `REPORT_FROM` (verifizierter Absender), `PUBLIC_BASE_URL`; optional
+Nötige Variablen: `BREVO_API_KEY` (oder `RESEND_API_KEY` / `SMTP_*`), `REPORT_FROM` (verifizierter Absender), `PUBLIC_BASE_URL`; optional
 `REPORT_REPLY_TO`, `REPORT_TIMEZONE`, `REPORTS_DAILY_CAP`. Aufbau, Grenzen und Datenschutz:
 [docs/REPORTS.md](docs/REPORTS.md).
 
@@ -208,7 +211,7 @@ DATABASE_URL="$DATABASE_URL" .venv/bin/python -m app.reports preview --role it-s
 DATABASE_URL="$DATABASE_URL" .venv/bin/python -m app.reports run --due
 ```
 
-Ohne `RESEND_API_KEY` schreibt der Lauf `dry_run`-Zeilen in `report_sends` — der komplette Ablauf lässt sich
+Ohne konfigurierten Mail-Provider schreibt der Lauf `dry_run`-Zeilen in `report_sends` — der komplette Ablauf lässt sich
 also ohne Provider demonstrieren. Die E-Mail-Adresse ist das einzige personenbezogene Datum; sie wird nur zum
 Versand gespeichert und beim Abmelden mit dem Abo gelöscht.
 
