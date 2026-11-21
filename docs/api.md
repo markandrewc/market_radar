@@ -2,7 +2,7 @@
 
 Contract between the **ingestion**, **backend** and **frontend** teams. Change this file first, then the code.
 Response types for the frontend are defined in `src/shared/types.ts`; the backend mirrors them in
-`backend/app/models.py`. Interactive docs: http://localhost:8787/docs
+`backend/app/schemas/`. Interactive docs: http://localhost:8787/docs
 
 Every number belongs to a source, so the frontend can always show the source name, link and retrieval date.
 
