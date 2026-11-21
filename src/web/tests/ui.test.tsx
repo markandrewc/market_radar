@@ -227,7 +227,7 @@ describe('Ask the radar', () => {
     const user = userEvent.setup();
     show('/ask');
     await ready(/Ask the radar/);
-    await user.type(screen.getByLabelText('Your question'), 'Which skills should we teach for IT Support?');
+    await user.type(await screen.findByLabelText('Your question', {}, { timeout: 4000 }), 'Which skills should we teach for IT Support?');
     await user.click(screen.getByRole('button', { name: 'Ask' }));
     expect(await screen.findByText(/The postings in our sample/i, {}, { timeout: 4000 })).toBeTruthy();
     expect(screen.getByText(/I used these sources/i)).toBeTruthy();
@@ -238,9 +238,24 @@ describe('Ask the radar', () => {
     const user = userEvent.setup();
     show('/ask');
     await ready(/Ask the radar/);
-    await user.type(screen.getByLabelText('Your question'), 'Who won the world cup?');
+    await user.type(await screen.findByLabelText('Your question', {}, { timeout: 4000 }), 'Who won the world cup?');
     await user.click(screen.getByRole('button', { name: 'Ask' }));
     expect(await screen.findByText(/I do not have data on that/i, {}, { timeout: 4000 })).toBeTruthy();
     expect(screen.getByText(/No data on that/i)).toBeTruthy();
+  });
+});
+
+
+describe('Explain simply', () => {
+  it('turns a card into plain words with a source next to each sentence', async () => {
+    const user = userEvent.setup();
+    show('/');
+    await ready(/This week's pulse/);
+    const buttons = await screen.findAllByRole('button', { name: /Explain simply/i }, { timeout: 4000 });
+    await user.click(buttons[0]);
+    expect(await screen.findByText(/AI explanation · our reading, not the source/i, {}, { timeout: 4000 })).toBeTruthy();
+    expect(await screen.findByText(/In plain words:/i)).toBeTruthy();
+    expect((await screen.findAllByRole('link', { name: /Demo data \(not real\)/ })).length).toBeGreaterThan(0);
+    await user.click(screen.getByRole('button', { name: 'Show the data-based reading' }));
   });
 });

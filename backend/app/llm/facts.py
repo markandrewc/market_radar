@@ -44,6 +44,7 @@ FALLBACK_SUMMARY_CHARS = 240
 
 _HTTP = ("http://", "https://")
 _EMAIL = re.compile(r"[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}")
+_LINK = re.compile(r"(?:https?://|www\.)\S+", re.IGNORECASE)
 _CATEGORY_LABEL = {
     "A": "Labour-market record",
     "B": "Skills or occupation record",
@@ -97,6 +98,11 @@ def _trim(value: Any, limit: int) -> str:
 def _scrub(value: Any) -> str:
     """Remove e-mail addresses: the fact bundle must never carry personal data."""
     return _EMAIL.sub("[email removed]", str(value or ""))
+
+
+def _plain(value: Any) -> str:
+    """Fallback text is shown as prose, not as a link list: e-mails and links are removed."""
+    return _LINK.sub("[link removed]", _scrub(value))
 
 
 def _row_source(row: Any) -> SourceRef | None:
@@ -255,8 +261,8 @@ def _item_row(conn: Conn, item_id: str) -> Any:
 
 
 def _item_fallback(row: Any, summary: str, note: Any) -> str:
-    title = " ".join((row["title"] or "").split())
-    parts = [f"{title}: {summary}" if summary else title]
+    title = _plain(row["title"]).strip()
+    parts = [f"{title}: {_plain(summary)}" if summary else title]
     if note is not None:
         parts.append(f"Our reading, not the source: {note.note}")
     text = ". ".join(part.rstrip(".") for part in parts if part.strip()) + "."
@@ -300,7 +306,7 @@ def _item_facts(conn: Conn, request: ExplainRequest, language: str, row: Any) ->
             builder.text("Watch group", group.label, source)
         builder.caveat("The facts do not establish whether the rule is in force; check the original publication.")
         builder.caveat("This is our plain-language reading, not legal advice.")
-    elif note is None and "E" not in categories:
+    else:
         builder.caveat("The facts describe one stored source record, not the whole market.")
     builder.caveat("Only the facts listed above are known; anything else is unknown.")
     fallback_summary = summary[:FALLBACK_ITEM_CHARS].rstrip()
@@ -406,7 +412,7 @@ def _search_items(conn: Conn, question: str, role_name: str | None) -> list[Any]
     return rows[:MAX_ASK_ITEMS]
 
 
-def _follow_ups(insights: list[Insight], conn: Conn, role_id: str | None) -> list[str]:
+def _follow_ups(insights: list[Insight], conn: Conn) -> list[str]:
     """Up to three headline suggestions: the role's insights first, then the global list."""
     pool = list(insights)
     if len(pool) < 3:
@@ -429,23 +435,29 @@ def _follow_ups(insights: list[Insight], conn: Conn, role_id: str | None) -> lis
 
 
 def _ask_fallback(items: list[Any], insights: list[Insight], overview: Overview) -> tuple[str, list[tuple[str, list[SourceRef]]]]:
-    """The deterministic answer when the provider or the guardrails fail: retrieved facts only."""
+    """The deterministic answer when the provider or the guardrails fail: retrieved facts only.
+
+    Our own (English) readings are preferred over raw source text: an item summary can be in
+    German and is not a plain-language explanation. Item titles are the last resort.
+    """
     sentences: list[tuple[str, list[SourceRef]]] = []
-    if items:
+    # Market readings answer a question better than a global policy note; only fall back to those
+    # when no market reading was retrieved at all.
+    market = [item for item in insights if item.kind in {"demand", "skills", "employers"}]
+    for insight in (market or insights)[:2]:
+        sources = _unique_sources([row.source for row in insight.evidence])
+        text = _trim(insight.body, FALLBACK_INSIGHT_CHARS).strip()
+        if text:
+            sentences.append((text if text.endswith((".", "!", "?")) else f"{text}.", sources))
+    if not sentences and items:
         row = items[0]
         source = _row_source(row)
-        title = " ".join((row["title"] or "").split())
-        summary = _trim(row["summary"], FALLBACK_SUMMARY_CHARS)
-        text = f"{title}: {summary}" if summary else title
-        if text and not text.endswith((".", "!", "?")):
-            text += "."
-        if text:
+        title = _plain(row["title"]).strip()
+        if title:
+            text = title if title.endswith((".", "!", "?")) else f"{title}."
             sentences.append((text, [source] if source is not None else []))
-    if insights:
-        insight = insights[0]
-        sources = _unique_sources([row.source for row in insight.evidence])
-        sentences.append((_trim(insight.body, FALLBACK_INSIGHT_CHARS), sources))
-    elif overview.postings is not None and overview.postings.value is not None:
+            sentences.append(("Open the source next to it to read the original record.", [source] if source is not None else []))
+    if not sentences and overview.postings is not None and overview.postings.value is not None:
         postings = overview.postings
         sentences.append((f"The latest sample has {_num(postings.value)} postings for the tracked roles "
                           f"in {postings.period}.", [postings.source]))
@@ -474,7 +486,7 @@ def ask_facts(conn: Conn, question: str, role_id: str | None, language: str) -> 
     overview = insights_service.overview(conn)
     usable = bool(items or insights or (role_id and (overview.postings or overview.biggestRiser
                                                      or overview.biggestFaller)))
-    follow_ups = _follow_ups(insights, conn, role_id)
+    follow_ups = _follow_ups(insights, conn)
     fallback_text, fallback_sentences = _ask_fallback(items, insights, overview)
     primary = next((_row_source(row) for row in items if _row_source(row) is not None), None)
     builder = BundleBuilder(language, question=normalized)

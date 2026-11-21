@@ -532,7 +532,7 @@ The server retrieves at most 6 items, 4 insights and the latest overview numbers
 
 ```json
 { "question": "…", "text": "…", "sentences": [{"text": "…", "sources": ["…"]}],
-  "method": "model|fallback|no_data", "usedSources": ["…"], "followUps": ["…"],
+  "method": "model|fallback|no_data", "usedSources": [ { "…": "SourceRef" } ], "followUps": ["…"],
   "cached": false, "model": "deepseek-flash", "generatedAt": "…", "disclaimer": "…" }
 ```
 
