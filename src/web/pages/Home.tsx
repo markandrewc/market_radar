@@ -1,21 +1,11 @@
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { TrendingDown, TrendingUp } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useDemand, useSkills } from '../api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { SourceBadge } from '@/components/SourceBadge';
-
-function Change({ pct }: { pct: number }) {
-  const up = pct >= 0;
-  const Icon = up ? TrendingUp : TrendingDown;
-  return (
-    <Badge variant={up ? 'success' : 'warning'}>
-      <Icon className="mr-1 h-3 w-3" />
-      {up ? '+' : ''}{pct}%
-    </Badge>
-  );
-}
+import { Change } from '@/components/Change';
 
 export default function Home() {
   const demand = useDemand();
@@ -38,7 +28,7 @@ export default function Home() {
         {demand.data.map((d) => (
           <Card key={d.role.id}>
             <CardHeader>
-              <CardTitle>{d.role.name}</CardTitle>
+              <CardTitle><Link to={`/roles/${d.role.id}`} className="hover:text-brand-accent">{d.role.name} →</Link></CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
               <div className="flex items-baseline gap-2">

@@ -1,0 +1,13 @@
+# Nicht mit ins Image kopieren – hält den Build klein und reproduzierbar.
+node_modules
+dist
+.git
+.gitignore
+.npm-cache
+npm-debug.log*
+.DS_Store
+
+# Env-Dateien bleiben draußen (Railway-Variablen kommen als Build-Args rein).
+# So landen keine lokalen Secrets im Image.
+.env
+.env.*

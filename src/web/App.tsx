@@ -1,9 +1,20 @@
 import { Link, Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
+import RolePage from './pages/RolePage';
+import Reports from './pages/Reports';
+import Policy from './pages/Policy';
+import Participants from './pages/Participants';
+import Sources from './pages/Sources';
 import { Logo } from './components/Logo';
 import { useMocks } from './api';
 
-const nav = ['Market', 'Skills', 'Employers', 'Sources'];
+const nav = [
+  { label: 'Market', to: '/' },
+  { label: 'Participants', to: '/participants' },
+  { label: 'Policy', to: '/policy' },
+  { label: 'Reports', to: '/reports' },
+  { label: 'Sources', to: '/sources' },
+];
 
 export default function App() {
   return (
@@ -15,7 +26,7 @@ export default function App() {
         <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
           <Link to="/"><Logo /></Link>
           <ul className="hidden gap-8 text-sm font-medium text-brand sm:flex">
-            {nav.map((n) => <li key={n} className="hover:text-brand-accent">{n}</li>)}
+            {nav.map((n) => <li key={n.to}><Link to={n.to} className="hover:text-brand-accent">{n.label}</Link></li>)}
           </ul>
         </nav>
       </header>
@@ -28,6 +39,11 @@ export default function App() {
       <main className="mx-auto max-w-6xl bg-white px-4 py-8">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/roles/:id" element={<RolePage />} />
+          <Route path="/participants" element={<Participants />} />
+          <Route path="/policy" element={<Policy />} />
+          <Route path="/reports" element={<Reports />} />
+          <Route path="/sources" element={<Sources />} />
         </Routes>
       </main>
       <footer className="bg-brand-soft py-6 text-center text-xs text-slate-500">Powercoders · Market Radar</footer>

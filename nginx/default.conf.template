@@ -1,0 +1,45 @@
+# Wird beim Container-Start ausgewertet: ${PORT} ersetzt das offizielle
+# nginx-Entrypoint-Skript (20-envsubst-on-templates.sh).
+server {
+    listen       ${PORT};
+    server_name  _;
+
+    root  /usr/share/nginx/html;
+    index index.html;
+
+    # Kompression für Text-Assets
+    gzip            on;
+    gzip_vary       on;
+    gzip_min_length 1024;
+    gzip_types      text/plain text/css application/javascript application/json image/svg+xml application/manifest+json;
+
+    # Sicherheits-Header. Achtung: nginx erbt add_header NICHT in Locations,
+    # die selbst add_header setzen – darum hier ausschließlich "expires" in den Locations.
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-Frame-Options        "SAMEORIGIN" always;
+    add_header Referrer-Policy        "strict-origin-when-cross-origin" always;
+
+    # Healthcheck-Endpoint für Railway (siehe Deploy -> Healthcheck Path: /healthz)
+    location = /healthz {
+        access_log off;
+        default_type text/plain;
+        return 200 "ok\n";
+    }
+
+    # Gehashte Build-Assets sind unveränderlich -> lange cachen
+    location /assets/ {
+        expires 1y;
+        try_files $uri =404;
+    }
+
+    # index.html nie cachen, damit neue Deployments sofort greifen
+    location = /index.html {
+        expires -1;
+    }
+
+    # SPA-Fallback: React Router (BrowserRouter) braucht das für direkte Aufrufe
+    # von z. B. /skills oder /employers statt eines 404 von nginx.
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
