@@ -1,5 +1,6 @@
 import { usePolicy } from '../api';
 import { PolicyCard } from '@/components/PolicyCard';
+import { DemoNotice } from '@/components/DemoNotice';
 import { Empty, ErrorMsg, Loading } from '@/components/Status';
 
 export default function Policy() {
@@ -10,6 +11,7 @@ export default function Policy() {
   return (
     <div className="space-y-4">
       <h2 className="text-2xl font-semibold text-brand">Policy news</h2>
+      <DemoNotice />
       <div className="grid gap-4 md:grid-cols-2">{data.items.map((i) => <PolicyCard key={i.title} item={i} />)}</div>
     </div>
   );

@@ -2,6 +2,7 @@ import type { EmployersResponse } from '../../shared/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
 import { SourceBadge } from './SourceBadge';
+import { DemoNotice } from './DemoNotice';
 
 export function EmployersBlock({ data }: { data: EmployersResponse }) {
   return (
@@ -11,6 +12,7 @@ export function EmployersBlock({ data }: { data: EmployersResponse }) {
         <CardDescription>Employers with the most open positions</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
+        <DemoNotice what="This card" />
         <Table>
           <TableHeader><TableRow><TableHead>Employer</TableHead><TableHead>Openings</TableHead><TableHead>Main skill</TableHead></TableRow></TableHeader>
           <TableBody>

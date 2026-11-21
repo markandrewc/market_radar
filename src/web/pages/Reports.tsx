@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useDemand, useSubscribe } from '../api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { PreviewPanel } from '@/components/PreviewPanel';
+import { DemoNotice } from '@/components/DemoNotice';
 import { Loading } from '@/components/Status';
 
 export default function Reports() {
@@ -17,6 +18,7 @@ export default function Reports() {
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-semibold text-brand">Weekly report</h2>
+      <DemoNotice what="The subscription" />
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
           <CardHeader>

@@ -1,6 +1,7 @@
 import { useParticipants } from '../api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { SourceBadge } from '@/components/SourceBadge';
+import { DemoNotice } from '@/components/DemoNotice';
 import { ErrorMsg, Loading } from '@/components/Status';
 
 export default function Participants() {
@@ -10,6 +11,7 @@ export default function Participants() {
   return (
     <div className="space-y-4">
       <h2 className="text-2xl font-semibold text-brand">Participants</h2>
+      <DemoNotice />
       <div className="grid gap-4 sm:grid-cols-3">
         {data.groups.map((g) => (
           <Card key={g.label}>

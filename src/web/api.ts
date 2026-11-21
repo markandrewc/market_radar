@@ -25,11 +25,12 @@ export const useSkills = (roleId?: string) =>
       useMocks ? wait(mockSkills()) : get(`/skills${roleId ? `?role=${encodeURIComponent(roleId)}` : ''}`),
   });
 
-// Not in the backend yet: mock data only
+// Not in the backend yet: mock data only (the pages mark these sections with <DemoNotice />)
 export const useEmployers = (roleId: string) => useQuery({ queryKey: ['employers', roleId], queryFn: (): Promise<EmployersResponse> => wait(mockEmployers(roleId)) });
 export const useParticipants = () => useQuery({ queryKey: ['participants'], queryFn: (): Promise<TargetGroupResponse> => wait(mockParticipants()) });
 export const usePolicy = () => useQuery({ queryKey: ['policy'], queryFn: (): Promise<PolicyResponse> => wait(mockPolicy()) });
-export const useSources = () => useQuery({ queryKey: ['sources'], queryFn: (): Promise<SourceStatus[]> => wait(mockSources()) });
+export const useSources = () =>
+  useQuery({ queryKey: ['sources'], queryFn: (): Promise<SourceStatus[]> => (useMocks ? wait(mockSources()) : get('/sources')) });
 export const useSubscribe = () => useMutation({ mutationFn: (b: SubscribeBody) => wait({ ok: true, ...b }) });
 
 // Config-driven connectors. Contract: docs/market-item.schema.json.
