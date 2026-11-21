@@ -37,9 +37,10 @@ decoration.
 | `--shadow-lift` | stronger | interactive hover |
 | `--shadow-float` | deepest | hero stat card, popovers |
 
-Typography: **Inter Variable**, self-hosted via `@fontsource-variable/inter` (no Google requests). Fallback is the
-system UI stack. Body 15–16 px / 1.6; H1 40–48 px; H2 24–28 px; kicker 11 px / 650 / 0.16 em tracking; numbers
-`tabular-nums`.
+Typography: **Inter Variable** for text and numbers, **Plus Jakarta Sans Variable** for display headlines —
+both self-hosted (`@fontsource-variable/inter`, `@fontsource-variable/plus-jakarta-sans`, no Google requests).
+Fallback is the system UI stack. Body 15–16 px / 1.6; H1 40–48 px; H2 24–28 px; kicker 11 px / 650 / 0.16 em
+tracking; numbers `tabular-nums`.
 
 Component classes: `.kicker`, `.display`, `.tnum`, `.rule`, `.paper-dots`, `.hero-glow`, `.card-lift`.
 
@@ -74,6 +75,36 @@ Component classes: `.kicker`, `.display`, `.tnum`, `.rule`, `.paper-dots`, `.her
   date, retrieval date, note and the original link.
 - **Explain**: same family as Interpretation; AI tag, sentence citations, disclaimer, data-based fallback.
 - **Empty / Error / Loading**: icon + one actionable sentence; skeletons in warm tones.
+
+## Information architecture (Level 1–4)
+
+The header carries the challenge structure as four level tabs (`LevelTabs`), so a coach always knows which
+question a page answers. Existing routes stay reachable.
+
+| Level | Tab | Routes | Question |
+|---|---|---|---|
+| 1 | Market & skills | `/`, `/roles`, `/roles/:id` | A demand, B skills |
+| 2 | Weekly briefing | `/reports` | regular plain-language digest |
+| 3 | People, employers & policy | `/context` (hub), `/policy`, `/participants` | C employers, D target group, E policy |
+| 4 | Data sources | `/sources`, `/items` | provenance, health, adding sources |
+
+`/context` is a hub: policy, target group and employers as three linked cards with real counts. Employers stay an
+honest empty state until Adzuna keys exist — never sample companies.
+
+## What we took from the "Swiss Humanitarian Clarity" references
+
+The references (Google Stitch, Material 3) contributed structure, not palette. The warm editorial palette and
+Crimson stay; Plus Jakarta Sans was added for display headlines.
+
+| Reference idea | Decision | Why |
+|---|---|---|
+| Level 1–4 tab navigation | adopted | makes the challenge structure visible |
+| "Question A/B" section framing | adopted | ties every chart to the challenge |
+| Two-column answer layout, card provenance footers | adopted | scanability + visible sources |
+| Mail-client preview frame | adopted | shows Level 2 as the real artefact |
+| Feed cards, health counts, add-source wizard | adopted | Level 4 becomes usable without a terminal |
+| Teal/cool-blue palette, Material Symbols, Google Fonts | **rejected** | brand and privacy: warm paper + Crimson, lucide, self-hosted fonts |
+| 14,820 vacancies, ESCO IDs, momentum index, latency/uptime, ISO/FADP seals, recipient groups, bi-weekly cadence | **rejected** | not in our data or not provable; replaced by real fields or honest empty states |
 
 ## Page rules
 

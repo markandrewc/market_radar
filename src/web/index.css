@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------- */
 @theme {
   --font-sans: 'Inter Variable', 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Plus Jakarta Sans Variable', 'Inter Variable', 'Inter', ui-sans-serif, system-ui, sans-serif;
 
   --color-ink: #1b1b1d;
   --color-ink-soft: #57534e;
@@ -77,7 +78,8 @@
 
   /* Editorial headline: tight, confident, never shouting. */
   .display {
-    font-weight: 650;
+    font-family: var(--font-display);
+    font-weight: 700;
     letter-spacing: -0.035em;
     line-height: 1.02;
     color: var(--color-ink);
@@ -90,6 +92,21 @@
 
   .rule {
     border-color: var(--color-line);
+  }
+
+  /* A quiet paper band for context rows and level headers. */
+  .surface-band {
+    background: var(--color-brand-soft);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+  }
+
+  /* Small metadata line: dates, "updated", counts. */
+  .meta {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    color: var(--color-ink-soft);
+    font-variant-numeric: tabular-nums;
   }
 
   /* Very quiet dotted paper texture for hero and section shoulders. */
