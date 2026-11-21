@@ -2,6 +2,8 @@
 
 Der Branch verbindet die veröffentlichte ITBoard-Stichprobe mit dem FastAPI-Backend des Teams. Er enthält zusätzlich den geprüften Quellenkatalog und einen Wochenexport mit Originalnachweisen für die fünf Kantone Zürich, Bern, Luzern, Zug und Genf.
 
+Die vollständige Liste aus beiden Team-Mails hält die ursprünglichen Adressen, konkrete Downloads und Zugangsbedingungen fest. [Quellenliste und Abrufstatus](source-links.md)
+
 ## Ersten Import vorführen
 
 1. Wie im Backend-README beschrieben, FastAPI mit einer lokalen PostgreSQL-Datenbank starten. `DATABASE_URL` und einen eigenen `INGEST_TOKEN` in der Umgebung des Backend-Prozesses setzen. Vite kann die vorhandene Teamoberfläche mit `VITE_USE_MOCKS=0` gegen diese API starten. [Backend-README](../backend/README.md)
