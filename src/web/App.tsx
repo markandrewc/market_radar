@@ -4,9 +4,6 @@ import Home from './pages/Home';
 export default function App() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
-      {import.meta.env.VITE_USE_MOCKS !== '0' && (
-        <div className="bg-amber-100 px-4 py-1 text-center text-xs text-amber-900">Demo data</div>
-      )}
       <header className="border-b border-slate-200 bg-white">
         <nav className="mx-auto flex max-w-6xl items-center gap-6 px-4 py-3">
           <Link to="/" className="font-semibold">Market Radar</Link>

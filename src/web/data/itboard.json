@@ -1,0 +1,893 @@
+{
+  "source": {
+    "name": "ITBoard.ch",
+    "url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+    "report_index_url": "https://www.itboard.ch/arbeitsmarkt",
+    "licence": "CC BY 4.0",
+    "scope": "Monatsstichproben der im ITBoard-Bericht gezählten Schweizer IT-Inserate. Die Rollen und das Erfahrungsniveau stammen aus der Klassifizierung von ITBoard.",
+    "fetched_at": "2026-11-21T09:30:25.695Z"
+  },
+  "fetched_at": "2026-11-21T09:30:25.695Z",
+  "roles": [
+    {
+      "id": "it-support",
+      "label": "IT-Support"
+    },
+    {
+      "id": "fullstack-developer",
+      "label": "Fullstack-Webentwicklung"
+    },
+    {
+      "id": "data-engineer",
+      "label": "Data Engineering"
+    }
+  ],
+  "rows": [
+    {
+      "role_id": "data-engineer",
+      "month": "2026-01",
+      "value": 1,
+      "base": 41,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-01-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/januar-2026"
+    },
+    {
+      "role_id": "fullstack-developer",
+      "month": "2026-01",
+      "value": 3,
+      "base": 41,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-01-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/januar-2026"
+    },
+    {
+      "role_id": "it-support",
+      "month": "2026-01",
+      "value": 4,
+      "base": 41,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-01-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/januar-2026"
+    },
+    {
+      "role_id": "data-engineer",
+      "month": "2026-02",
+      "value": 3,
+      "base": 130,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-02-26",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/februar-2026"
+    },
+    {
+      "role_id": "fullstack-developer",
+      "month": "2026-02",
+      "value": 12,
+      "base": 130,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-02-26",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/februar-2026"
+    },
+    {
+      "role_id": "it-support",
+      "month": "2026-02",
+      "value": 1,
+      "base": 130,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-02-26",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/februar-2026"
+    },
+    {
+      "role_id": "data-engineer",
+      "month": "2026-03",
+      "value": 1,
+      "base": 61,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-03-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/maerz-2026"
+    },
+    {
+      "role_id": "fullstack-developer",
+      "month": "2026-03",
+      "value": 5,
+      "base": 61,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-03-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/maerz-2026"
+    },
+    {
+      "role_id": "data-engineer",
+      "month": "2026-04",
+      "value": 2,
+      "base": 78,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-04-28",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/april-2026"
+    },
+    {
+      "role_id": "fullstack-developer",
+      "month": "2026-04",
+      "value": 4,
+      "base": 78,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-04-28",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/april-2026"
+    },
+    {
+      "role_id": "it-support",
+      "month": "2026-04",
+      "value": 2,
+      "base": 78,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-04-28",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/april-2026"
+    },
+    {
+      "role_id": "data-engineer",
+      "month": "2026-05",
+      "value": 3,
+      "base": 88,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-05-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/mai-2026"
+    },
+    {
+      "role_id": "fullstack-developer",
+      "month": "2026-05",
+      "value": 5,
+      "base": 88,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-05-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/mai-2026"
+    },
+    {
+      "role_id": "data-engineer",
+      "month": "2026-06",
+      "value": 7,
+      "base": 131,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-06-28",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/juni-2026"
+    },
+    {
+      "role_id": "fullstack-developer",
+      "month": "2026-06",
+      "value": 12,
+      "base": 131,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-06-28",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/juni-2026"
+    },
+    {
+      "role_id": "it-support",
+      "month": "2026-06",
+      "value": 5,
+      "base": 131,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-06-28",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/juni-2026"
+    },
+    {
+      "role_id": "data-engineer",
+      "month": "2026-07",
+      "value": 14,
+      "base": 142,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-07-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/juli-2026"
+    },
+    {
+      "role_id": "fullstack-developer",
+      "month": "2026-07",
+      "value": 4,
+      "base": 142,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-07-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/juli-2026"
+    },
+    {
+      "role_id": "it-support",
+      "month": "2026-07",
+      "value": 7,
+      "base": 142,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-07-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/juli-2026"
+    },
+    {
+      "role_id": "data-engineer",
+      "month": "2026-08",
+      "value": 8,
+      "base": 104,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-08-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/august-2026"
+    },
+    {
+      "role_id": "fullstack-developer",
+      "month": "2026-08",
+      "value": 9,
+      "base": 104,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-08-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/august-2026"
+    },
+    {
+      "role_id": "it-support",
+      "month": "2026-08",
+      "value": 6,
+      "base": 104,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-08-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/august-2026"
+    },
+    {
+      "role_id": "data-engineer",
+      "month": "2026-09",
+      "value": 5,
+      "base": 114,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-09-28",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/september-2026"
+    },
+    {
+      "role_id": "fullstack-developer",
+      "month": "2026-09",
+      "value": 11,
+      "base": 114,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-09-28",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/september-2026"
+    },
+    {
+      "role_id": "it-support",
+      "month": "2026-09",
+      "value": 1,
+      "base": 114,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-09-28",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/september-2026"
+    },
+    {
+      "role_id": "data-engineer",
+      "month": "2026-10",
+      "value": 36,
+      "base": 582,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-10-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/oktober-2026"
+    },
+    {
+      "role_id": "fullstack-developer",
+      "month": "2026-10",
+      "value": 37,
+      "base": 582,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-10-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/oktober-2026"
+    },
+    {
+      "role_id": "it-support",
+      "month": "2026-10",
+      "value": 27,
+      "base": 582,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-10-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/oktober-2026"
+    },
+    {
+      "role_id": "data-engineer",
+      "month": "2026-11",
+      "value": 57,
+      "base": 770,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-11-15",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/november-2026"
+    },
+    {
+      "role_id": "fullstack-developer",
+      "month": "2026-11",
+      "value": 46,
+      "base": 770,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-11-15",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/november-2026"
+    },
+    {
+      "role_id": "it-support",
+      "month": "2026-11",
+      "value": 34,
+      "base": 770,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-11-15",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/november-2026"
+    }
+  ],
+  "totals": [
+    {
+      "role_id": "all-itboard",
+      "month": "2026-01",
+      "value": 41,
+      "base": null,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-01-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/januar-2026"
+    },
+    {
+      "role_id": "all-itboard",
+      "month": "2026-02",
+      "value": 130,
+      "base": null,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-02-26",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/februar-2026"
+    },
+    {
+      "role_id": "all-itboard",
+      "month": "2026-03",
+      "value": 61,
+      "base": null,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-03-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/maerz-2026"
+    },
+    {
+      "role_id": "all-itboard",
+      "month": "2026-04",
+      "value": 78,
+      "base": null,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-04-28",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/april-2026"
+    },
+    {
+      "role_id": "all-itboard",
+      "month": "2026-05",
+      "value": 88,
+      "base": null,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-05-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/mai-2026"
+    },
+    {
+      "role_id": "all-itboard",
+      "month": "2026-06",
+      "value": 131,
+      "base": null,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-06-28",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/juni-2026"
+    },
+    {
+      "role_id": "all-itboard",
+      "month": "2026-07",
+      "value": 142,
+      "base": null,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-07-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/juli-2026"
+    },
+    {
+      "role_id": "all-itboard",
+      "month": "2026-08",
+      "value": 104,
+      "base": null,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-08-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/august-2026"
+    },
+    {
+      "role_id": "all-itboard",
+      "month": "2026-09",
+      "value": 114,
+      "base": null,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-09-28",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/september-2026"
+    },
+    {
+      "role_id": "all-itboard",
+      "month": "2026-10",
+      "value": 582,
+      "base": null,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-10-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/oktober-2026"
+    },
+    {
+      "role_id": "all-itboard",
+      "month": "2026-11",
+      "value": 770,
+      "base": null,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-11-15",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/november-2026"
+    }
+  ],
+  "junior": [
+    {
+      "role_id": "junior-itboard",
+      "month": "2026-01",
+      "value": 0,
+      "base": 41,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-01-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/januar-2026"
+    },
+    {
+      "role_id": "junior-itboard",
+      "month": "2026-02",
+      "value": 0,
+      "base": 130,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-02-26",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/februar-2026"
+    },
+    {
+      "role_id": "junior-itboard",
+      "month": "2026-03",
+      "value": 0,
+      "base": 61,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-03-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/maerz-2026"
+    },
+    {
+      "role_id": "junior-itboard",
+      "month": "2026-04",
+      "value": 0,
+      "base": 78,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-04-28",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/april-2026"
+    },
+    {
+      "role_id": "junior-itboard",
+      "month": "2026-05",
+      "value": 0,
+      "base": 88,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-05-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/mai-2026"
+    },
+    {
+      "role_id": "junior-itboard",
+      "month": "2026-06",
+      "value": 13,
+      "base": 131,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-06-28",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/juni-2026"
+    },
+    {
+      "role_id": "junior-itboard",
+      "month": "2026-07",
+      "value": 21,
+      "base": 142,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-07-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/juli-2026"
+    },
+    {
+      "role_id": "junior-itboard",
+      "month": "2026-08",
+      "value": 18,
+      "base": 104,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-08-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/august-2026"
+    },
+    {
+      "role_id": "junior-itboard",
+      "month": "2026-09",
+      "value": 11,
+      "base": 114,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-09-28",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/september-2026"
+    },
+    {
+      "role_id": "junior-itboard",
+      "month": "2026-10",
+      "value": 50,
+      "base": 582,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-10-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/oktober-2026"
+    },
+    {
+      "role_id": "junior-itboard",
+      "month": "2026-11",
+      "value": 67,
+      "base": 770,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-11-15",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/november-2026"
+    }
+  ],
+  "skill_trends": [
+    {
+      "skill_id": "docker",
+      "month": "2026-01",
+      "value": 4,
+      "base": 41,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-01-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/januar-2026"
+    },
+    {
+      "skill_id": "python",
+      "month": "2026-01",
+      "value": 6,
+      "base": 41,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-01-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/januar-2026"
+    },
+    {
+      "skill_id": "security",
+      "month": "2026-01",
+      "value": 3,
+      "base": 41,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-01-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/januar-2026"
+    },
+    {
+      "skill_id": "docker",
+      "month": "2026-02",
+      "value": 17,
+      "base": 130,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-02-26",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/februar-2026"
+    },
+    {
+      "skill_id": "python",
+      "month": "2026-02",
+      "value": 24,
+      "base": 130,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-02-26",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/februar-2026"
+    },
+    {
+      "skill_id": "security",
+      "month": "2026-02",
+      "value": 4,
+      "base": 130,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-02-26",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/februar-2026"
+    },
+    {
+      "skill_id": "docker",
+      "month": "2026-03",
+      "value": 11,
+      "base": 61,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-03-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/maerz-2026"
+    },
+    {
+      "skill_id": "python",
+      "month": "2026-03",
+      "value": 13,
+      "base": 61,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-03-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/maerz-2026"
+    },
+    {
+      "skill_id": "security",
+      "month": "2026-03",
+      "value": 3,
+      "base": 61,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-03-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/maerz-2026"
+    },
+    {
+      "skill_id": "docker",
+      "month": "2026-04",
+      "value": 9,
+      "base": 78,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-04-28",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/april-2026"
+    },
+    {
+      "skill_id": "python",
+      "month": "2026-04",
+      "value": 15,
+      "base": 78,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-04-28",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/april-2026"
+    },
+    {
+      "skill_id": "security",
+      "month": "2026-04",
+      "value": 4,
+      "base": 78,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-04-28",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/april-2026"
+    },
+    {
+      "skill_id": "docker",
+      "month": "2026-05",
+      "value": 11,
+      "base": 88,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-05-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/mai-2026"
+    },
+    {
+      "skill_id": "python",
+      "month": "2026-05",
+      "value": 14,
+      "base": 88,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-05-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/mai-2026"
+    },
+    {
+      "skill_id": "security",
+      "month": "2026-05",
+      "value": 3,
+      "base": 88,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-05-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/mai-2026"
+    },
+    {
+      "skill_id": "docker",
+      "month": "2026-06",
+      "value": 15,
+      "base": 131,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-06-28",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/juni-2026"
+    },
+    {
+      "skill_id": "python",
+      "month": "2026-06",
+      "value": 22,
+      "base": 131,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-06-28",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/juni-2026"
+    },
+    {
+      "skill_id": "security",
+      "month": "2026-06",
+      "value": 3,
+      "base": 131,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-06-28",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/juni-2026"
+    },
+    {
+      "skill_id": "docker",
+      "month": "2026-07",
+      "value": 6,
+      "base": 142,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-07-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/juli-2026"
+    },
+    {
+      "skill_id": "python",
+      "month": "2026-07",
+      "value": 35,
+      "base": 142,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-07-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/juli-2026"
+    },
+    {
+      "skill_id": "security",
+      "month": "2026-07",
+      "value": 8,
+      "base": 142,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-07-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/juli-2026"
+    },
+    {
+      "skill_id": "docker",
+      "month": "2026-08",
+      "value": 11,
+      "base": 104,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-08-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/august-2026"
+    },
+    {
+      "skill_id": "python",
+      "month": "2026-08",
+      "value": 29,
+      "base": 104,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-08-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/august-2026"
+    },
+    {
+      "skill_id": "security",
+      "month": "2026-08",
+      "value": 5,
+      "base": 104,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-08-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/august-2026"
+    },
+    {
+      "skill_id": "docker",
+      "month": "2026-09",
+      "value": 6,
+      "base": 114,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-09-28",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/september-2026"
+    },
+    {
+      "skill_id": "python",
+      "month": "2026-09",
+      "value": 11,
+      "base": 114,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-09-28",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/september-2026"
+    },
+    {
+      "skill_id": "security",
+      "month": "2026-09",
+      "value": 15,
+      "base": 114,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-09-28",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/september-2026"
+    },
+    {
+      "skill_id": "docker",
+      "month": "2026-10",
+      "value": 99,
+      "base": 582,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-10-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/oktober-2026"
+    },
+    {
+      "skill_id": "python",
+      "month": "2026-10",
+      "value": 115,
+      "base": 582,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-10-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/oktober-2026"
+    },
+    {
+      "skill_id": "security",
+      "month": "2026-10",
+      "value": 145,
+      "base": 582,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-10-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/oktober-2026"
+    },
+    {
+      "skill_id": "docker",
+      "month": "2026-11",
+      "value": 123,
+      "base": 770,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-11-15",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/november-2026"
+    },
+    {
+      "skill_id": "python",
+      "month": "2026-11",
+      "value": 188,
+      "base": 770,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-11-15",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/november-2026"
+    },
+    {
+      "skill_id": "security",
+      "month": "2026-11",
+      "value": 169,
+      "base": 770,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-11-15",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/november-2026"
+    }
+  ]
+}

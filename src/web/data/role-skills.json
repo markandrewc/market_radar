@@ -1,0 +1,35 @@
+{
+  "it-support": {
+    "source": "https://www.itboard.ch/rollen/it-support",
+    "read_on": "2026-11-21",
+    "base": 16,
+    "skills": [["ICT", 13], ["Microsoft 365", 9], ["Active Directory", 6], ["Windows 11", 5]],
+    "course": {
+      "title": "Troubleshoot a sign-in problem",
+      "practice": "Work through a fictional support ticket. A Microsoft 365 sign-in fails on Windows 11. Ask what error the user saw and who is affected, then suggest a safe first check.",
+      "check": "Record the symptom, action and result in the ticket. Keep credentials private and escalate unresolved issues to the right team."
+    }
+  },
+  "fullstack-developer": {
+    "source": "https://www.itboard.ch/rollen/fullstack-developer",
+    "read_on": "2026-11-21",
+    "base": 29,
+    "skills": [["Java", 16], ["React", 13], ["Docker", 12], ["Angular", 11]],
+    "course": {
+      "title": "Run a small web app with React and Docker",
+      "practice": "Display three fictional records in a React list and run the application in a prepared container.",
+      "check": "Ask someone else to follow your setup instructions and confirm they can open the app and see all three records."
+    }
+  },
+  "data-engineer": {
+    "source": "https://www.itboard.ch/rollen/data-engineer",
+    "read_on": "2026-11-21",
+    "base": 34,
+    "skills": [["Python", 13], ["ML / AI", 11], ["ICT", 9], ["Snowflake", 9], ["Kafka", 9], ["SQL", 8]],
+    "course": {
+      "title": "Check and summarize CSV data with Python",
+      "practice": "Read a fictional CSV, flag missing values and count valid records for each group.",
+      "check": "Verify the row totals and report missing records separately."
+    }
+  }
+}
