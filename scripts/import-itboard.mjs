@@ -13,6 +13,8 @@ const roles = [
   { id: 'it-support', label: 'IT-Support' },
   { id: 'fullstack-developer', label: 'Fullstack-Webentwicklung' },
   { id: 'data-engineer', label: 'Data Engineering' },
+  { id: 'software-engineer', label: 'Software Engineer / Developer' },
+  { id: 'data-analyst', label: 'Data Analyst' },
 ];
 
 const skillIds = new Map([

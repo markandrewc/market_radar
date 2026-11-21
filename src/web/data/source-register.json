@@ -1,0 +1,248 @@
+{
+  "schemaVersion": 1,
+  "verifiedOn": "2026-11-21",
+  "sources": [
+    {
+      "id": "itboard-monthly",
+      "areas": [
+        "A",
+        "B"
+      ],
+      "tier": "start",
+      "name": "ITBoard · IT-Stellen und Kenntnisse",
+      "url": "https://www.itboard.ch/arbeitsmarkt",
+      "access": "Direkte CSV",
+      "cadence": "Monatlich",
+      "description": "Schweizer IT-Inserate auf ITBoard. Zählung, Junioranteil, Beruf, Technologie und ausgewählte Regionen. CSV-Felder monat, kennzahl, auspraegung, anzahl und basis.",
+      "discovery": "Dieselbe CSV-URL erneut abrufen. Den Berichtsmonat und seinen Erhebungsstichtag aus dem verlinkten Monatsbericht übernehmen.",
+      "limit": "Portalstichprobe. Für ein Merkmal mit Bezugsgrösse basis ausweisen. Vergleich: gezählte und aktuell aktive Inserate sind unterschiedliche Kennzahlen.",
+      "links": [
+        {
+          "label": "Fortlaufende CSV",
+          "url": "https://www.itboard.ch/arbeitsmarkt/daten.csv"
+        },
+        {
+          "label": "Lizenz CC BY 4.0",
+          "url": "https://creativecommons.org/licenses/by/4.0/"
+        }
+      ]
+    },
+    {
+      "id": "bfs-vacancies-region",
+      "areas": [
+        "A"
+      ],
+      "tier": "start",
+      "name": "BFS · Offene Stellen nach Grossregion",
+      "url": "https://www.bfs.admin.ch/asset/de/px-x-0602000000_104",
+      "access": "PxWeb-API",
+      "cadence": "Quartalsweise",
+      "description": "Schweiz und sieben Grossregionen, branchenübergreifende BESTA-Schätzung.",
+      "discovery": "Metadaten per GET lesen und den neuesten Wert aus Quartal wählen. Am selben Endpunkt mit POST und Format json-stat2 abfragen.",
+      "limit": "Grossregionen, keine einzelnen Städte und keine Filter für IT-Berufe oder Berufseinstieg.",
+      "links": [
+        {
+          "label": "Regionaler API-Endpunkt",
+          "url": "https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0602000000_104/px-x-0602000000_104.px"
+        }
+      ]
+    },
+    {
+      "id": "bfs-vacancies-industry",
+      "areas": [
+        "A"
+      ],
+      "tier": "start",
+      "name": "BFS · Offene Stellen nach Wirtschaftsabteilung",
+      "url": "https://www.bfs.admin.ch/asset/de/px-x-0602000000_103",
+      "access": "PxWeb-API",
+      "cadence": "Quartalsweise",
+      "description": "Schweizer BESTA-Schätzungen für ausgewählte Wirtschaftsabteilungen. 62–63 umfasst IT- und Informationsdienstleistungen.",
+      "discovery": "Metadaten per GET lesen. Quartal und Wirtschaftsabteilung aus den angebotenen Codes wählen. Am selben Endpunkt per POST als json-stat2 abfragen.",
+      "limit": "Die Branche des Betriebs ist eine andere Kennzahl als der Beruf. IT-Aufgaben in einer anderen Branche zählen dort zur Branche des Betriebs.",
+      "links": [
+        {
+          "label": "API-Endpunkt für Wirtschaftsabteilungen",
+          "url": "https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0602000000_103/px-x-0602000000_103.px"
+        }
+      ]
+    },
+    {
+      "id": "esco-occupations",
+      "areas": [
+        "B"
+      ],
+      "tier": "later",
+      "name": "ESCO · Berufe und Kenntnisse",
+      "url": "https://esco.ec.europa.eu/en/use-esco/use-esco-services-api/esco-web-service-api",
+      "access": "Klassifikation und API",
+      "cadence": "Versioniert",
+      "description": "Mehrsprachige Berufs- und Kenntnisbezeichnungen als gemeinsame Zuordnung, auch für Schnittstellenrollen.",
+      "discovery": "Veröffentlichte Version und stabile URI jedes Begriffs festhalten. Kenntnisse aus einer Schweizer Inseratequelle damit abgleichen.",
+      "limit": "Klassifikation für Begriffe. Häufigkeiten kommen aus Stellendaten.",
+      "links": []
+    },
+    {
+      "id": "sem-asylum",
+      "areas": [
+        "D"
+      ],
+      "tier": "start",
+      "name": "SEM · Asylstatistik",
+      "url": "https://www.sem.admin.ch/de/asylstatistik",
+      "access": "Index mit monatlichen XLSX-Dateien",
+      "cadence": "Monatlich",
+      "description": "Asylgesuche 7-20 und 7-21, Bestände 6-10 und 6-20, Erwerbstätigkeit N, F, B und S in 6-21 bis 6-24, Status S in 7-70.",
+      "discovery": "«Aktuelle Zahlen» öffnen und im neuesten Monatsbericht die XLSX-Datei mit Tabellenkennung und Monatsbezug auswählen. Dateilink aus dem Bericht übernehmen.",
+      "limit": "Für jede Tabelle Zeitraum und Bezugsgruppe prüfen. Asylgesuche, Personen im Bestand und Erwerbstätige separat ausweisen.",
+      "links": []
+    },
+    {
+      "id": "sem-resident-statistics",
+      "areas": [
+        "D"
+      ],
+      "tier": "later",
+      "name": "SEM · Ausländerstatistik",
+      "url": "https://www.sem.admin.ch/de/auslaenderstatistik",
+      "access": "Index mit monatlichen XLSX-Dateien",
+      "cadence": "Monatlich",
+      "description": "3-25 liefert Einwanderung nach Kantonen und Staatsangehörigkeit. 3-30 vertieft Einwanderungsgründe. 2-10 und weitere Bestandstabellen betreffen die ausländische Wohnbevölkerung.",
+      "discovery": "«Aktuelle Zahlen» nutzen, korrekte Tabellenkennung und den Monatsbezug auswählen. Laufjahr oder letzte zwölf Monate nur für die dazugehörige Ansicht verwenden.",
+      "limit": "Die ausländische Wohnbevölkerung und die Bevölkerung im Asylverfahren haben unterschiedliche Definitionen.",
+      "links": []
+    },
+    {
+      "id": "sem-status-s",
+      "areas": [
+        "D"
+      ],
+      "tier": "later",
+      "name": "SEM · Schutzstatus S und Kantonszuweisungen",
+      "url": "https://www.sem.admin.ch/de/statistiken-ukraine",
+      "access": "Index mit PDF-Reihen",
+      "cadence": "Reihen mit eigenen Stichtagen",
+      "description": "Separate Reihen für Kantonszuweisungen und Angaben zum Erwerb von Personen mit Schutzstatus S.",
+      "discovery": "Unter «Angaben zum Erwerb» beziehungsweise «Kantonszuweisungen» den neuesten tatsächlich verlinkten Bericht prüfen. Für Erwerbszahlen im XLSX-Format SEM-Asylstatistik 6-24 nutzen.",
+      "limit": "Kantonszuweisungen und Erwerbszahlen getrennt erfassen. Für PDFs mit geändertem Tabellenaufbau braucht es eine Prüfung.",
+      "links": []
+    },
+    {
+      "id": "sem-work",
+      "areas": [
+        "E"
+      ],
+      "tier": "start",
+      "name": "SEM · Arbeiten im Asylbereich",
+      "url": "https://www.sem.admin.ch/de/arbeit-asylbereich",
+      "access": "Laufend gepflegte Fachdokumentation",
+      "cadence": "Bei Änderungen",
+      "description": "Arbeitszugang, Meldeverfahren und Bewilligungen nach Aufenthaltsstatus.",
+      "discovery": "Seitenänderungen und verlinkte Weisungen prüfen. Änderungen mit der publizierten Rechtsgrundlage und dem Inkrafttreten abgleichen.",
+      "limit": "Geltungsdatum und betroffenen Aufenthaltsstatus zu jeder Änderung erfassen.",
+      "links": [
+        {
+          "label": "SEM-Medienmitteilungen",
+          "url": "https://www.sem.admin.ch/de/medienmitteilungen"
+        }
+      ]
+    },
+    {
+      "id": "sem-entry-residence",
+      "areas": [
+        "E"
+      ],
+      "tier": "later",
+      "name": "SEM · Einreise, Aufenthalt und Kontingente",
+      "url": "https://www.sem.admin.ch/de/in-die-schweiz-einreisen",
+      "access": "Fachseiten und amtliche Mitteilungen",
+      "cadence": "Bei Änderungen",
+      "description": "Visa, Aufenthalt und Drittstaaten-Kontingente über die jeweils passenden SEM-Fachseiten.",
+      "discovery": "Auf den Themenseiten die amtliche Weisung oder Mitteilung und ihr Datum feststellen. Rechtsgrundlage und Geltungsbeginn zusätzlich in Fedlex prüfen.",
+      "limit": "Einreise, Aufenthalt und Arbeitsmarktzugang können verschiedene Bedingungen haben.",
+      "links": [
+        {
+          "label": "Aufenthalt",
+          "url": "https://www.sem.admin.ch/de/aufenthalt"
+        },
+        {
+          "label": "Drittstaaten und Kontingente",
+          "url": "https://www.sem.admin.ch/de/nicht-eu-efta-angehoerige"
+        }
+      ]
+    },
+    {
+      "id": "seco-job-notification",
+      "areas": [
+        "E"
+      ],
+      "tier": "later",
+      "name": "SECO · Stellenmeldepflicht",
+      "url": "https://www.arbeit.swiss/de/arbeitgebende/stellenmeldepflichten",
+      "access": "Übersicht mit Jahreslisten",
+      "cadence": "Jährlich",
+      "description": "Meldepflichtige Berufsarten und Check-up. Die dauerhafte Arbeitgeberübersicht verlinkt die Listen nach Geltungsjahr.",
+      "discovery": "Vom Einstieg den aktuellen Check-up und seine offizielle XLSX- oder PDF-Liste wählen. Bei einer Folgeliste den Vorbehalt und Geltungsbeginn ausweisen.",
+      "limit": "Die Liste der meldepflichtigen Berufe beantwortet eine Regelfrage. Sie dient nicht als Stellenzählung.",
+      "links": [
+        {
+          "label": "Arbeitgeberübersicht",
+          "url": "https://www.arbeit.swiss/de/arbeitgebende"
+        }
+      ]
+    },
+    {
+      "id": "fedlex",
+      "areas": [
+        "E"
+      ],
+      "tier": "later",
+      "name": "Fedlex · Bundesrecht und Inkrafttreten",
+      "url": "https://fedlex.data.admin.ch/de-CH/home",
+      "access": "ELI und SPARQL",
+      "cadence": "Bei amtlicher Veröffentlichung",
+      "description": "Amtliche Fassungen und Metadaten zu Bundesgesetzen und Verordnungen.",
+      "discovery": "Relevante Rechtsakte anhand ELI oder SR-Nummer verfolgen. Veröffentlichte Änderung, geltende Fassung und Datum des Inkrafttretens getrennt erfassen.",
+      "limit": "Für die Behandlung eines laufenden Vorstosses die Parlamentsquelle hinzuziehen.",
+      "links": [
+        {
+          "label": "AIG · geltende Fassung",
+          "url": "https://www.fedlex.admin.ch/eli/cc/2007/758/de"
+        }
+      ]
+    },
+    {
+      "id": "parliament",
+      "areas": [
+        "E"
+      ],
+      "tier": "later",
+      "name": "Parlament · Geschäfte und Vorstösse",
+      "url": "https://www.parlament.ch/de/%C3%BCber-das-parlament/fakten-und-zahlen/open-data-web-services",
+      "access": "Offener Webdienst mit API-Schlüssel",
+      "cadence": "Nach Geschäftsstand",
+      "description": "Parlamentarische Geschäfte und Verfahrensstände. Curia Vista dient zur Prüfung einzelner Vorstösse.",
+      "discovery": "Den neuen Open Web Service nach Anmeldung verwenden. Geschäfts-ID und Verfahrensstand für die Anzeige speichern und zur Originalseite verlinken.",
+      "limit": "Bei einem Vorstoss den politischen Status anzeigen. Rechtswirkung und Inkrafttreten in Fedlex prüfen.",
+      "links": [
+        {
+          "label": "Schweizer Parlamentsgeschäfte",
+          "url": "https://www.parlament.ch/de/ratsbetrieb/suche-curia-vista"
+        }
+      ]
+    }
+  ],
+  "openCoverage": [
+    {
+      "area": "C",
+      "label": "Arbeitgeber für passende Rollen",
+      "description": "Für Arbeitgeberauswertungen ist eine zugelassene Schweizer Inseratequelle mit Arbeitgeberfeld und geklärter Wiederverwendung nötig. Adzuna ist ein Kandidat mit Zugangsdaten. Seine Schweizer Antwort und Nutzungsrechte noch vor der Bindung prüfen.",
+      "source": "https://developer.adzuna.com/activedocs"
+    },
+    {
+      "area": "A/B",
+      "label": "Teilrollen und Städte",
+      "description": "Separate belastbare Zahlen für einzelne Städte, Schnittstellenrollen und einzelne Fähigkeiten pro Branche brauchen eine Quelle mit passender Granularität."
+    }
+  ]
+}

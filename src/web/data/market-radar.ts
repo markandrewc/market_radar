@@ -71,9 +71,9 @@ function parseSkill(row: (number | string)[]): SkillSnapshot['skills'][number] {
   return [label, count];
 }
 
-export const skillsByRole: Readonly<Record<string, SkillSnapshot>> = Object.fromEntries(
+export const skillsByRole: Readonly<Partial<Record<string, SkillSnapshot | null>>> = Object.fromEntries(
   Object.entries(roleSkills).map(([id, snapshot]) => [
     id,
-    { ...snapshot, skills: snapshot.skills.map(parseSkill) },
+    snapshot && { ...snapshot, skills: snapshot.skills.map(parseSkill) },
   ]),
 );

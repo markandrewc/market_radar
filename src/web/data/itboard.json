@@ -5,9 +5,9 @@
     "report_index_url": "https://www.itboard.ch/arbeitsmarkt",
     "licence": "CC BY 4.0",
     "scope": "Monatsstichproben der im ITBoard-Bericht gezählten Schweizer IT-Inserate. Die Rollen und das Erfahrungsniveau stammen aus der Klassifizierung von ITBoard.",
-    "fetched_at": "2026-11-21T09:30:25.695Z"
+    "fetched_at": "2026-11-21T09:45:19.979Z"
   },
-  "fetched_at": "2026-11-21T09:30:25.695Z",
+  "fetched_at": "2026-11-21T09:45:19.979Z",
   "roles": [
     {
       "id": "it-support",
@@ -20,6 +20,14 @@
     {
       "id": "data-engineer",
       "label": "Data Engineering"
+    },
+    {
+      "id": "software-engineer",
+      "label": "Software Engineer / Developer"
+    },
+    {
+      "id": "data-analyst",
+      "label": "Data Analyst"
     }
   ],
   "rows": [
@@ -54,6 +62,26 @@
       "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/januar-2026"
     },
     {
+      "role_id": "software-engineer",
+      "month": "2026-01",
+      "value": 9,
+      "base": 41,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-01-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/januar-2026"
+    },
+    {
+      "role_id": "data-analyst",
+      "month": "2026-02",
+      "value": 3,
+      "base": 130,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-02-26",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/februar-2026"
+    },
+    {
       "role_id": "data-engineer",
       "month": "2026-02",
       "value": 3,
@@ -84,6 +112,16 @@
       "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/februar-2026"
     },
     {
+      "role_id": "software-engineer",
+      "month": "2026-02",
+      "value": 23,
+      "base": 130,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-02-26",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/februar-2026"
+    },
+    {
       "role_id": "data-engineer",
       "month": "2026-03",
       "value": 1,
@@ -97,6 +135,16 @@
       "role_id": "fullstack-developer",
       "month": "2026-03",
       "value": 5,
+      "base": 61,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-03-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/maerz-2026"
+    },
+    {
+      "role_id": "software-engineer",
+      "month": "2026-03",
+      "value": 6,
       "base": 61,
       "unit": "postings",
       "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
@@ -134,6 +182,26 @@
       "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/april-2026"
     },
     {
+      "role_id": "software-engineer",
+      "month": "2026-04",
+      "value": 13,
+      "base": 78,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-04-28",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/april-2026"
+    },
+    {
+      "role_id": "data-analyst",
+      "month": "2026-05",
+      "value": 2,
+      "base": 88,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-05-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/mai-2026"
+    },
+    {
       "role_id": "data-engineer",
       "month": "2026-05",
       "value": 3,
@@ -152,6 +220,26 @@
       "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
       "data_cutoff": "2026-05-29",
       "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/mai-2026"
+    },
+    {
+      "role_id": "software-engineer",
+      "month": "2026-05",
+      "value": 14,
+      "base": 88,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-05-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/mai-2026"
+    },
+    {
+      "role_id": "data-analyst",
+      "month": "2026-06",
+      "value": 3,
+      "base": 131,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-06-28",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/juni-2026"
     },
     {
       "role_id": "data-engineer",
@@ -182,6 +270,26 @@
       "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
       "data_cutoff": "2026-06-28",
       "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/juni-2026"
+    },
+    {
+      "role_id": "software-engineer",
+      "month": "2026-06",
+      "value": 28,
+      "base": 131,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-06-28",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/juni-2026"
+    },
+    {
+      "role_id": "data-analyst",
+      "month": "2026-07",
+      "value": 1,
+      "base": 142,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-07-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/juli-2026"
     },
     {
       "role_id": "data-engineer",
@@ -207,6 +315,16 @@
       "role_id": "it-support",
       "month": "2026-07",
       "value": 7,
+      "base": 142,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-07-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/juli-2026"
+    },
+    {
+      "role_id": "software-engineer",
+      "month": "2026-07",
+      "value": 27,
       "base": 142,
       "unit": "postings",
       "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
@@ -244,6 +362,16 @@
       "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/august-2026"
     },
     {
+      "role_id": "software-engineer",
+      "month": "2026-08",
+      "value": 29,
+      "base": 104,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-08-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/august-2026"
+    },
+    {
       "role_id": "data-engineer",
       "month": "2026-09",
       "value": 5,
@@ -272,6 +400,26 @@
       "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
       "data_cutoff": "2026-09-28",
       "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/september-2026"
+    },
+    {
+      "role_id": "software-engineer",
+      "month": "2026-09",
+      "value": 24,
+      "base": 114,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-09-28",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/september-2026"
+    },
+    {
+      "role_id": "data-analyst",
+      "month": "2026-10",
+      "value": 3,
+      "base": 582,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-10-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/oktober-2026"
     },
     {
       "role_id": "data-engineer",
@@ -304,6 +452,26 @@
       "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/oktober-2026"
     },
     {
+      "role_id": "software-engineer",
+      "month": "2026-10",
+      "value": 139,
+      "base": 582,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-10-29",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/oktober-2026"
+    },
+    {
+      "role_id": "data-analyst",
+      "month": "2026-11",
+      "value": 4,
+      "base": 770,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-11-15",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/november-2026"
+    },
+    {
       "role_id": "data-engineer",
       "month": "2026-11",
       "value": 57,
@@ -327,6 +495,16 @@
       "role_id": "it-support",
       "month": "2026-11",
       "value": 34,
+      "base": 770,
+      "unit": "postings",
+      "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",
+      "data_cutoff": "2026-11-15",
+      "cutoff_source_url": "https://www.itboard.ch/arbeitsmarkt/november-2026"
+    },
+    {
+      "role_id": "software-engineer",
+      "month": "2026-11",
+      "value": 184,
       "base": 770,
       "unit": "postings",
       "source_url": "https://www.itboard.ch/arbeitsmarkt/daten.csv",

@@ -1,0 +1,288 @@
+{
+  "schemaVersion": 1,
+  "completedAt": "2026-11-21T10:04:26.661Z",
+  "sources": [
+    {
+      "id": "sem-asylum-statistics",
+      "label": "SEM Asylstatistik",
+      "url": "https://www.sem.admin.ch/de/asylstatistik",
+      "attempt": {
+        "checkedAt": "2026-11-21T10:04:22.353Z",
+        "status": "reachable",
+        "httpStatus": 200
+      },
+      "lastSuccess": {
+        "checkedAt": "2026-11-21T10:04:22.353Z",
+        "httpStatus": 200
+      },
+      "publicationStatus": "confirmed",
+      "publication": {
+        "period": "2026-10",
+        "title": "Asylstatistik Oktober 2026",
+        "publishedOn": "2026-11-16",
+        "url": "https://www.sem.admin.ch/de/asylstatistik-oktober-2026",
+        "observedAt": "2026-11-21T10:04:22.353Z"
+      },
+      "publicationChanged": false,
+      "lastPublicationChange": null
+    },
+    {
+      "id": "sem-resident-statistics",
+      "label": "SEM Ausländerstatistik",
+      "url": "https://www.sem.admin.ch/de/auslaenderstatistik",
+      "attempt": {
+        "checkedAt": "2026-11-21T10:04:22.420Z",
+        "status": "reachable",
+        "httpStatus": 200
+      },
+      "lastSuccess": {
+        "checkedAt": "2026-11-21T10:04:22.420Z",
+        "httpStatus": 200
+      },
+      "publicationStatus": "confirmed",
+      "publication": {
+        "period": "2026-10",
+        "title": "Ausländerstatistik Oktober 2026",
+        "publishedOn": "2026-11-19",
+        "url": "https://www.sem.admin.ch/de/auslaenderstatistik-oktober-2026",
+        "observedAt": "2026-11-21T10:04:22.420Z"
+      },
+      "publicationChanged": null,
+      "lastPublicationChange": null
+    },
+    {
+      "id": "sem-asylum-employment",
+      "label": "SEM employment in the asylum system",
+      "url": "https://www.sem.admin.ch/de/arbeit-asylbereich",
+      "attempt": {
+        "checkedAt": "2026-11-21T10:04:22.420Z",
+        "status": "reachable",
+        "httpStatus": 200
+      },
+      "lastSuccess": {
+        "checkedAt": "2026-11-21T10:04:22.420Z",
+        "httpStatus": 200
+      },
+      "publicationStatus": "confirmed",
+      "publication": {
+        "title": "Erwerbstätige aus dem Asylbereich",
+        "publishedOn": "2026-10-21",
+        "url": "https://www.sem.admin.ch/de/arbeit-asylbereich",
+        "observedAt": "2026-11-21T10:04:22.420Z"
+      },
+      "publicationChanged": false,
+      "lastPublicationChange": null
+    },
+    {
+      "id": "sem-status-s-statistics",
+      "label": "SEM protection status S statistics",
+      "url": "https://www.sem.admin.ch/de/statistiken-ukraine",
+      "attempt": {
+        "checkedAt": "2026-11-21T10:04:22.421Z",
+        "status": "reachable",
+        "httpStatus": 200
+      },
+      "lastSuccess": {
+        "checkedAt": "2026-11-21T10:04:22.421Z",
+        "httpStatus": 200
+      }
+    },
+    {
+      "id": "sem-visa-entry",
+      "label": "SEM entry and visa guidance",
+      "url": "https://www.sem.admin.ch/de/in-die-schweiz-einreisen",
+      "attempt": {
+        "checkedAt": "2026-11-21T10:04:22.421Z",
+        "status": "reachable",
+        "httpStatus": 200
+      },
+      "lastSuccess": {
+        "checkedAt": "2026-11-21T10:04:22.421Z",
+        "httpStatus": 200
+      }
+    },
+    {
+      "id": "sem-residence",
+      "label": "SEM residence guidance",
+      "url": "https://www.sem.admin.ch/de/aufenthalt",
+      "attempt": {
+        "checkedAt": "2026-11-21T10:04:22.421Z",
+        "status": "reachable",
+        "httpStatus": 200
+      },
+      "lastSuccess": {
+        "checkedAt": "2026-11-21T10:04:22.421Z",
+        "httpStatus": 200
+      }
+    },
+    {
+      "id": "sem-status-s-travel",
+      "label": "Federal Council protection status S travel proposal",
+      "url": "https://www.sem.admin.ch/de/newnsb/Oq0CiNf6IUcX",
+      "attempt": {
+        "checkedAt": "2026-11-21T10:04:22.421Z",
+        "status": "reachable",
+        "httpStatus": 200
+      },
+      "lastSuccess": {
+        "checkedAt": "2026-11-21T10:04:22.421Z",
+        "httpStatus": 200
+      },
+      "publicationStatus": "confirmed",
+      "publication": {
+        "title": "Ukrainerinnen und Ukrainer mit Schutzstatus S sollen weiterhin ins Ausland reisen können",
+        "publishedOn": "2026-11-11",
+        "url": "https://www.sem.admin.ch/de/newnsb/Oq0CiNf6IUcX",
+        "observedAt": "2026-11-21T10:04:22.421Z"
+      },
+      "publicationChanged": false,
+      "lastPublicationChange": null
+    },
+    {
+      "id": "sem-permit-quotas",
+      "label": "Federal Council 2026 permit quotas",
+      "url": "https://www.ejpd.admin.ch/de/newnsb/7HwBjdg5HpBA",
+      "attempt": {
+        "checkedAt": "2026-11-21T10:04:22.421Z",
+        "status": "reachable",
+        "httpStatus": 200
+      },
+      "lastSuccess": {
+        "checkedAt": "2026-11-21T10:04:22.421Z",
+        "httpStatus": 200
+      }
+    },
+    {
+      "id": "sem-non-eu-work",
+      "label": "SEM work permits and quota publications",
+      "url": "https://www.sem.admin.ch/de/nicht-eu-efta-angehoerige",
+      "attempt": {
+        "checkedAt": "2026-11-21T10:04:22.423Z",
+        "status": "reachable",
+        "httpStatus": 200
+      },
+      "lastSuccess": {
+        "checkedAt": "2026-11-21T10:04:22.423Z",
+        "httpStatus": 200
+      }
+    },
+    {
+      "id": "bfs-vacancies",
+      "label": "BFS Offene Stellen nach Wirtschaftsabteilung",
+      "url": "https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0602000000_103/px-x-0602000000_103.px",
+      "attempt": {
+        "checkedAt": "2026-11-21T10:04:22.423Z",
+        "status": "reachable",
+        "httpStatus": 200
+      },
+      "lastSuccess": {
+        "checkedAt": "2026-11-21T10:04:22.423Z",
+        "httpStatus": 200
+      },
+      "publicationStatus": "confirmed",
+      "publication": {
+        "period": "2026Q2",
+        "title": "Offene Stellen nach ausgewählten Wirtschaftsabteilungen",
+        "publishedOn": null,
+        "url": "https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0602000000_103/px-x-0602000000_103.px",
+        "observedAt": "2026-11-21T10:04:22.423Z"
+      },
+      "publicationChanged": null,
+      "lastPublicationChange": null
+    },
+    {
+      "id": "bfs-vacancies-region",
+      "label": "BFS Offene Stellen nach Grossregion",
+      "url": "https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0602000000_104/px-x-0602000000_104.px",
+      "attempt": {
+        "checkedAt": "2026-11-21T10:04:22.424Z",
+        "status": "reachable",
+        "httpStatus": 200
+      },
+      "lastSuccess": {
+        "checkedAt": "2026-11-21T10:04:22.424Z",
+        "httpStatus": 200
+      },
+      "publicationStatus": "confirmed",
+      "publication": {
+        "period": "2026Q2",
+        "title": "Offene Stellen nach Grossregion",
+        "publishedOn": null,
+        "url": "https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0602000000_104/px-x-0602000000_104.px",
+        "observedAt": "2026-11-21T10:04:22.424Z"
+      },
+      "publicationChanged": null,
+      "lastPublicationChange": null
+    },
+    {
+      "id": "seco-job-notification",
+      "label": "SECO Stellenmeldepflicht",
+      "url": "https://www.arbeit.swiss/de/arbeitgebende/stellenmeldepflichten",
+      "attempt": {
+        "checkedAt": "2026-11-21T10:04:22.424Z",
+        "status": "reachable",
+        "httpStatus": 200
+      },
+      "lastSuccess": {
+        "checkedAt": "2026-11-21T10:04:22.424Z",
+        "httpStatus": 200
+      }
+    },
+    {
+      "id": "parliament-work-access",
+      "label": "Swiss Parliament committee update on work access",
+      "url": "https://www.parlament.ch/press-releases/Pages/mm-spk-s-2026-11-06.aspx?lang=1031",
+      "attempt": {
+        "checkedAt": "2026-11-21T10:04:22.425Z",
+        "status": "reachable",
+        "httpStatus": 200
+      },
+      "lastSuccess": {
+        "checkedAt": "2026-11-21T10:04:22.425Z",
+        "httpStatus": 200
+      }
+    },
+    {
+      "id": "parliament-open-data",
+      "label": "Swiss Parliament Open Data",
+      "url": "https://www.parlament.ch/de/%C3%BCber-das-parlament/fakten-und-zahlen/open-data-web-services",
+      "attempt": {
+        "checkedAt": "2026-11-21T10:04:22.427Z",
+        "status": "reachable",
+        "httpStatus": 200
+      },
+      "lastSuccess": {
+        "checkedAt": "2026-11-21T10:04:22.427Z",
+        "httpStatus": 200
+      }
+    },
+    {
+      "id": "fedlex-status-s-employment",
+      "label": "Fedlex work notification ordinance",
+      "url": "https://www.fedlex.admin.ch/eli/oc/2025/669/de",
+      "attempt": {
+        "checkedAt": "2026-11-21T10:04:22.427Z",
+        "status": "reachable",
+        "httpStatus": 200
+      },
+      "lastSuccess": {
+        "checkedAt": "2026-11-21T10:04:22.427Z",
+        "httpStatus": 200
+      }
+    },
+    {
+      "id": "fedlex-migration-act",
+      "label": "Fedlex Foreign Nationals and Integration Act",
+      "url": "https://www.fedlex.admin.ch/eli/cc/2007/758/de",
+      "attempt": {
+        "checkedAt": "2026-11-21T10:04:22.428Z",
+        "status": "reachable",
+        "httpStatus": 200
+      },
+      "lastSuccess": {
+        "checkedAt": "2026-11-21T10:04:22.428Z",
+        "httpStatus": 200
+      }
+    }
+  ]
+}

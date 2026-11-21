@@ -5,9 +5,9 @@
     "base": 16,
     "skills": [["ICT", 13], ["Microsoft 365", 9], ["Active Directory", 6], ["Windows 11", 5]],
     "course": {
-      "title": "Troubleshoot a sign-in problem",
-      "practice": "Work through a fictional support ticket. A Microsoft 365 sign-in fails on Windows 11. Ask what error the user saw and who is affected, then suggest a safe first check.",
-      "check": "Record the symptom, action and result in the ticket. Keep credentials private and escalate unresolved issues to the right team."
+      "title": "Ein Anmeldeproblem eingrenzen",
+      "practice": "Bearbeite eine fiktive Supportanfrage. Die Anmeldung bei Microsoft 365 schlägt auf Windows 11 fehl. Frage nach der Fehlermeldung und den betroffenen Personen. Schlage dann eine erste sichere Prüfung vor.",
+      "check": "Halte Fehlerbild, Massnahme und Ergebnis fest. Schütze die Zugangsdaten und leite ungelöste Fälle an das zuständige Team weiter."
     }
   },
   "fullstack-developer": {
@@ -16,9 +16,9 @@
     "base": 29,
     "skills": [["Java", 16], ["React", 13], ["Docker", 12], ["Angular", 11]],
     "course": {
-      "title": "Run a small web app with React and Docker",
-      "practice": "Display three fictional records in a React list and run the application in a prepared container.",
-      "check": "Ask someone else to follow your setup instructions and confirm they can open the app and see all three records."
+      "title": "Eine kleine Webanwendung mit React und Docker starten",
+      "practice": "Zeige drei fiktive Einträge in einer React-Liste und starte die Anwendung in einem vorbereiteten Container.",
+      "check": "Bitte eine zweite Person, deiner Anleitung zu folgen und zu prüfen, ob alle drei Einträge sichtbar sind."
     }
   },
   "data-engineer": {
@@ -27,9 +27,21 @@
     "base": 34,
     "skills": [["Python", 13], ["ML / AI", 11], ["ICT", 9], ["Snowflake", 9], ["Kafka", 9], ["SQL", 8]],
     "course": {
-      "title": "Check and summarize CSV data with Python",
-      "practice": "Read a fictional CSV, flag missing values and count valid records for each group.",
-      "check": "Verify the row totals and report missing records separately."
+      "title": "CSV-Daten mit Python prüfen und zusammenfassen",
+      "practice": "Lies eine fiktive CSV-Datei ein. Markiere fehlende Werte und zähle die gültigen Einträge pro Gruppe.",
+      "check": "Prüfe die Gesamtzahl der Zeilen und weise fehlende Einträge separat aus."
     }
-  }
+  },
+  "software-engineer": {
+    "source": "https://www.itboard.ch/rollen/software-engineer",
+    "read_on": "2026-11-21",
+    "base": 119,
+    "skills": [["Java", 39], ["Python", 35], ["Kubernetes", 29], ["Docker", 26], ["CI/CD", 25], ["C++", 22], ["SQL", 20], ["TypeScript", 18]],
+    "course": {
+      "title": "Eine kleine Java-Schnittstelle bauen und testen",
+      "practice": "Erstelle eine Java-Schnittstelle für einen Eintrag aus einem fiktiven Datensatz. Teste eine gültige und eine ungültige Anfrage. Starte die Anwendung anschliessend in Docker.",
+      "check": "Beide Tests bestehen. Die Schnittstelle meldet bei ungültiger Eingabe den dokumentierten Fehler. Eine zweite Person kann die Anwendung mit deiner Anleitung starten."
+    }
+  },
+  "data-analyst": null
 }
