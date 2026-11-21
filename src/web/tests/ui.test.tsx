@@ -85,6 +85,18 @@ describe('guidance', () => {
     expect(screen.getByText(/Sources up to date/)).toBeTruthy();
     expect((await screen.findAllByText('What this means for Powercoders', {}, { timeout: 4000 })).length).toBeGreaterThan(0);
   });
+
+  it('opens every pulse source link in a new tab', async () => {
+    show('/');
+    await ready(/This week's pulse/);
+    const pulse = screen.getByRole('region', { name: "This week's pulse" });
+    const links = await within(pulse).findAllByRole('link', { name: /^Source: / }, { timeout: 4000 });
+    expect(links.length).toBeGreaterThan(0);
+    for (const link of links) {
+      expect(link.getAttribute('target')).toBe('_blank');
+      expect(link.getAttribute('rel')).toContain('noreferrer');
+    }
+  });
 });
 
 describe('roles on the home page and the all-roles view', () => {

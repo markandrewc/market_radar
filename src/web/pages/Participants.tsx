@@ -139,7 +139,7 @@ export default function Participants() {
           </div>
         ) : (
           <div className="space-y-4">
-            <div className="overflow-hidden rounded-card border border-line bg-surface shadow-card">
+            <div className="rounded-card border border-line bg-surface shadow-card">
               <ul className="grid divide-y divide-line sm:grid-cols-2 sm:divide-y-0">
                 {items.map((item) => (
                   <li

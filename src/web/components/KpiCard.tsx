@@ -35,9 +35,9 @@ export function KpiCard({
   icon?: ReactNode;
 }) {
   return (
-    <Card className="relative h-full overflow-hidden">
-      {/* 2 px data accent: crisp on paper, gone the moment the card is hovered by nothing. */}
-      <span aria-hidden className="absolute inset-x-0 top-0 h-0.5 bg-linear-to-r from-accent-soft to-brand-accent" />
+    <Card className="relative h-full">
+      {/* 2 px data accent, inset so it follows the card corners without clipping popovers. */}
+      <span aria-hidden className="absolute left-3 right-3 top-1 h-0.5 rounded-full bg-linear-to-r from-accent-soft to-brand-accent" />
       <CardContent className="flex h-full flex-col gap-3 p-5">
         <div className="flex items-start justify-between gap-3">
           <p className="text-xs font-medium uppercase tracking-[0.12em] text-ink-soft">{label}</p>

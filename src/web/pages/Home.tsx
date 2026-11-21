@@ -211,9 +211,11 @@ export default function Home({ onHelp }: { onHelp: () => void }) {
   return (
     <div className="space-y-14 sm:space-y-16">
       {/* Hero: graphite panel, dotted paper texture, crimson glow and the live numbers card. */}
-      <section className="relative overflow-hidden rounded-[1.5rem] bg-brand text-paper">
-        <div aria-hidden className="paper-dots pointer-events-none absolute inset-0 opacity-[0.14] invert" />
-        <div aria-hidden className="hero-glow pointer-events-none absolute inset-0" />
+      <section className="relative rounded-[1.5rem] bg-brand text-paper">
+        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden rounded-[1.5rem]">
+          <div className="paper-dots absolute inset-0 opacity-[0.14] invert" />
+          <div className="hero-glow absolute inset-0" />
+        </div>
         <div className="relative grid gap-8 p-6 sm:p-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-rose-200">MARKET RADAR · WEEKLY PULSE</p>
