@@ -6,6 +6,7 @@ import { usePaged } from '../hooks';
 import { PageHeader } from '@/components/PageHeader';
 import { PolicyCard } from '@/components/PolicyCard';
 import { FilterPills } from '@/components/FilterPills';
+import { Button } from '@/components/ui/button';
 import { Pagination } from '@/components/ui/pagination';
 import { Empty, ErrorMsg, Loading } from '@/components/Status';
 import { formatDate } from '../lib/source';
@@ -51,6 +52,10 @@ function noteFor(item: MarketItem, notes: PolicyNote[]): PolicyNote | undefined 
 const ALL_TOPICS = '';
 const PAGE = 8;
 
+/** Quiet inline link in supporting sentences. */
+const linkClass =
+  'font-medium text-brand-accent underline decoration-brand-accent/30 underline-offset-2 transition-colors hover:text-accent-deep';
+
 export default function Policy() {
   const [topic, setTopic] = useState<string>(ALL_TOPICS);
   const { data, isLoading, error } = useItems({ category: 'E', limit: 100 });
@@ -77,22 +82,37 @@ export default function Policy() {
 
   const header = (
     <PageHeader
+      kicker="POLICY WATCH"
       title="Policy news"
       description="New laws, motions and reporting duties that can change what we teach or who we can place."
     />
   );
 
-  if (isLoading) return <Loading />;
-  if (error) return <ErrorMsg />;
+  if (isLoading) {
+    return (
+      <div className="space-y-8">
+        {header}
+        <Loading />
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="space-y-8">
+        {header}
+        <ErrorMsg />
+      </div>
+    );
+  }
 
   if (allItems.length === 0) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-8">
         {header}
         <Empty text="No policy items are stored yet. Run the connector pipeline and sync the configured sources, then reload this page." />
-        <p className="text-sm text-slate-600">
-          Check the <Link to="/sources" className="font-medium text-brand underline">data sources</Link> for the last sync and errors, or
-          browse <Link to="/items?category=E" className="font-medium text-brand underline">all category E items</Link>.
+        <p className="text-sm text-ink-soft">
+          Check the <Link to="/sources" className={linkClass}>data sources</Link> for the last sync and errors, or
+          browse <Link to="/items?category=E" className={linkClass}>all category E items</Link>.
         </p>
       </div>
     );
@@ -104,51 +124,49 @@ export default function Policy() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {header}
-      <p className="text-xs text-slate-500">
-        Notes marked “Our reading, not the source” are our own interpretation, not the publisher’s wording.
-      </p>
 
-      <FilterPills
-        label="Filter policy items by topic"
-        options={chipOptions}
-        value={activeGroup ? activeGroup.label : ALL_TOPICS}
-        onChange={chooseTopic}
-      />
+      <div className="space-y-4">
+        <p className="text-xs leading-relaxed text-ink-soft">
+          Notes marked “Our reading, not the source” are our own interpretation, not the publisher’s wording.
+        </p>
+        <FilterPills
+          label="Filter policy items by topic"
+          options={chipOptions}
+          value={activeGroup ? activeGroup.label : ALL_TOPICS}
+          onChange={chooseTopic}
+        />
+      </div>
 
       {items.length === 0 ? (
-        <div className="space-y-2">
+        <div className="space-y-4">
           <Empty text={`No policy item mentions “${activeGroup?.label ?? topic}” right now.`} />
-          <button
-            type="button"
-            onClick={() => chooseTopic(ALL_TOPICS)}
-            className="rounded-md border border-slate-200 px-3 py-1 text-xs font-medium text-slate-600"
-          >
+          <Button variant="outline" size="sm" className="rounded-control" onClick={() => chooseTopic(ALL_TOPICS)}>
             Show all topics
-          </button>
+          </Button>
         </div>
       ) : (
-        <div className="space-y-8">
+        <div className="space-y-10">
           {groups.map((group) => (
-            <section key={group.name} aria-label={`Policy items from ${group.name}`} className="space-y-3">
-              <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-slate-200 pb-2">
-                <h2 className="font-semibold text-brand">
+            <section key={group.name} aria-label={`Policy items from ${group.name}`} className="space-y-5">
+              <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-b border-line pb-3">
+                <h2 className="min-w-0">
                   <a
                     href={group.items[0].source_url}
                     target="_blank"
                     rel="noreferrer"
-                    className="underline-offset-2 hover:text-brand-accent hover:underline"
+                    className="kicker underline-offset-4 transition-colors hover:underline"
                   >
                     {group.name}
                   </a>
                 </h2>
-                <p className="text-xs text-slate-500">
+                <p className="tnum text-xs text-ink-soft">
                   {group.items.length} item(s) on this page · newest{' '}
                   {group.newest ? formatDate(group.newest) : 'date not stated'}
                 </p>
               </div>
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-5 md:grid-cols-2">
                 {group.items.map((item) => (
                   <PolicyCard
                     key={`${item.source_name}-${item.id}`}
@@ -160,18 +178,21 @@ export default function Policy() {
               </div>
             </section>
           ))}
-          <Pagination
-            label="Policy items pages"
-            page={paged.page}
-            pageCount={paged.pageCount}
-            total={paged.total}
-            size={PAGE}
-            onChange={paged.setPage}
-          />
-          <p className="text-xs text-slate-500">
-            {items.length} item(s) from {new Set(items.map((item) => item.source_name)).size} source(s)
-            {activeGroup ? ` on “${activeGroup.label}”` : ''}.
-          </p>
+
+          <div className="space-y-3 border-t border-line pt-5">
+            <Pagination
+              label="Policy items pages"
+              page={paged.page}
+              pageCount={paged.pageCount}
+              total={paged.total}
+              size={PAGE}
+              onChange={paged.setPage}
+            />
+            <p className="text-xs text-ink-soft">
+              {items.length} item(s) from {new Set(items.map((item) => item.source_name)).size} source(s)
+              {activeGroup ? ` on “${activeGroup.label}”` : ''}.
+            </p>
+          </div>
         </div>
       )}
     </div>

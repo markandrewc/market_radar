@@ -27,7 +27,7 @@ async function noViolations() {
 describe('accessibility (axe) on every page', () => {
   for (const [name, path, heading] of [
     ['Job market', '/', /Job market by role/], ['Role page', '/roles/web-developer', /^Web Developer$/],
-    ['Policy', '/policy', /Policy news/], ['Participants', '/participants', /Participants/], ['Reports', '/reports', /Weekly report/], ['Sources', '/sources', /Data sources/], ['Ask', '/ask', /Ask the radar/],
+    ['Policy', '/policy', /Policy news/], ['Participants', '/participants', /Participants/], ['Reports', '/reports', /Weekly report/], ['Sources', '/sources', /Data sources/], ['Ask', '/ask', /Ask the radar/], ['All roles', '/roles', /^All roles$/], ['Items', '/items', /Market items/],
   ] as const) {
     it(`${name} has no violations`, async () => {
       show(path);

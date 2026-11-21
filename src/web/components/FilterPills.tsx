@@ -1,6 +1,10 @@
 import { cn } from '@/lib/utils';
 
-/** "Pick one" chips as real buttons: pressed state is announced, and the row scrolls sideways on small screens. */
+/**
+ * "Pick one" tabs on paper. The pressed state is announced, the active tab keeps ink
+ * text with a 2 px crimson underline (the label stays legible for every choice), and
+ * the row scrolls sideways on small screens instead of overflowing the page.
+ */
 export function FilterPills<T extends string>({
   options,
   value,
@@ -13,7 +17,7 @@ export function FilterPills<T extends string>({
   label: string;
 }) {
   return (
-    <div role="group" aria-label={label} className="-mx-1 flex max-w-full items-center gap-2 overflow-x-auto px-1 pb-1">
+    <div role="group" aria-label={label} className="-mx-1 flex max-w-full items-center gap-1 overflow-x-auto px-1">
       {options.map((option) => {
         const selected = option.value === value;
         return (
@@ -23,14 +27,19 @@ export function FilterPills<T extends string>({
             aria-pressed={selected}
             onClick={() => onChange(option.value)}
             className={cn(
-              'inline-flex min-h-9 shrink-0 items-center whitespace-nowrap rounded-full border px-3 py-1.5 text-sm font-medium transition-colors',
+              'relative inline-flex min-h-10 shrink-0 items-center whitespace-nowrap rounded-control px-3 text-sm font-medium transition-colors',
               'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accent',
-              selected
-                ? 'border-brand bg-brand text-white'
-                : 'border-slate-300 bg-white text-brand hover:bg-slate-50',
+              selected ? 'text-ink' : 'text-ink-soft hover:bg-brand-soft/70 hover:text-ink',
             )}
           >
             {option.label}
+            <span
+              aria-hidden
+              className={cn(
+                'absolute inset-x-2 bottom-0 h-0.5 rounded-full transition-colors',
+                selected ? 'bg-brand-accent' : 'bg-transparent',
+              )}
+            />
           </button>
         );
       })}

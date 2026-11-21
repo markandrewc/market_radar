@@ -5,10 +5,10 @@ import { ExternalLink, RefreshCw, SearchX, Sparkles } from 'lucide-react';
 import type { AskAnswer, SourceRef } from '../../shared/types';
 import { ApiError, useAsk, useLlmStatus } from '../api';
 import { PageHeader } from '@/components/PageHeader';
+import { SectionHeader } from '@/components/SectionHeader';
 import { SourceInfo, formatDate } from '@/components/SourceInfo';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const HISTORY_KEY = 'mr-ask-history';
@@ -63,7 +63,7 @@ function SourceLink({ source }: { source: SourceRef }) {
       href={source.url}
       target="_blank"
       rel="noreferrer"
-      className="inline-flex items-center gap-1 break-words text-xs font-medium text-brand-accent underline underline-offset-2 hover:text-brand"
+      className="inline-flex max-w-full items-center gap-1.5 break-words text-xs font-medium text-ink underline decoration-line-strong underline-offset-2 transition-colors hover:text-brand-accent hover:decoration-brand-accent/40"
     >
       <span>
         {source.name}
@@ -78,11 +78,11 @@ function SourceLink({ source }: { source: SourceRef }) {
 function FollowUps({ followUps, pending, onAsk }: { followUps: string[]; pending: boolean; onAsk: (question: string) => void }) {
   if (followUps.length === 0) return null;
   return (
-    <div className="space-y-2 border-t border-slate-100 pt-3">
-      <p className="text-sm font-medium text-slate-700">You could also ask</p>
+    <div className="space-y-3 border-t border-line pt-4">
+      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-ink-soft">You could also ask</p>
       <div className="flex flex-wrap gap-2">
         {followUps.map((followUp) => (
-          <Button key={followUp} variant="outline" size="sm" disabled={pending} onClick={() => onAsk(followUp)}>
+          <Button key={followUp} variant="outline" size="sm" className="rounded-full" disabled={pending} onClick={() => onAsk(followUp)}>
             {followUp}
           </Button>
         ))}
@@ -108,27 +108,28 @@ function AnswerPanel({
   const usedSources = Array.from(new Map(answer.usedSources.map((source) => [source.id || source.url, source])).values());
 
   return (
-    <section aria-labelledby="ask-answer-heading" className="space-y-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-      <div className="flex flex-wrap items-center gap-2">
-        <h2 id="ask-answer-heading" ref={headingRef} tabIndex={-1} className="text-xl font-semibold text-brand">
+    <section aria-labelledby="ask-answer-heading" className="rounded-card border border-line bg-surface p-5 shadow-card sm:p-7">
+      <p className="kicker">THE ANSWER</p>
+      <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
+        <h2 id="ask-answer-heading" ref={headingRef} tabIndex={-1} className="text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
           The answer
         </h2>
         <Badge variant={method.variant}>{method.label}</Badge>
       </div>
-      <p className="text-sm text-slate-600">Your question: “{answer.question}”</p>
+      <p className="mt-3 text-sm text-ink-soft">Your question: “{answer.question}”</p>
 
       {answer.method === 'no_data' ? (
-        <div className="space-y-4">
-          <p className="text-slate-800">{answer.text}</p>
+        <div className="mt-4 space-y-4">
+          <p className="text-[15px] leading-relaxed text-ink">{answer.text}</p>
           <FollowUps followUps={answer.followUps} pending={pending} onAsk={onAsk} />
         </div>
       ) : (
-        <div className="space-y-4">
-          <div className="space-y-3">
+        <div className="mt-4 space-y-6">
+          <div className="space-y-4">
             {answer.sentences.length > 0 ? (
               answer.sentences.map((sentence, index) => (
-                <div key={`${sentence.text}-${index}`} className="space-y-1">
-                  <p className="text-slate-800">{sentence.text}</p>
+                <div key={`${sentence.text}-${index}`} className="space-y-2">
+                  <p className="text-[15px] leading-relaxed text-ink">{sentence.text}</p>
                   {sentence.sources.length > 0 && (
                     <div className="flex flex-wrap gap-1.5">
                       {sentence.sources.map((source, sourceIndex) => (
@@ -139,18 +140,18 @@ function AnswerPanel({
                 </div>
               ))
             ) : (
-              <p className="text-slate-800">{answer.text}</p>
+              <p className="text-[15px] leading-relaxed text-ink">{answer.text}</p>
             )}
           </div>
 
           {usedSources.length > 0 && (
-            <section aria-labelledby="ask-sources-heading" className="space-y-1 border-t border-slate-100 pt-3">
-              <h3 id="ask-sources-heading" className="text-sm font-semibold text-brand">
+            <section aria-labelledby="ask-sources-heading" className="space-y-2 border-t border-line pt-4">
+              <h3 id="ask-sources-heading" className="kicker">
                 I used these sources
               </h3>
-              <ul className="space-y-1">
+              <ul className="divide-y divide-line border-t border-line">
                 {usedSources.map((source) => (
-                  <li key={source.id || source.url}>
+                  <li key={source.id || source.url} className="py-2.5">
                     <SourceLink source={source} />
                   </li>
                 ))}
@@ -158,7 +159,7 @@ function AnswerPanel({
             </section>
           )}
 
-          {answer.disclaimer ? <p className="border-t border-slate-100 pt-3 text-xs text-slate-500">{answer.disclaimer}</p> : null}
+          {answer.disclaimer ? <p className="border-t border-line pt-4 text-xs leading-relaxed text-ink-soft">{answer.disclaimer}</p> : null}
 
           <FollowUps followUps={answer.followUps} pending={pending} onAsk={onAsk} />
         </div>
@@ -267,6 +268,7 @@ export default function Ask() {
 
   const header = (
     <PageHeader
+      kicker="ASK THE RADAR"
       title="Ask the radar"
       description="Ask about the roles we track, the skills in the postings, employers, the target group or policy news. Answers use only the data we store and name their sources."
     />
@@ -274,7 +276,7 @@ export default function Ask() {
 
   if (llm.isLoading) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-8">
         {header}
         <AskSkeleton />
       </div>
@@ -283,7 +285,7 @@ export default function Ask() {
 
   if (llm.data?.enabled === false) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-8">
         {header}
         <NotConfiguredNotice />
       </div>
@@ -291,76 +293,76 @@ export default function Ask() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-10">
       {header}
 
-      <Card>
-        <CardContent className="space-y-4 pt-5">
-          <form onSubmit={submit} className="space-y-3">
-            <div className="space-y-1">
-              <label htmlFor={inputId} className="block text-sm font-medium text-slate-700">
-                Your question
-              </label>
-              <input
-                id={inputId}
-                name="question"
-                type="text"
-                required
-                maxLength={MAX_QUESTION_LENGTH}
-                value={question}
-                onChange={(event) => setQuestion(event.target.value.slice(0, MAX_QUESTION_LENGTH))}
-                aria-describedby={hintId}
-                placeholder="For example: Which skills should we teach for IT Support?"
-                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 placeholder:text-slate-400 focus:border-brand-accent"
-              />
-              <p id={hintId} className="text-xs text-slate-500">
-                Up to {MAX_QUESTION_LENGTH} characters. Answers use only the data we store and name their sources.
-              </p>
-            </div>
-            <Button type="submit" disabled={pending || question.trim().length === 0}>
-              Ask
-            </Button>
-          </form>
-
-          <div className="space-y-2 border-t border-slate-100 pt-3">
-            <p id="ask-suggestions-heading" className="text-sm font-medium text-slate-700">
-              Try one of these
+      <div className="rounded-card border border-line bg-surface p-5 shadow-card sm:p-7">
+        <form onSubmit={submit} className="space-y-4">
+          <div className="space-y-2">
+            <label htmlFor={inputId} className="block text-sm font-medium text-ink">
+              Your question
+            </label>
+            <input
+              id={inputId}
+              name="question"
+              type="text"
+              required
+              maxLength={MAX_QUESTION_LENGTH}
+              value={question}
+              onChange={(event) => setQuestion(event.target.value.slice(0, MAX_QUESTION_LENGTH))}
+              aria-describedby={hintId}
+              placeholder="For example: Which skills should we teach for IT Support?"
+              className="w-full rounded-control border border-line bg-surface px-4 py-3 text-base text-ink placeholder:text-ink-soft/70 transition-colors focus-visible:border-brand-accent"
+            />
+            <p id={hintId} className="text-xs leading-relaxed text-ink-soft">
+              Up to {MAX_QUESTION_LENGTH} characters. Answers use only the data we store and name their sources.
             </p>
-            <div role="group" aria-labelledby="ask-suggestions-heading" className="flex flex-wrap gap-2">
-              {SUGGESTIONS.map((suggestion) => (
-                <Button key={suggestion} variant="outline" size="sm" disabled={pending} onClick={() => askQuestion(suggestion)}>
-                  {suggestion}
-                </Button>
-              ))}
-            </div>
           </div>
-        </CardContent>
-      </Card>
+          <Button type="submit" disabled={pending || question.trim().length === 0}>
+            Ask
+          </Button>
+        </form>
+
+        <div className="mt-6 space-y-3 border-t border-line pt-5">
+          <p id="ask-suggestions-heading" className="text-xs font-semibold uppercase tracking-[0.14em] text-ink-soft">
+            Try one of these
+          </p>
+          <div role="group" aria-labelledby="ask-suggestions-heading" className="flex flex-wrap gap-2">
+            {SUGGESTIONS.map((suggestion) => (
+              <Button key={suggestion} variant="outline" size="sm" className="rounded-full" disabled={pending} onClick={() => askQuestion(suggestion)}>
+                {suggestion}
+              </Button>
+            ))}
+          </div>
+        </div>
+      </div>
 
       {history.length > 0 && (
-        <section aria-labelledby="ask-history-heading" className="space-y-2">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <h2 id="ask-history-heading" className="font-semibold text-brand">
-              Your last questions
-            </h2>
-            <Button variant="ghost" size="sm" onClick={clearHistory}>
-              Clear
-            </Button>
-          </div>
+        <section aria-labelledby="ask-history-heading" className="space-y-3">
+          <SectionHeader
+            id="ask-history-heading"
+            kicker="HISTORY"
+            title="Your last questions"
+            action={
+              <Button variant="ghost" size="sm" onClick={clearHistory}>
+                Clear
+              </Button>
+            }
+          />
           <div className="flex flex-wrap gap-2">
             {history.map((item) => (
-              <Button key={item} variant="outline" size="sm" disabled={pending} onClick={() => askQuestion(item)}>
+              <Button key={item} variant="outline" size="sm" className="rounded-full" disabled={pending} onClick={() => askQuestion(item)}>
                 {item}
               </Button>
             ))}
           </div>
-          <p className="text-xs text-slate-500">Kept in this browser tab only.</p>
+          <p className="text-xs text-ink-soft">Kept in this browser tab only.</p>
         </section>
       )}
 
       <div aria-live="polite" aria-atomic="false" className="space-y-4">
         {pending && (
-          <p role="status" className="flex items-center gap-2 text-sm text-slate-600">
+          <p role="status" className="flex items-center gap-2 rounded-card border border-line bg-surface px-4 py-3 text-sm text-ink-soft shadow-card">
             <Sparkles className="h-4 w-4 shrink-0 text-brand-accent motion-safe:animate-pulse" aria-hidden />
             Asking the radar…
           </p>
@@ -369,9 +371,9 @@ export default function Ask() {
       </div>
 
       {ask.error && (
-        <div role="alert" className="space-y-3 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-900">
-          <p className="flex items-start gap-2">
-            <SearchX className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+        <div role="alert" className="flex flex-wrap items-start gap-4 rounded-card border border-line bg-accent-soft p-4 text-sm text-ink">
+          <p className="flex min-w-0 flex-1 items-start gap-2">
+            <SearchX className="mt-0.5 h-4 w-4 shrink-0 text-brand-accent" aria-hidden />
             {errorMessage(ask.error)}
           </p>
           {lastAsked && (
