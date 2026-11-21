@@ -5,6 +5,7 @@ import Reports from './pages/Reports';
 import Policy from './pages/Policy';
 import Participants from './pages/Participants';
 import Sources from './pages/Sources';
+import Items from './pages/Items';
 import { Logo } from './components/Logo';
 import { useMocks } from './api';
 
@@ -13,6 +14,7 @@ const nav = [
   { label: 'Participants', to: '/participants' },
   { label: 'Policy', to: '/policy' },
   { label: 'Reports', to: '/reports' },
+  { label: 'Items', to: '/items' },
   { label: 'Sources', to: '/sources' },
 ];
 
@@ -44,6 +46,7 @@ export default function App() {
           <Route path="/policy" element={<Policy />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/sources" element={<Sources />} />
+          <Route path="/items" element={<Items />} />
         </Routes>
       </main>
       <footer className="bg-brand-soft py-6 text-center text-xs text-slate-500">Powercoders · Market Radar</footer>

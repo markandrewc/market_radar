@@ -156,6 +156,9 @@ curl -s https://<deine-domain>/api/connectors | jq '.sources[] | {id, enabled, i
 curl -s 'https://<deine-domain>/api/items?category=E&limit=3' | jq
 ```
 
+Im Frontend erscheinen die Datensätze unter **Items** (`/items`), filterbar nach Kategorie, Kanton, Quelle und
+Suchbegriff; die Filter stehen in der URL (`/items?category=E`). Voraussetzung: `VITE_USE_MOCKS=0` beim Build.
+
 ## Lokal testen
 
 ```bash

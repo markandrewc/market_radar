@@ -96,6 +96,10 @@ curl -s localhost:8080/api/connectors | jq '.sources[] | {id, enabled, itemCount
 curl -s 'localhost:8080/api/items?category=A&limit=3' | jq
 ```
 
+Im Frontend: **Items** (`/items`). Die Filter stehen in der URL und sind teilbar, z. B.
+`/items?category=E`, `/items?category=D&region=ZH`, `/items?source=Fedlex%20–%20Amtliche%20Sammlung`.
+`VITE_USE_MOCKS=0` nötig, damit die Seite die API statt der 30 Demo-Records zeigt.
+
 Auf Railway läuft das über `POST /api/connectors/sync?due_only=true` per Cron; `refresh_rate`
 entscheidet, welche Quelle dabei fällig ist (`static` nur mit ausdrücklichem Aufruf).
 Liegt die Datei auf einem Volume (`SOURCES_FILE=/data/sources.yaml`), genügt nach dem Editieren ein

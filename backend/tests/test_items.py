@@ -263,6 +263,8 @@ def test_items_filters(configured, client, monkeypatch):
     assert client.get("/api/items?q=nichts").json() == []
     assert client.get("/api/items?region=ZH").json() == []
     assert client.get("/api/items?source=nope").json() == []
+    assert len(client.get("/api/items?source=itboard").json()) == 2      # by source id
+    assert len(client.get("/api/items?source=ITBoard").json()) == 2      # by display name
     assert client.get("/api/items?category=F").status_code == 422
     assert client.get("/api/items?order=title").status_code == 422
 

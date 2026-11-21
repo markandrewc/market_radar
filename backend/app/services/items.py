@@ -55,8 +55,8 @@ def read_items(conn: Conn, *, category: str | None = None, region: str | None = 
         where.append("region = %s")
         params.append(region.upper())
     if source:
-        where.append("source_id = %s")
-        params.append(source)
+        where.append("(source_id = %s OR source_name = %s)")
+        params.extend([source, source])
     if q:
         where.append("(title ILIKE %s OR summary ILIKE %s)")
         params.extend([f"%{q}%", f"%{q}%"])

@@ -85,7 +85,10 @@ def sync_connectors(source: str | None = None, due_only: bool = False) -> SyncSu
 def list_items(category: str | None = None, region: str | None = None, source: str | None = None,
                q: str | None = None, order: str = "published_at", limit: int = 100, offset: int = 0,
                conn: Conn = Depends(get_conn)) -> list[MarketItem]:
-    """Normalised records from all connectors (docs/market-item.schema.json)."""
+    """Normalised records from all connectors (docs/market-item.schema.json).
+
+    ``source`` takes the connector id or the display name.
+    """
     if category is not None and category.upper() not in sources_config.CATEGORIES:
         raise HTTPException(422, f"category must be one of {', '.join(sources_config.CATEGORIES)}")
     if order not in ("published_at", "fetched_at"):

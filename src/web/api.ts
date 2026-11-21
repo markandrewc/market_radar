@@ -57,6 +57,10 @@ export const useItems = (filter: ItemFilter = {}) =>
       if (filter.category) items = items.filter((item) => item.categories.includes(filter.category!));
       if (filter.region) items = items.filter((item) => item.region === filter.region);
       if (filter.source) items = items.filter((item) => item.source_name === filter.source);
+      if (filter.q) {
+        const needle = filter.q.toLowerCase();
+        items = items.filter((item) => `${item.title} ${item.summary}`.toLowerCase().includes(needle));
+      }
       if (filter.limit) items = items.slice(0, filter.limit);
       return wait(items);
     },
