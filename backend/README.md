@@ -68,6 +68,10 @@ insights and the home-page `Overview`, and `taxonomy.py` holds the curated polic
 Every number in an insight text must also appear in its `evidence` with a `SourceRef`; the test suite enforces it.
 Same source of truth for the dashboard and the e-mailed briefing (`app/reports/digest.py`).
 
+`app/llm/` adds the optional model layer: `POST /api/explain` and `POST /api/ask` build a fact bundle, validate
+the model answer against it (numbers, source ids, no URLs, language) and fall back to the deterministic text on
+any violation. Configuration, guardrails and costs: [docs/LLM.md](../docs/LLM.md).
+
 ## Production
 
 FastAPI also serves the built frontend from `dist/` (see `DEPLOY.md`). The pipeline can run anywhere that reaches

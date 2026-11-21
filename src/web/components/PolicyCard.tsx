@@ -1,7 +1,8 @@
-import type { MarketItem, PolicyNote } from '../../shared/types';
+import type { ExplainRequest, MarketItem, PolicyNote } from '../../shared/types';
 import { formatDate, itemSource } from '../lib/source';
 import { Badge } from './ui/badge';
 import { Card, CardContent } from './ui/card';
+import { ExplainPanel } from './Explain';
 import { SourceBadge } from './SourceBadge';
 
 const SUMMARY_LIMIT = 300;
@@ -29,7 +30,15 @@ function isNewThisWeek(publishedAt: string | null): boolean {
  * One policy item with its provenance. The optional `note` is our curated
  * reading, rendered apart from the publisher text and labelled as ours.
  */
-export function PolicyCard({ item, note }: { item: MarketItem; note?: PolicyNote }) {
+export function PolicyCard({
+  item,
+  note,
+  explain,
+}: {
+  item: MarketItem;
+  note?: PolicyNote;
+  explain?: ExplainRequest | null;
+}) {
   // The record permalink when the source has one, otherwise the source's own page.
   const href = item.url ?? item.source_url;
   return (
@@ -69,6 +78,8 @@ export function PolicyCard({ item, note }: { item: MarketItem; note?: PolicyNote
         )}
 
         <SourceBadge source={itemSource(item)} />
+
+        {explain && <ExplainPanel target={explain} fallbackText={item.summary} />}
       </CardContent>
     </Card>
   );

@@ -1,7 +1,7 @@
 import type {
-  ConnectorConfigFile, ConnectorList, Digest, DigestRequest, DemandResponse, EmployersResponse, Evidence, Insight,
-  ContextKpi, InsightKind, Overview, Role, SkillsResponse, SourceRef, SourceStatus, SubscribeBody, SubscribeResult,
-  Taxonomy, TargetGroupContext,
+  AskAnswer, ConnectorConfigFile, ConnectorList, Digest, DigestRequest, DemandResponse, EmployersResponse, Evidence,
+  ContextKpi, Explanation, ExplainRequest, Insight, InsightKind, LlmStatus, Overview, Role, SkillsResponse, SourceRef,
+  SourceStatus, SubscribeBody, SubscribeResult, Taxonomy, TargetGroupContext,
 } from '../../shared/types';
 
 // Demo data for designing and testing the screens. Clearly labelled, never presented as real.
@@ -228,6 +228,76 @@ export const mockOverview = (): Overview => ({
   sources: { ok: 2, stale: 1, error: 0 },
   insights: mockInsights(),
 });
+
+
+// ---- LLM explanations (demo: no provider is called) -------------------------
+const llmDisclaimer = 'Our reading, not the source. Not legal advice — check the original.';
+
+export const mockLlmStatus = (): LlmStatus => ({
+  enabled: true,
+  provider: 'deepseek (demo)',
+  model: 'deepseek-flash',
+  language: 'en',
+  promptVersion: 'explain-v1',
+  dailyCap: 200000,
+  remainingTokens: 198400,
+  disclaimer: llmDisclaimer,
+});
+
+export const mockExplanation = (request: ExplainRequest = { kind: 'insight' }): Explanation => ({
+  target: {
+    kind: request.kind,
+    id: request.insightId ?? request.itemId ?? 'demo',
+    label: request.kind === 'policy' ? 'Demo policy item' : 'Demo reading',
+  },
+  language: request.language ?? 'en',
+  text: 'In plain words: this figure matters because it shows where the jobs are. The change is small and based on a sample, so treat it as a direction, not a promise. Check the source before making a decision.',
+  sentences: [
+    { text: 'In plain words: this figure matters because it shows where the jobs are.', sources: [source] },
+    { text: 'The change is small and based on a sample, so treat it as a direction, not a promise.', sources: [source] },
+    { text: 'Check the source before making a decision.', sources: [source] },
+  ],
+  method: 'model',
+  model: 'deepseek-flash',
+  cached: false,
+  generatedAt,
+  disclaimer: llmDisclaimer,
+  usedSources: [source],
+});
+
+export const mockAskAnswer = (question: string): AskAnswer => {
+  const noData = /world cup|weather|recipe|bitcoin/i.test(question);
+  if (noData) {
+    return {
+      question,
+      text: 'I do not have data on that in Market Radar. I can answer questions about the roles we track, the skills in the postings, employers, the target group and policy news.',
+      sentences: [],
+      method: 'no_data',
+      usedSources: [],
+      followUps: ['Which skills are rising for IT Support?', 'What is new in policy this week?'],
+      cached: false,
+      model: 'deepseek-flash',
+      generatedAt,
+      disclaimer: llmDisclaimer,
+    };
+  }
+  return {
+    question,
+    text: 'The postings in our sample ask most often for SQL, Windows and Microsoft 365 for this role. The reading is based on the stored postings, not on a survey.',
+    sentences: [
+      { text: 'The postings in our sample ask most often for SQL, Windows and Microsoft 365 for this role.', sources: [source] },
+      { text: 'The reading is based on the stored postings, not on a survey.', sources: [source] },
+    ],
+    method: 'model',
+    usedSources: [source],
+    followUps: ['Which roles are growing fastest?', 'What changed in policy this week?'],
+    cached: false,
+    model: 'deepseek-flash',
+    generatedAt,
+    disclaimer: llmDisclaimer,
+  };
+};
+
 
 // ---- Level 3D: target group (demo figures, same shape as GET /api/target-group) ----
 const targetSource = (id: string, name: string): SourceRef => ({

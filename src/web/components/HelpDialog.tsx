@@ -9,6 +9,7 @@ const steps = [
   { title: 'Look inside a role', text: 'A role page has tabs: Demand shows the trend over the months (you can choose 6, 12 or all months), Skills shows what employers ask for, and Employers shows who is hiring. Use the role buttons at the top to switch roles quickly.' },
   { title: 'Check where numbers come from', text: 'Under every number you will see a small badge with the source and the date of the last update. Click it to open the original. If a number is an estimate, the banner at the top and the source name say so.', link: { to: '/sources', label: 'See all sources' } },
   { title: 'Policy news and weekly reports', text: 'The Policy page lists changes that may affect our participants. On Reports you can choose roles and get a short summary by email every week.', link: { to: '/reports', label: 'Open Reports' } },
+  { title: 'Ask a question', text: 'On the Ask page you can type a plain question about the roles we track, the skills in the postings, employers, the target group or policy news. Answers are short, use only the stored data and name their sources.', link: { to: '/ask', label: 'Go to Ask the radar' } },
 ];
 
 export function HelpDialog({ open, onClose }: { open: boolean; onClose: () => void }) {

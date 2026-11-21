@@ -95,7 +95,7 @@ what was sent even if the inbox is gone.
 
 ## Optional: AI polish with a guardrail
 
-Set `LLM_BASE_URL`, `LLM_API_KEY` and `LLM_MODEL` (OpenAI-compatible) to have the wording of each bullet rewritten
+Set `LLM_PROVIDER`, `LLM_API_KEY` and (optionally) `LLM_MODEL` to have the wording of each bullet rewritten
 in plainer language. The model must return one sentence per bullet together with the id of the source it is based
 on; the code rejects unknown ids and falls back to the template on any error. Citations are appended afterwards, so
 a hallucinated URL cannot reach an inbox. Without the three variables the briefing is fully deterministic —

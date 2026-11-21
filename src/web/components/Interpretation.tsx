@@ -1,24 +1,36 @@
 import { Compass, ExternalLink } from 'lucide-react';
-import type { Insight } from '../../shared/types';
+import type { ExplainRequest, Insight } from '../../shared/types';
 import { cn } from '@/lib/utils';
+import { ExplainPanel } from './Explain';
 import { formatDate } from './SourceInfo';
 
 /**
  * Our plain-language reading of a number or an item. The text is always labelled
  * as our reading, never as the publisher's, and every number in it is repeated in
- * the evidence list with a link to the source it came from.
+ * the evidence list with a link to the source it came from. When `explain` is set,
+ * the caller may also ask the server for a shorter AI-written reading of the same
+ * insight; that panel is clearly separated from our deterministic text.
  */
-export function Interpretation({ insight, className }: { insight: Insight; className?: string }) {
+export function Interpretation({
+  insight,
+  explain,
+  className,
+}: {
+  insight: Insight;
+  explain?: ExplainRequest | null;
+  className?: string;
+}) {
   return (
     <div className={cn('rounded-lg border border-amber-200 bg-amber-50 p-4', className)}>
       <div className="flex items-start gap-2">
         <Compass className="mt-0.5 h-5 w-5 shrink-0 text-amber-800" aria-hidden />
-        <div className="min-w-0 space-y-2">
+        <div className="min-w-0 flex-1 space-y-2">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
             <h3 className="text-sm font-semibold text-brand">What this means for Powercoders</h3>
             <span className="rounded border border-amber-300 bg-white px-1.5 py-0.5 text-[11px] font-medium text-amber-900">
               Our reading, not the source
             </span>
+            {explain && <ExplainPanel target={explain} fallbackText={insight.body} />}
           </div>
           <p className="text-sm text-slate-800">{insight.body}</p>
           {insight.evidence.length > 0 && (

@@ -42,7 +42,12 @@ export default function RolePage() {
       content: (
         <div className="space-y-4">
           <DemandBlock data={d} />
-          {demandInsight.data?.[0] && <Interpretation insight={demandInsight.data[0]} />}
+          {demandInsight.data?.[0] && (
+            <Interpretation
+              insight={demandInsight.data[0]}
+              explain={{ kind: 'insight', insightId: demandInsight.data[0].id }}
+            />
+          )}
           {demandInsight.error && <ErrorMsg onRetry={() => demandInsight.refetch()} />}
         </div>
       ),
@@ -55,7 +60,9 @@ export default function RolePage() {
         : skills.data ? (
           <div className="space-y-4">
             <SkillsBlock data={skills.data} />
-            {skillsInsight && <Interpretation insight={skillsInsight} />}
+            {skillsInsight && (
+              <Interpretation insight={skillsInsight} explain={{ kind: 'insight', insightId: skillsInsight.id }} />
+            )}
           </div>
         ) : null,
     },
@@ -67,7 +74,12 @@ export default function RolePage() {
         : employers.data ? (
           <div className="space-y-4">
             <EmployersBlock data={employers.data} />
-            {employersInsight.data?.[0] && <Interpretation insight={employersInsight.data[0]} />}
+            {employersInsight.data?.[0] && (
+              <Interpretation
+                insight={employersInsight.data[0]}
+                explain={{ kind: 'insight', insightId: employersInsight.data[0].id }}
+              />
+            )}
           </div>
         ) : null,
     },
@@ -85,6 +97,16 @@ export default function RolePage() {
       <div className="space-y-3">
         <h1 className="text-3xl font-semibold text-brand">{d.role.name}</h1>
         <nav aria-label="Switch role">
+          <ul className="flex flex-wrap gap-2">
+            {demand.data!.map((r) => (
+              <li key={r.role.id}>
+                <Link to={`/roles/${r.role.id}`} aria-current={r.role.id === id ? 'page' : undefined}
+                  className={`inline-flex min-h-9 items-center rounded-full border px-4 text-sm font-medium ${r.role.id === id ? 'border-brand bg-brand text-white' : 'border-slate-300 bg-white text-brand hover:bg-slate-50'}`}>
+                  {r.role.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </nav>
       </div>
       <Tabs key={id} label={`${d.role.name}: demand, skills and employers`} tabs={tabs} />
@@ -93,7 +115,11 @@ export default function RolePage() {
         <section aria-labelledby="watch-title" className="space-y-4">
           <h2 id="watch-title" className="text-2xl font-semibold text-brand">What to watch</h2>
           <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {watchItems.map((insight) => <li key={insight.id}><Interpretation insight={insight} /></li>)}
+            {watchItems.map((insight) => (
+              <li key={insight.id}>
+                <Interpretation insight={insight} explain={{ kind: 'insight', insightId: insight.id }} />
+              </li>
+            ))}
           </ul>
         </section>
       )}

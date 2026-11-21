@@ -128,6 +128,9 @@ export default function Home({ onHelp }: { onHelp: () => void }) {
   // ---- Regions: only when the overview carries a regional insight (never invented) ----
   const regionInsight = pulse?.insights.find((insight) => insight.kind === 'regions');
 
+  // Plain-language "Explain simply" targets; the server resolves them to the same facts.
+  const demandInsightItem = demandInsight.data?.[0];
+
   // ---- Policy: the three newest published records ----
   const policyItems = [...(policy.data ?? [])]
     .sort((a, b) => (b.published_at ?? '').localeCompare(a.published_at ?? ''))
@@ -257,10 +260,17 @@ export default function Home({ onHelp }: { onHelp: () => void }) {
               head: ['Month', 'Reported postings'],
               rows: demandRows,
             }}
-            interpretation={demandInsight.data?.[0]}
             sources={[active.source]}
           >
-            <ForecastChart series={active.series} forecast={active.trend?.forecast} label={`${active.role.name} demand`} />
+            <div className="space-y-4">
+              <ForecastChart series={active.series} forecast={active.trend?.forecast} label={`${active.role.name} demand`} />
+              {demandInsightItem && (
+                <Interpretation
+                  insight={demandInsightItem}
+                  explain={{ kind: 'insight', insightId: demandInsightItem.id }}
+                />
+              )}
+            </div>
           </ChartFrame>
         </section>
       )}
@@ -278,16 +288,20 @@ export default function Home({ onHelp }: { onHelp: () => void }) {
                 }
               : undefined
           }
-          interpretation={skillsInsight}
           sources={firstSkill ? [firstSkill.source] : undefined}
         >
-          {skills.isLoading ? (
-            <Skeleton className="h-48" />
-          ) : skillsFailed ? (
-            <ErrorMsg onRetry={() => skills.refetch()} />
-          ) : (
-            <SkillBars skills={skills.data?.skills ?? []} limit={SKILL_LIMIT} />
-          )}
+          <div className="space-y-4">
+            {skills.isLoading ? (
+              <Skeleton className="h-48" />
+            ) : skillsFailed ? (
+              <ErrorMsg onRetry={() => skills.refetch()} />
+            ) : (
+              <SkillBars skills={skills.data?.skills ?? []} limit={SKILL_LIMIT} />
+            )}
+            {skillsInsight && (
+              <Interpretation insight={skillsInsight} explain={{ kind: 'insight', insightId: skillsInsight.id }} />
+            )}
+          </div>
         </ChartFrame>
       </section>
 
@@ -296,7 +310,10 @@ export default function Home({ onHelp }: { onHelp: () => void }) {
           <h2 id="regions-title" className="text-2xl font-semibold text-brand">Open positions by region</h2>
           <Card>
             <CardContent className="space-y-4 pt-5">
-              <Interpretation insight={regionInsight} />
+              <Interpretation
+                insight={regionInsight}
+                explain={{ kind: 'insight', insightId: regionInsight.id }}
+              />
               {regionInsight.evidence.length > 0 && (
                 <dl className="grid gap-3 sm:grid-cols-2">
                   {regionInsight.evidence.map((row, index) => (

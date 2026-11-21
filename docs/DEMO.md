@@ -28,7 +28,9 @@ Everything on screen names its source — point at the source line once and let 
 | 45–75 | `/` — Demand & Skills cards | "Demand for the role we pick, with the forecast band. Below the chart: our reading in plain language, labelled as ours, with the evidence it is based on. The skills card shows what to teach next term." |
 | 75–95 | `/` — Regions & Policy | "BFS gives the regional picture quarterly. Policy in 30 seconds: the newest three items, each with its source." |
 | 95–125 | `/roles/<id>` | "Inside a role: three tabs, and under each number a short 'what this means for Powercoders'. The source badge opens the original." |
-| 125–165 | `/reports` | "Staff pick topics, preview the exact e-mail with links, and subscribe. Here is the one that just arrived." (switch to inbox, open a bullet link) |
+| 125–150 | Any insight card → **Explain simply** | "One click turns our reading into plain words — for people without a data or law background. Every sentence names its source; the label says it is our reading, not the law. For policy: 'Not legal advice'." |
+| 150–175 | `/ask` | "And they can just ask: 'Which skills should we teach for IT Support?' The answer comes only from the stored postings — it shows the sources it used and admits when it has no data." |
+| 175–200 | `/reports` | "Staff pick topics, preview the exact e-mail with links, and subscribe. Here is the one that just arrived." (switch to inbox, open a bullet link) |
 | 165–190 | `/participants`, `/roles/<id>` employers | "Context on our target group — residence status, canton, integration, aggregate only — and the employers worth a call, straight from the postings." |
 | 190–215 | `/policy` | "Three triggers from our interviews: SEM numbers and distribution, migration law, labour law. Each card carries our reading and the publisher's link." |
 | 215–240 | `/sources` → operator panel | "Adding a source is a config block, not a code change: paste, apply, sync." Paste the block below, click *Validate & apply*, then *Sync now*, open `/items?category=E` and show the new rows. |
@@ -38,7 +40,8 @@ Everything on screen names its source — point at the source line once and let 
 | Test | Where | Passes when |
 |---|---|---|
 | **10 seconds:** "Where are the skills for Zürich/Bern?" | `/` (skills card) or `/roles/<id>` | the page names the role, the share of postings per skill and the source, without a click into a report |
-| **30 seconds:** "What does this new SEM/Fedlex item mean for us?" | `/policy` → a card | the publisher's text, the source link, and our reading are visibly separate, and the reading is labelled "Our reading, not the source" |
+| **30 seconds:** "What does this new SEM/Fedlex item mean for us?" | `/policy` → a card → *Explain simply* | the publisher's text, the source link, our reading and the AI explanation are visibly separate, labelled, and every sentence names its source; "Not legal advice" is visible |
+| **Free question:** "What should we teach next?" | `/ask` | the answer uses only stored data, lists the sources it used, and says "no data" instead of guessing |
 
 ## Level 4 block to paste (no code, no shell)
 

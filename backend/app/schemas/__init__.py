@@ -5,6 +5,8 @@ from .connectors import (ConnectorConfigFile, ConnectorConfigUpdate, ConnectorDe
                          ConnectorSource, ReloadResult, SyncResult, SyncSummary)
 from .market_item import MarketItem
 from .employers import Employer, EmployersResponse, Window
+from .llm import (AskAnswer, AskRequest, CitedSentence, Explanation, ExplainRequest, ExplainTarget,
+                 LlmStatus)
 from .insights import (Evidence, Insight, InsightKind, Overview, PolicyGroup, PolicyNote, PulseMover,
                        PulsePostings, Severity, SourceHealth, Taxonomy)
 from .market import DemandResponse, ForecastPoint, SkillRow, SkillsResponse, Trend
@@ -20,5 +22,6 @@ __all__ = [
     "Point", "Role", "SkillRow", "SkillsResponse", "SourceRef", "SourceStatus",
     "Digest", "DigestBullet", "DigestRequest", "DigestSection", "MarketItem", "RunRequest", "RunResult", "SendOutcome", "SubscribeBody", "SubscribeResult",
     "Evidence", "Insight", "InsightKind", "Overview", "PolicyGroup", "PolicyNote", "PulseMover", "PulsePostings", "Severity",
+    "AskAnswer", "AskRequest", "CitedSentence", "Explanation", "ExplainRequest", "ExplainTarget", "LlmStatus",
     "SourceHealth", "Taxonomy",
 ]

@@ -9,6 +9,7 @@ import Policy from './pages/Policy';
 import Participants from './pages/Participants';
 import Sources from './pages/Sources';
 import Items from './pages/Items';
+import Ask from './pages/Ask';
 import { Logo } from './components/Logo';
 import { HelpDialog } from './components/HelpDialog';
 import { Button } from './components/ui/button';
@@ -17,6 +18,7 @@ import { useLocalFlag } from './hooks';
 
 const nav = [
   { label: 'Job market', to: '/' },
+  { label: 'Ask', to: '/ask' },
   { label: 'Participants', to: '/participants' },
   { label: 'Policy', to: '/policy' },
   { label: 'Reports', to: '/reports' },
@@ -76,6 +78,7 @@ export default function App() {
       <main id="main" ref={main} tabIndex={-1} className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 outline-none">
         <Routes>
           <Route path="/" element={<Home onHelp={() => setHelp(true)} />} />
+          <Route path="/ask" element={<Ask />} />
           <Route path="/roles" element={<RolesList />} />
           <Route path="/roles/:id" element={<RolePage />} />
           <Route path="/participants" element={<Participants />} />

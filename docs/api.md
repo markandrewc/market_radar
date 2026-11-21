@@ -481,3 +481,61 @@ Curated product knowledge, so the app and the e-mailed briefing tell the same st
 `{ policyGroups: [{label, keywords[]}], policyNotes: [{keyword, label, note}], roleAliases: {role: [alias]} }`.
 `policyGroups` and `roleAliases` come from `sources.yaml` → `defaults` when present (falling back to the built-in
 list); `policyNotes` are curated text (our reading, never the source's). No token required.
+
+## LLM explanations (docs/LLM.md)
+
+Plainer-language explanations of a card or a free-form question. The server builds a **fact bundle** from the
+database, asks an OpenAI-compatible model to phrase it, and validates the answer before returning it:
+
+- every number in the generated text must also appear in the facts;
+- every sentence must cite at least one `source_id` from the facts (resolved to a `SourceRef` by the server);
+- URLs in the generated text are rejected — citations always come from the server;
+- length, language and structure are checked; any violation returns the deterministic reading instead.
+
+`method` tells the UI where the text came from: `model` (validated model answer), `fallback` (the existing
+insight text, e.g. when no provider is configured, the budget is exhausted or validation failed) or `no_data`
+(ask only). The prompt text is never stored; the answer and its sources are, for audit.
+
+### `GET /api/llm/status`
+
+Public, no secrets:
+
+```json
+{ "enabled": true, "provider": "deepseek", "model": "deepseek-flash", "language": "en",
+  "promptVersion": "explain-v1", "dailyCap": 200000, "remainingTokens": 198400,
+  "disclaimer": "Our reading, not the source. Not legal advice — check the original." }
+```
+
+`enabled: false` means no provider is configured; the UI then hides the "Explain simply" action and shows a hint.
+
+### `POST /api/explain`
+
+Body: `{"kind": "insight|policy|item", "insightId": "...", "itemId": "...", "roleId": "...", "language": "en"}`
+(`insightId` from `GET /api/insights`, `itemId` from `GET /api/items`). The target is resolved **server-side**;
+text supplied by the client is ignored. Answer:
+
+```json
+{ "target": {"kind": "policy", "id": "…", "label": "Status S: …"},
+  "language": "en", "text": "…",
+  "sentences": [{"text": "…", "sources": [ { "id": "…", "name": "…", "url": "…", "fetchedAt": "…", "dataAsOf": "…" } ]}],
+  "method": "model", "model": "deepseek-flash", "cached": false, "generatedAt": "…",
+  "disclaimer": "Our reading, not the source. Not legal advice — check the original.",
+  "usedSources": [ { "…": "SourceRef" } ] }
+```
+
+`503` when no provider is configured, `429` on the rate/token limit, `422` for an unknown target.
+
+### `POST /api/ask`
+
+Body: `{"question": "What skills should we teach for IT Support?", "roleId": null, "language": "en"}`.
+The server retrieves at most 6 items, 4 insights and the latest overview numbers, and answers only from them:
+
+```json
+{ "question": "…", "text": "…", "sentences": [{"text": "…", "sources": ["…"]}],
+  "method": "model|fallback|no_data", "usedSources": ["…"], "followUps": ["…"],
+  "cached": false, "model": "deepseek-flash", "generatedAt": "…", "disclaimer": "…" }
+```
+
+`no_data` means the stored data does not answer the question — the answer says so and offers follow-up questions
+instead of inventing anything. Questions are limited to 300 characters; the endpoints are public but rate-limited
+(`LLM_RATE_PER_MIN`, `LLM_RATE_PER_DAY`, global `LLM_DAILY_TOKEN_CAP`).

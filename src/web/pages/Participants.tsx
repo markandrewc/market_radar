@@ -72,7 +72,13 @@ export default function Participants() {
     <div className="space-y-6">
       {header}
 
-      {targetInsight && <Interpretation insight={targetInsight} className="p-3" />}
+      {targetInsight && (
+        <Interpretation
+          insight={targetInsight}
+          className="p-3"
+          explain={{ kind: 'insight', insightId: targetInsight.id }}
+        />
+      )}
 
       <TargetGroupSummary region={canton || undefined} />
 

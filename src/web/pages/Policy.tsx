@@ -154,6 +154,7 @@ export default function Policy() {
                     key={`${item.source_name}-${item.id}`}
                     item={item}
                     note={noteFor(item, policyNotes)}
+                    explain={{ kind: 'policy', itemId: item.id }}
                   />
                 ))}
               </div>

@@ -53,6 +53,56 @@ export interface Overview {
 // Curated product knowledge, served so the app and the e-mailed briefing tell the same story.
 export interface Taxonomy { policyGroups: PolicyGroup[]; policyNotes: PolicyNote[]; roleAliases: Record<string, string[]> }
 
+// ---- LLM explanations (docs/LLM.md) ---------------------------------------
+// The model only writes the wording; numbers and citations are validated against the
+// server-built facts, and `method` tells the UI whether the text came from the model
+// or from the deterministic fallback.
+export type ExplainKind = 'insight' | 'policy' | 'item';
+export interface LlmStatus {
+  enabled: boolean;
+  provider: string;
+  model: string;
+  language: string;
+  promptVersion: string;
+  dailyCap: number;
+  remainingTokens: number;
+  disclaimer: string;
+}
+export interface ExplainRequest {
+  kind: ExplainKind;
+  insightId?: string | null;
+  itemId?: string | null;
+  roleId?: string | null;
+  language?: 'en' | 'de';
+}
+export interface ExplainTarget { kind: string; id: string; label: string }
+export interface CitedSentence { text: string; sources: SourceRef[] }
+export interface Explanation {
+  target: ExplainTarget;
+  language: string;
+  text: string;
+  sentences: CitedSentence[];
+  method: 'model' | 'fallback';
+  model?: string | null;
+  cached: boolean;
+  generatedAt: string;
+  disclaimer: string;
+  usedSources: SourceRef[];
+}
+export interface AskRequest { question: string; roleId?: string | null; language?: 'en' | 'de' }
+export interface AskAnswer {
+  question: string;
+  text: string;
+  sentences: CitedSentence[];
+  method: 'model' | 'fallback' | 'no_data';
+  usedSources: SourceRef[];
+  followUps: string[];
+  cached: boolean;
+  model?: string | null;
+  generatedAt: string;
+  disclaimer: string;
+}
+
 // ---- Level 2: briefings ----------------------------------------------------
 // One bullet = one fact plus the source it came from. The backend appends the citation line, never the model.
 export interface DigestBullet { text: string; source: SourceRef }

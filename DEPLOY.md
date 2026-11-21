@@ -68,7 +68,11 @@ Der Port braucht keine Konfiguration: uvicorn bindet auf `$PORT` (Default 8080).
 | `PUBLIC_BASE_URL` | für E-Mails nötig | absolute Links (Unsubscribe, Dashboard), z. B. `https://radar.example.ch`; leer = relative Links |
 | `REPORTS_DAILY_CAP` | optional | Obergrenze für Versände pro Tag (Default 100), schützt das Resend-Kontingent |
 | `REPORT_TIMEZONE` | optional | Zeitzone für Woche/Monat der Briefings, Default `Europe/Zurich` |
-| `LLM_BASE_URL` / `LLM_API_KEY` / `LLM_MODEL` | optional | formuliert nur den Text der Briefing-Punkte um; Quellenangaben hängt immer der Code an. Ohne alle drei bleibt alles deterministisch |
+| `LLM_PROVIDER` | optional | `deepseek` (Default), `openai` oder `custom`; Preset für Base-URL und Modell |
+| `LLM_API_KEY` | optional | schaltet „Explain simply“/„Ask“ und den Briefing-Feinschliff frei; ohne Key bleibt alles deterministisch |
+| `LLM_MODEL` / `LLM_BASE_URL` | optional | überschreiben das Preset (z. B. Azure OpenAI, Mistral, Ollama) |
+| `LLM_DAILY_TOKEN_CAP` / `LLM_RATE_PER_MIN` / `LLM_RATE_PER_DAY` | optional | Kosten- und Missbrauchsgrenzen; bei Erreichen Fallback bzw. `429` |
+| `LLM_LANGUAGE` | optional | Standardsprache der Erklärung (`en`) |
 
 **`VITE_*` wirkt nur beim Build.** Vite ersetzt die Variable beim Bauen durch einen
 festen Wert; nach jeder Änderung ist ein Redeploy nötig. Das Dockerfile deklariert
@@ -209,7 +213,8 @@ also ohne Provider demonstrieren. Die E-Mail-Adresse ist das einzige personenbez
 Versand gespeichert und beim Abmelden mit dem Abo gelöscht.
 
 Quellen, Zahlenstand und Abrufdatum setzt das Backend an jeden Punkt; der optionale LLM-Feinschliff
-(`LLM_BASE_URL`/`LLM_API_KEY`/`LLM_MODEL`) darf nur den Text umformulieren, die Quellenangabe hängt immer der Code an.
+(`LLM_PROVIDER`/`LLM_API_KEY`/`LLM_MODEL`) darf nur den Text umformulieren, die Quellenangabe hängt immer der
+Code an. Details, Guardrails und Datenschutz: [docs/LLM.md](docs/LLM.md).
 
 ## Lokal testen
 

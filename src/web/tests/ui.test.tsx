@@ -27,7 +27,7 @@ async function noViolations() {
 describe('accessibility (axe) on every page', () => {
   for (const [name, path, heading] of [
     ['Job market', '/', /Job market by role/], ['Role page', '/roles/web-developer', /^Web Developer$/],
-    ['Policy', '/policy', /Policy news/], ['Participants', '/participants', /Participants/], ['Reports', '/reports', /Weekly report/], ['Sources', '/sources', /Data sources/],
+    ['Policy', '/policy', /Policy news/], ['Participants', '/participants', /Participants/], ['Reports', '/reports', /Weekly report/], ['Sources', '/sources', /Data sources/], ['Ask', '/ask', /Ask the radar/],
   ] as const) {
     it(`${name} has no violations`, async () => {
       show(path);
@@ -51,8 +51,8 @@ describe('guidance', () => {
     show('/');
     await user.click(screen.getByRole('button', { name: 'How to use' }));
     const dialog = await screen.findByRole('dialog');
-    expect(within(dialog).getByText(/Step 1 of 5/)).toBeTruthy();
-    for (let i = 2; i <= 5; i++) { await user.click(within(dialog).getByRole('button', { name: 'Next' })); expect(within(dialog).getByText(new RegExp(`Step ${i} of 5`))).toBeTruthy(); }
+    expect(within(dialog).getByText(/Step 1 of 6/)).toBeTruthy();
+    for (let i = 2; i <= 6; i++) { await user.click(within(dialog).getByRole('button', { name: 'Next' })); expect(within(dialog).getByText(new RegExp(`Step ${i} of 6`))).toBeTruthy(); }
     await user.click(within(dialog).getByRole('button', { name: 'Done' }));
   });
 
@@ -218,5 +218,29 @@ describe('weekly report: topics and PDF', () => {
     expect(String.fromCharCode(...bytes.slice(0, 5))).toBe('%PDF-');
     expect(bytes.length).toBeGreaterThan(1500);
     expect(doc.getNumberOfPages()).toBeGreaterThan(0);
+  });
+});
+
+
+describe('Ask the radar', () => {
+  it('answers only from the stored data and names its sources', async () => {
+    const user = userEvent.setup();
+    show('/ask');
+    await ready(/Ask the radar/);
+    await user.type(screen.getByLabelText('Your question'), 'Which skills should we teach for IT Support?');
+    await user.click(screen.getByRole('button', { name: 'Ask' }));
+    expect(await screen.findByText(/The postings in our sample/i, {}, { timeout: 4000 })).toBeTruthy();
+    expect(screen.getByText(/I used these sources/i)).toBeTruthy();
+    expect(screen.getByText(/AI explanation/i)).toBeTruthy();
+  });
+
+  it('admits when it has no data instead of guessing', async () => {
+    const user = userEvent.setup();
+    show('/ask');
+    await ready(/Ask the radar/);
+    await user.type(screen.getByLabelText('Your question'), 'Who won the world cup?');
+    await user.click(screen.getByRole('button', { name: 'Ask' }));
+    expect(await screen.findByText(/I do not have data on that/i, {}, { timeout: 4000 })).toBeTruthy();
+    expect(screen.getByText(/No data on that/i)).toBeTruthy();
   });
 });

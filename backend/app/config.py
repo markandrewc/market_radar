@@ -31,7 +31,19 @@ PUBLIC_BASE_URL = (os.environ.get("PUBLIC_BASE_URL") or "").rstrip("/")
 REPORTS_DAILY_CAP = int(os.environ.get("REPORTS_DAILY_CAP", "100"))
 # Week/month boundaries are compared in this time zone, so DST never shifts a send.
 REPORT_TIMEZONE = os.environ.get("REPORT_TIMEZONE") or "Europe/Zurich"
-# Optional LLM polish: only the wording of a bullet is rewritten. All three set = active.
+# --- LLM explanations (docs/LLM.md) -----------------------------------------
+# OpenAI-compatible provider. `LLM_PROVIDER` picks the preset (deepseek, openai,
+# custom); `LLM_BASE_URL` / `LLM_MODEL` override it. Without a key, explanations
+# are disabled and the app falls back to the deterministic reading.
+LLM_PROVIDER = (os.environ.get("LLM_PROVIDER") or "deepseek").strip().lower()
 LLM_BASE_URL = (os.environ.get("LLM_BASE_URL") or "").rstrip("/")
 LLM_API_KEY = os.environ.get("LLM_API_KEY") or None
 LLM_MODEL = os.environ.get("LLM_MODEL") or None
+LLM_TIMEOUT = float(os.environ.get("LLM_TIMEOUT", "20"))
+LLM_MAX_OUTPUT_TOKENS = int(os.environ.get("LLM_MAX_OUTPUT_TOKENS", "700"))
+# Global daily budget: once reached, explanations answer with the deterministic reading.
+LLM_DAILY_TOKEN_CAP = int(os.environ.get("LLM_DAILY_TOKEN_CAP", "200000"))
+LLM_RATE_PER_MIN = int(os.environ.get("LLM_RATE_PER_MIN", "6"))
+LLM_RATE_PER_DAY = int(os.environ.get("LLM_RATE_PER_DAY", "100"))
+# Default explanation language; a request may override it.
+LLM_LANGUAGE = (os.environ.get("LLM_LANGUAGE") or "en").strip().lower()

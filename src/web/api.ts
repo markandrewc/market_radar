@@ -1,12 +1,14 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import type {
   ConnectorConfigFile, ConnectorConfigUpdate, ConnectorList, Digest, DigestRequest, DemandResponse, EmployersResponse,
-  Insight, InsightKind, MarketItem, MarketItemCategory, Overview, Role, SkillsResponse, SourceStatus, SubscribeBody,
+  AskAnswer, AskRequest, Explanation, ExplainRequest, Insight, InsightKind, LlmStatus, MarketItem, MarketItemCategory, Overview,
+  Role, SkillsResponse, SourceStatus, SubscribeBody,
   SubscribeResult, SyncSummary, TargetGroupContext, Taxonomy,
 } from '../shared/types';
 import {
-  mockConnectorConfig, mockConnectors, mockDemand, mockDigest, mockEmployers, mockInsights, mockOverview, mockRoles,
-  mockSkills, mockSources, mockSubscribeResult, mockTargetGroup, mockTaxonomy, type Scenario,
+  mockAskAnswer, mockConnectorConfig, mockConnectors, mockDemand, mockDigest, mockEmployers, mockExplanation, mockInsights,
+  mockLlmStatus, mockOverview, mockRoles, mockSkills, mockSources, mockSubscribeResult, mockTargetGroup, mockTaxonomy,
+  type Scenario,
 } from './mocks/data';
 import { mockMarketItems } from './mocks/marketItems';
 
@@ -176,6 +178,27 @@ export const useTaxonomy = () =>
     queryKey: ['taxonomy'],
     staleTime: 5 * 60_000,
     queryFn: (): Promise<Taxonomy> => (useMocks ? mock(mockTaxonomy) : get('/insights/taxonomy')),
+  });
+
+// ---- LLM explanations ------------------------------------------------------
+export const useLlmStatus = () =>
+  useQuery({
+    queryKey: ['llm-status'],
+    staleTime: 60_000,
+    retry: false,
+    queryFn: (): Promise<LlmStatus> => (useMocks ? mock(mockLlmStatus) : get('/llm/status')),
+  });
+
+export const useExplain = () =>
+  useMutation({
+    mutationFn: (body: ExplainRequest): Promise<Explanation> =>
+      useMocks ? mock(() => mockExplanation(body)) : post('/explain', body),
+  });
+
+export const useAsk = () =>
+  useMutation({
+    mutationFn: (body: AskRequest): Promise<AskAnswer> =>
+      useMocks ? mock(() => mockAskAnswer(body.question)) : post('/ask', body),
   });
 
 // ---- Level 2: briefings ----------------------------------------------------

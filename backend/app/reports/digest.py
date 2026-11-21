@@ -13,7 +13,6 @@ ours. Any mismatch or error keeps the original text.
 from __future__ import annotations
 
 import json
-import urllib.request
 from datetime import datetime, timezone
 from typing import Any
 from zoneinfo import ZoneInfo
@@ -21,6 +20,7 @@ from zoneinfo import ZoneInfo
 from .. import config
 from ..db import Conn, iso
 from ..insights import taxonomy
+from ..llm import client
 from ..schemas import Digest, DigestBullet, DigestRequest, DigestSection, SourceRef
 from ..services import market_view
 
@@ -31,7 +31,6 @@ _TARGET_LIMIT = 3
 _EMPLOYER_LIMIT = 3
 _DEMAND_LIMIT = 6
 _SUMMARY_CHARS = 280
-_LLM_TIMEOUT = 10
 
 
 # --- small formatting helpers -------------------------------------------------
@@ -288,20 +287,22 @@ def _employers_section(conn: Conn, requested: list[str]) -> DigestSection | None
 # --- optional LLM polish ------------------------------------------------------
 
 def _llm_configured() -> bool:
-    return bool(config.LLM_BASE_URL and config.LLM_API_KEY and config.LLM_MODEL)
+    """The shared provider check: LLM_API_KEY plus a resolvable preset base/model."""
+    return client.configured()
 
 
 def _llm_chat(payload: dict) -> str:
-    """One OpenAI-compatible /chat/completions call. Only called when all LLM_* settings exist."""
-    request = urllib.request.Request(
-        f"{config.LLM_BASE_URL}/chat/completions",
-        data=json.dumps(payload).encode("utf-8"),
-        headers={"Authorization": f"Bearer {config.LLM_API_KEY}", "Content-Type": "application/json"},
-        method="POST")
-    with urllib.request.urlopen(request, timeout=_LLM_TIMEOUT) as response:  # noqa: S310 - fixed by config
-        body = response.read()
-    data = json.loads(body)
-    return data["choices"][0]["message"]["content"]
+    """The polish seam kept for the tests; the shared client performs the HTTP call.
+
+    `payload` keeps the old messages shape. `app.llm.client.chat_json` adds the JSON-mode
+    response format, the preset model and, for the DeepSeek preset, `thinking: disabled`.
+    Only called when `_llm_configured()` is true.
+    """
+    messages = payload.get("messages") or []
+    system = messages[0]["content"] if messages else ""
+    user = messages[1]["content"] if len(messages) > 1 else ""
+    content, _usage = client.chat_json(system, user)
+    return content
 
 
 def _parse_polish(answer: str, bullets: list[DigestBullet]) -> list[str] | None:

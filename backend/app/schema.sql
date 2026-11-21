@@ -174,3 +174,34 @@ CREATE TABLE IF NOT EXISTS report_sends (
     error           TEXT
 );
 CREATE INDEX IF NOT EXISTS report_sends_email_sent ON report_sends (email, sent_at DESC);
+
+-- --------------------------------------------------------------------------
+-- LLM explanations (docs/LLM.md). Only public/aggregated source text is sent to
+-- the provider; the prompt itself is never stored (hash only), the answer is kept
+-- so the team can audit what was shown.
+CREATE TABLE IF NOT EXISTS llm_explanations (
+    cache_key      TEXT PRIMARY KEY,
+    target_kind    TEXT NOT NULL,
+    target_id      TEXT NOT NULL,
+    role_id        TEXT,
+    language       TEXT NOT NULL,
+    provider       TEXT NOT NULL,
+    model          TEXT NOT NULL,
+    prompt_version TEXT NOT NULL,
+    facts_hash     TEXT NOT NULL,
+    text           TEXT NOT NULL,
+    payload        JSONB NOT NULL DEFAULT '{}'::jsonb,
+    method         TEXT NOT NULL CHECK (method IN ('model', 'fallback', 'no_data')),
+    tokens_in      INTEGER,
+    tokens_out     INTEGER,
+    created_at     TIMESTAMPTZ NOT NULL DEFAULT now(),
+    expires_at     TIMESTAMPTZ NOT NULL
+);
+CREATE INDEX IF NOT EXISTS llm_explanations_target ON llm_explanations (target_kind, target_id, language);
+CREATE INDEX IF NOT EXISTS llm_explanations_expiry ON llm_explanations (expires_at);
+
+CREATE TABLE IF NOT EXISTS llm_usage (
+    day      DATE PRIMARY KEY,
+    requests INTEGER NOT NULL DEFAULT 0,
+    tokens   INTEGER NOT NULL DEFAULT 0
+);
