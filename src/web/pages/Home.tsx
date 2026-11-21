@@ -269,7 +269,7 @@ export default function Home({ onHelp }: { onHelp: () => void }) {
           </aside>
         </div>
 
-        {/* Role strip, directly under the hero CTAs: one choice drives Question A and B below.
+        {/* Role strip, directly under the hero CTAs: one choice drives both charts below.
             It sits on a paper inset so the pills stay readable on the graphite hero. */}
         <div className="relative px-6 pb-6 sm:px-10 sm:pb-8">
           <div className="rounded-card border border-line bg-surface p-3 text-ink shadow-card sm:p-4">
@@ -431,7 +431,7 @@ export default function Home({ onHelp }: { onHelp: () => void }) {
         {active && (
           <section aria-label="Demand for the roles we train for">
             <ChartFrame
-              kicker="Question A · Hiring volume"
+              kicker="Hiring volume"
               title="Demand for the roles we train for"
               description="Monthly job postings in Switzerland for one role. The dashed part is a forecast."
               badge={
@@ -458,7 +458,7 @@ export default function Home({ onHelp }: { onHelp: () => void }) {
 
         <section aria-label="Skills employers ask for">
           <ChartFrame
-            kicker="Question B · Skill momentum"
+            kicker="Skill momentum"
             title="Skills employers ask for"
             description="Share of postings that mention the skill; the change is compared with the previous month."
             badge={

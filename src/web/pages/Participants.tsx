@@ -51,7 +51,7 @@ export default function Participants() {
 
   const header = (
     <PageHeader
-      kicker="LEVEL 3 · QUESTION D"
+      kicker="LEVEL 3 · TARGET GROUP"
       title="Participants"
       description="Context for our participants — aggregate statistics only, no personal data."
       actions={

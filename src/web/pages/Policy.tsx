@@ -87,7 +87,7 @@ export default function Policy() {
 
   const header = (
     <PageHeader
-      kicker="LEVEL 3 · QUESTION E"
+      kicker="LEVEL 3 · POLICY WATCH"
       title="Policy news"
       description="New laws, motions and reporting duties that can change what we teach or who we can place."
       actions={

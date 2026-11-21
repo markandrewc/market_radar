@@ -69,7 +69,7 @@ function RecordCount({ value, label }: { value: number; label: string }) {
 }
 
 /**
- * Question C: who is hiring for one role. The counts are listings we saw, not an
+ * Employers: who is hiring for one role. The counts are listings we saw, not an
  * employer's total, and an empty answer names the missing configuration instead of
  * inventing companies.
  */
@@ -143,7 +143,7 @@ function EmployersCard() {
   return (
     <Card className="flex h-full flex-col">
       <CardHeader>
-        <p className="kicker">Question C · Employers</p>
+        <p className="kicker">Employers</p>
         <CardTitle>Who is hiring</CardTitle>
         <CardDescription>
           Employers seen in the stored postings for one role. Counts are listings we saw, not an employer’s total.
@@ -197,7 +197,7 @@ function TargetGroupCard() {
   return (
     <Card className="flex h-full flex-col">
       <CardHeader>
-        <p className="kicker">Question D · Target group</p>
+        <p className="kicker">Target group</p>
         <CardTitle>Participants in context</CardTitle>
         <CardDescription>Aggregate statistics about the people we support, with no personal data.</CardDescription>
       </CardHeader>
@@ -255,7 +255,7 @@ function PolicyNewsCard() {
   return (
     <Card className="flex h-full flex-col">
       <CardHeader>
-        <p className="kicker">Question E · Policy &amp; regulation</p>
+        <p className="kicker">Policy &amp; regulation</p>
         <CardTitle>What policy changed</CardTitle>
         <CardDescription>New laws, motions and reporting duties that can change what we teach or who we can place.</CardDescription>
       </CardHeader>
@@ -321,7 +321,7 @@ export default function Context() {
       <PageHeader
         kicker="LEVEL 3"
         title="People, employers & policy"
-        description="This page answers questions C (employers), D (target group) and E (policy) with the same sources as the rest of the app."
+        description="Who is hiring, who our participants are, and which rules are changing — with the same sources as the rest of the radar."
       />
       <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
         <EmployersCard />
