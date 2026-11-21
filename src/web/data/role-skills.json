@@ -1,0 +1,47 @@
+{
+  "it-support": {
+    "source": "https://www.itboard.ch/rollen/it-support",
+    "read_on": "2026-11-21",
+    "base": 16,
+    "skills": [["ICT", 13], ["Microsoft 365", 9], ["Active Directory", 6], ["Windows 11", 5]],
+    "course": {
+      "title": "Ein Anmeldeproblem eingrenzen",
+      "practice": "Bearbeite eine fiktive Supportanfrage. Die Anmeldung bei Microsoft 365 schlägt auf Windows 11 fehl. Frage nach der Fehlermeldung und den betroffenen Personen. Schlage dann eine erste sichere Prüfung vor.",
+      "check": "Halte Fehlerbild, Massnahme und Ergebnis fest. Schütze die Zugangsdaten und leite ungelöste Fälle an das zuständige Team weiter."
+    }
+  },
+  "fullstack-developer": {
+    "source": "https://www.itboard.ch/rollen/fullstack-developer",
+    "read_on": "2026-11-21",
+    "base": 29,
+    "skills": [["Java", 16], ["React", 13], ["Docker", 12], ["Angular", 11]],
+    "course": {
+      "title": "Eine kleine Webanwendung mit React und Docker starten",
+      "practice": "Zeige drei fiktive Einträge in einer React-Liste und starte die Anwendung in einem vorbereiteten Container.",
+      "check": "Bitte eine zweite Person, deiner Anleitung zu folgen und zu prüfen, ob alle drei Einträge sichtbar sind."
+    }
+  },
+  "data-engineer": {
+    "source": "https://www.itboard.ch/rollen/data-engineer",
+    "read_on": "2026-11-21",
+    "base": 34,
+    "skills": [["Python", 13], ["ML / AI", 11], ["ICT", 9], ["Snowflake", 9], ["Kafka", 9], ["SQL", 8]],
+    "course": {
+      "title": "CSV-Daten mit Python prüfen und zusammenfassen",
+      "practice": "Lies eine fiktive CSV-Datei ein. Markiere fehlende Werte und zähle die gültigen Einträge pro Gruppe.",
+      "check": "Prüfe die Gesamtzahl der Zeilen und weise fehlende Einträge separat aus."
+    }
+  },
+  "software-engineer": {
+    "source": "https://www.itboard.ch/rollen/software-engineer",
+    "read_on": "2026-11-21",
+    "base": 119,
+    "skills": [["Java", 39], ["Python", 35], ["Kubernetes", 29], ["Docker", 26], ["CI/CD", 25], ["C++", 22], ["SQL", 20], ["TypeScript", 18]],
+    "course": {
+      "title": "Eine kleine Java-Schnittstelle bauen und testen",
+      "practice": "Erstelle eine Java-Schnittstelle für einen Eintrag aus einem fiktiven Datensatz. Teste eine gültige und eine ungültige Anfrage. Starte die Anwendung anschliessend in Docker.",
+      "check": "Beide Tests bestehen. Die Schnittstelle meldet bei ungültiger Eingabe den dokumentierten Fehler. Eine zweite Person kann die Anwendung mit deiner Anleitung starten."
+    }
+  },
+  "data-analyst": null
+}

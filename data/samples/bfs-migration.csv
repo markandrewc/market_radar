@@ -1,0 +1,161 @@
+source,indicator,year,week,canton,nationality,iso3,value,unit,source_url,fetched_at
+BFS STATPOP,international_arrivals,2025,,ZH,Total,,38735,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103020200_104/px-x-0103020200_104.px,2026-11-21T10:33:45.590Z
+BFS STATPOP,international_arrivals,2025,,ZH,Schweiz,CHE,4179,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103020200_104/px-x-0103020200_104.px,2026-11-21T10:33:45.590Z
+BFS STATPOP,international_arrivals,2025,,ZH,Ausland,,34556,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103020200_104/px-x-0103020200_104.px,2026-11-21T10:33:45.590Z
+BFS STATPOP,international_arrivals,2025,,BE,Total,,16131,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103020200_104/px-x-0103020200_104.px,2026-11-21T10:33:45.590Z
+BFS STATPOP,international_arrivals,2025,,BE,Schweiz,CHE,2229,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103020200_104/px-x-0103020200_104.px,2026-11-21T10:33:45.590Z
+BFS STATPOP,international_arrivals,2025,,BE,Ausland,,13902,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103020200_104/px-x-0103020200_104.px,2026-11-21T10:33:45.590Z
+BFS STATPOP,international_arrivals,2025,,LU,Total,,7911,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103020200_104/px-x-0103020200_104.px,2026-11-21T10:33:45.590Z
+BFS STATPOP,international_arrivals,2025,,LU,Schweiz,CHE,690,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103020200_104/px-x-0103020200_104.px,2026-11-21T10:33:45.590Z
+BFS STATPOP,international_arrivals,2025,,LU,Ausland,,7221,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103020200_104/px-x-0103020200_104.px,2026-11-21T10:33:45.590Z
+BFS STATPOP,international_arrivals,2025,,ZG,Total,,2752,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103020200_104/px-x-0103020200_104.px,2026-11-21T10:33:45.590Z
+BFS STATPOP,international_arrivals,2025,,ZG,Schweiz,CHE,286,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103020200_104/px-x-0103020200_104.px,2026-11-21T10:33:45.590Z
+BFS STATPOP,international_arrivals,2025,,ZG,Ausland,,2466,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103020200_104/px-x-0103020200_104.px,2026-11-21T10:33:45.590Z
+BFS STATPOP,international_arrivals,2025,,GE,Total,,23658,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103020200_104/px-x-0103020200_104.px,2026-11-21T10:33:45.590Z
+BFS STATPOP,international_arrivals,2025,,GE,Schweiz,CHE,3053,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103020200_104/px-x-0103020200_104.px,2026-11-21T10:33:45.590Z
+BFS STATPOP,international_arrivals,2025,,GE,Ausland,,20605,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103020200_104/px-x-0103020200_104.px,2026-11-21T10:33:45.590Z
+BFS STATPOP,international_departures,2025,,ZH,Total,,24630,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103020300_104/px-x-0103020300_104.px,2026-11-21T10:33:45.592Z
+BFS STATPOP,international_departures,2025,,ZH,Schweiz,CHE,6243,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103020300_104/px-x-0103020300_104.px,2026-11-21T10:33:45.592Z
+BFS STATPOP,international_departures,2025,,ZH,Ausland,,18387,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103020300_104/px-x-0103020300_104.px,2026-11-21T10:33:45.592Z
+BFS STATPOP,international_departures,2025,,BE,Total,,10303,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103020300_104/px-x-0103020300_104.px,2026-11-21T10:33:45.592Z
+BFS STATPOP,international_departures,2025,,BE,Schweiz,CHE,2501,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103020300_104/px-x-0103020300_104.px,2026-11-21T10:33:45.592Z
+BFS STATPOP,international_departures,2025,,BE,Ausland,,7802,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103020300_104/px-x-0103020300_104.px,2026-11-21T10:33:45.592Z
+BFS STATPOP,international_departures,2025,,LU,Total,,5126,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103020300_104/px-x-0103020300_104.px,2026-11-21T10:33:45.592Z
+BFS STATPOP,international_departures,2025,,LU,Schweiz,CHE,1008,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103020300_104/px-x-0103020300_104.px,2026-11-21T10:33:45.592Z
+BFS STATPOP,international_departures,2025,,LU,Ausland,,4118,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103020300_104/px-x-0103020300_104.px,2026-11-21T10:33:45.592Z
+BFS STATPOP,international_departures,2025,,ZG,Total,,2101,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103020300_104/px-x-0103020300_104.px,2026-11-21T10:33:45.592Z
+BFS STATPOP,international_departures,2025,,ZG,Schweiz,CHE,424,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103020300_104/px-x-0103020300_104.px,2026-11-21T10:33:45.592Z
+BFS STATPOP,international_departures,2025,,ZG,Ausland,,1677,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103020300_104/px-x-0103020300_104.px,2026-11-21T10:33:45.592Z
+BFS STATPOP,international_departures,2025,,GE,Total,,14868,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103020300_104/px-x-0103020300_104.px,2026-11-21T10:33:45.592Z
+BFS STATPOP,international_departures,2025,,GE,Schweiz,CHE,3444,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103020300_104/px-x-0103020300_104.px,2026-11-21T10:33:45.592Z
+BFS STATPOP,international_departures,2025,,GE,Ausland,,11424,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103020300_104/px-x-0103020300_104.px,2026-11-21T10:33:45.592Z
+BFS STATPOP,intercantonal_arrivals,2025,,ZH,Total,,22916,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,ZH,Total,,26876,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,ZH,Schweiz,CHE,13400,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,ZH,Schweiz,CHE,16348,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,ZH,Mitgliedstaat der Europäischen Union (EU),,7013,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,ZH,Mitgliedstaat der Europäischen Union (EU),,8235,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,ZH,Mitgliedstaat der EFTA,,21,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,ZH,Mitgliedstaat der EFTA,,33,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,ZH,Anderer europäischer Staat,,1046,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,ZH,Anderer europäischer Staat,,1117,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,ZH,Afrika,,264,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,ZH,Afrika,,169,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,ZH,Nordamerika,,88,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,ZH,Nordamerika,,95,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,ZH,"Süd- und Zentralamerika, Karibik",,190,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,ZH,"Süd- und Zentralamerika, Karibik",,224,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,ZH,Asien,,869,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,ZH,Asien,,629,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,ZH,Ozeanien,,15,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,ZH,Ozeanien,,22,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,ZH,Staatenlos,,6,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,ZH,Staatenlos,,3,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,ZH,Nicht zuteilbar gemäss den aktuellen Grenzen,,0,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,ZH,Nicht zuteilbar gemäss den aktuellen Grenzen,,0,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,ZH,Ohne Angabe,,4,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,ZH,Ohne Angabe,,1,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,BE,Total,,13193,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,BE,Total,,13036,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,BE,Schweiz,CHE,8837,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,BE,Schweiz,CHE,8500,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,BE,Mitgliedstaat der Europäischen Union (EU),,3232,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,BE,Mitgliedstaat der Europäischen Union (EU),,3337,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,BE,Mitgliedstaat der EFTA,,6,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,BE,Mitgliedstaat der EFTA,,8,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,BE,Anderer europäischer Staat,,473,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,BE,Anderer europäischer Staat,,497,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,BE,Afrika,,161,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,BE,Afrika,,185,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,BE,Nordamerika,,37,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,BE,Nordamerika,,34,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,BE,"Süd- und Zentralamerika, Karibik",,94,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,BE,"Süd- und Zentralamerika, Karibik",,114,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,BE,Asien,,346,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,BE,Asien,,350,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,BE,Ozeanien,,5,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,BE,Ozeanien,,6,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,BE,Staatenlos,,1,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,BE,Staatenlos,,3,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,BE,Nicht zuteilbar gemäss den aktuellen Grenzen,,0,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,BE,Nicht zuteilbar gemäss den aktuellen Grenzen,,0,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,BE,Ohne Angabe,,1,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,BE,Ohne Angabe,,2,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,LU,Total,,8122,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,LU,Total,,7991,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,LU,Schweiz,CHE,5033,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,LU,Schweiz,CHE,5028,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,LU,Mitgliedstaat der Europäischen Union (EU),,2340,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,LU,Mitgliedstaat der Europäischen Union (EU),,2242,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,LU,Mitgliedstaat der EFTA,,11,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,LU,Mitgliedstaat der EFTA,,12,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,LU,Anderer europäischer Staat,,340,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,LU,Anderer europäischer Staat,,361,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,LU,Afrika,,96,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,LU,Afrika,,56,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,LU,Nordamerika,,35,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,LU,Nordamerika,,10,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,LU,"Süd- und Zentralamerika, Karibik",,64,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,LU,"Süd- und Zentralamerika, Karibik",,54,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,LU,Asien,,200,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,LU,Asien,,227,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,LU,Ozeanien,,2,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,LU,Ozeanien,,0,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,LU,Staatenlos,,0,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,LU,Staatenlos,,0,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,LU,Nicht zuteilbar gemäss den aktuellen Grenzen,,0,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,LU,Nicht zuteilbar gemäss den aktuellen Grenzen,,0,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,LU,Ohne Angabe,,1,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,LU,Ohne Angabe,,1,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,ZG,Total,,3796,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,ZG,Total,,3452,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,ZG,Schweiz,CHE,2057,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,ZG,Schweiz,CHE,2032,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,ZG,Mitgliedstaat der Europäischen Union (EU),,1292,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,ZG,Mitgliedstaat der Europäischen Union (EU),,1028,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,ZG,Mitgliedstaat der EFTA,,7,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,ZG,Mitgliedstaat der EFTA,,9,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,ZG,Anderer europäischer Staat,,215,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,ZG,Anderer europäischer Staat,,174,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,ZG,Afrika,,27,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,ZG,Afrika,,38,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,ZG,Nordamerika,,21,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,ZG,Nordamerika,,30,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,ZG,"Süd- und Zentralamerika, Karibik",,42,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,ZG,"Süd- und Zentralamerika, Karibik",,28,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,ZG,Asien,,131,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,ZG,Asien,,108,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,ZG,Ozeanien,,3,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,ZG,Ozeanien,,4,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,ZG,Staatenlos,,0,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,ZG,Staatenlos,,1,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,ZG,Nicht zuteilbar gemäss den aktuellen Grenzen,,0,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,ZG,Nicht zuteilbar gemäss den aktuellen Grenzen,,0,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,ZG,Ohne Angabe,,1,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,ZG,Ohne Angabe,,0,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,GE,Total,,3480,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,GE,Total,,4890,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,GE,Schweiz,CHE,1856,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,GE,Schweiz,CHE,2777,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,GE,Mitgliedstaat der Europäischen Union (EU),,1091,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,GE,Mitgliedstaat der Europäischen Union (EU),,1452,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,GE,Mitgliedstaat der EFTA,,5,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,GE,Mitgliedstaat der EFTA,,6,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,GE,Anderer europäischer Staat,,150,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,GE,Anderer europäischer Staat,,219,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,GE,Afrika,,101,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,GE,Afrika,,122,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,GE,Nordamerika,,38,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,GE,Nordamerika,,69,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,GE,"Süd- und Zentralamerika, Karibik",,37,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,GE,"Süd- und Zentralamerika, Karibik",,86,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,GE,Asien,,197,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,GE,Asien,,151,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,GE,Ozeanien,,5,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,GE,Ozeanien,,8,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,GE,Staatenlos,,0,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,GE,Staatenlos,,0,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,GE,Nicht zuteilbar gemäss den aktuellen Grenzen,,0,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,GE,Nicht zuteilbar gemäss den aktuellen Grenzen,,0,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_arrivals,2025,,GE,Ohne Angabe,,0,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
+BFS STATPOP,intercantonal_departures,2025,,GE,Ohne Angabe,,0,Wanderungen,https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0103010200_121/px-x-0103010200_121.px,2026-11-21T10:33:45.593Z
