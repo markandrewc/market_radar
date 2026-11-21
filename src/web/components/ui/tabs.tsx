@@ -18,7 +18,7 @@ export function Tabs({ tabs, label }: { tabs: TabDef[]; label: string }) {
 
   return (
     <div>
-      <div role="tablist" aria-label={label} className="flex gap-1 border-b border-slate-200"
+      <div role="tablist" aria-label={label} className="flex gap-1 overflow-x-auto border-b border-line"
         onKeyDown={(e) => {
           if (e.key === 'ArrowRight') { e.preventDefault(); move(idx + 1); }
           if (e.key === 'ArrowLeft') { e.preventDefault(); move(idx - 1); }
@@ -30,7 +30,8 @@ export function Tabs({ tabs, label }: { tabs: TabDef[]; label: string }) {
           return (
             <button key={t.id} ref={(el) => { refs.current[t.id] = el; }} type="button" role="tab" id={`${uid}-tab-${t.id}`}
               aria-selected={on} aria-controls={`${uid}-panel-${t.id}`} tabIndex={on ? 0 : -1} onClick={() => setCurrent(t.id)}
-              className={cn('-mb-px border-b-2 px-4 py-3 text-sm font-medium', on ? 'border-brand-accent text-brand' : 'border-transparent text-slate-600 hover:text-brand')}>
+              className={cn('-mb-px whitespace-nowrap border-b-2 px-4 py-3 text-sm font-medium transition-colors',
+                on ? 'border-brand-accent text-ink' : 'border-transparent text-ink-soft hover:bg-paper hover:text-ink')}>
               {t.label}
             </button>
           );

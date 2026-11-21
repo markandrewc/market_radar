@@ -21,37 +21,42 @@ export function Interpretation({
   className?: string;
 }) {
   return (
-    <div className={cn('rounded-lg border border-amber-200 bg-amber-50 p-4', className)}>
-      <div className="flex items-start gap-2">
-        <Compass className="mt-0.5 h-5 w-5 shrink-0 text-amber-800" aria-hidden />
-        <div className="min-w-0 flex-1 space-y-2">
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-            <h3 className="text-sm font-semibold text-brand">What this means for Powercoders</h3>
-            <span className="rounded border border-amber-300 bg-white px-1.5 py-0.5 text-[11px] font-medium text-amber-900">
+    <div className={cn('relative overflow-hidden rounded-card border border-line bg-[#fbf6ee] py-4 pl-5 pr-4 sm:pl-6 sm:pr-5', className)}>
+      {/* 3 px crimson rail: the panel is ours, not the publisher's. */}
+      <span aria-hidden className="absolute inset-y-0 left-0 w-[3px] bg-brand-accent" />
+      <div className="flex items-start gap-3">
+        <span aria-hidden className="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent-soft text-brand-accent">
+          <Compass className="h-4 w-4" />
+        </span>
+        <div className="min-w-0 flex-1 space-y-2.5">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+            {/* Kicker, not a headline: the panel is a reading, the number above it is the data. */}
+            <h3 className="kicker">What this means for Powercoders</h3>
+            <span className="inline-flex items-center rounded-full border border-line bg-surface px-2.5 py-1 text-xs font-medium text-ink-soft">
               Our reading, not the source
             </span>
             {explain && <ExplainPanel target={explain} fallbackText={insight.body} />}
           </div>
-          <p className="text-sm text-slate-800">{insight.body}</p>
+          <p className="text-[15px] leading-relaxed text-ink">{insight.body}</p>
           {insight.evidence.length > 0 && (
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-600">The numbers behind this</p>
-              <ul className="mt-1 space-y-1">
+            <div className="space-y-1.5 pt-0.5">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-soft">The numbers behind this</p>
+              <ul className="flex flex-wrap gap-1.5">
                 {insight.evidence.map((evidence, index) => {
                   const asOf = evidence.source.dataAsOf ? formatDate(evidence.source.dataAsOf) : null;
                   const retrieved = formatDate(evidence.source.fetchedAt);
                   return (
-                    <li key={`${evidence.label}-${index}`} className="flex flex-wrap items-baseline gap-x-1 text-sm text-slate-700">
-                      <span className="font-medium text-slate-800">{evidence.label}:</span>
-                      <span>{evidence.value}</span>
-                      <span aria-hidden>·</span>
+                    <li key={`${evidence.label}-${index}`} className="flex max-w-full flex-wrap items-baseline gap-x-1.5 gap-y-1 text-sm text-ink">
+                      <span className="font-medium text-ink">{evidence.label}:</span>
+                      <span className="tnum">{evidence.value}</span>
+                      <span aria-hidden className="text-ink-soft">·</span>
                       <a
                         href={evidence.source.url}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center gap-1 break-words text-brand-accent underline underline-offset-2 hover:text-brand"
+                        className="inline-flex max-w-full items-center gap-1 rounded-control border border-line bg-surface px-2 py-0.5 text-xs text-ink-soft underline decoration-line-strong underline-offset-2 transition-colors hover:border-line-strong hover:text-ink hover:decoration-ink"
                       >
-                        <span>
+                        <span className="break-words">
                           {evidence.source.name}
                           {asOf ? ` · data as of ${asOf}` : ''} · retrieved {retrieved}
                         </span>

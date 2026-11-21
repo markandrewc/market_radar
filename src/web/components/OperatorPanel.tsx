@@ -6,7 +6,9 @@ import type { ConnectorConfigUpdate, SyncSummary } from '../../shared/types';
 import { useApplyConnectorConfig, useConnectorConfig, useReloadConnectors, useSyncConnectors } from '../api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
+import { Button } from './ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
+import { cn } from '@/lib/utils';
 
 /**
  * Level 4: change `sources.yaml` from the browser and pull the records in.
@@ -35,23 +37,19 @@ function readStoredToken(): string {
   }
 }
 
-const button = (primary = false) =>
-  `rounded-md border px-3 py-1.5 text-xs font-medium disabled:cursor-not-allowed disabled:opacity-50 ${
-    primary
-      ? 'border-brand bg-brand text-white hover:opacity-90'
-      : 'border-slate-200 text-slate-700 hover:bg-slate-50'
-  }`;
+/** Quiet one-line code token on paper. */
+const codeClass = 'rounded border border-line bg-surface px-1 py-0.5 font-mono text-[0.9em] text-ink';
 
 type Tone = 'ok' | 'warn' | 'error';
 const toneClass: Record<Tone, string> = {
-  ok: 'border-emerald-200 bg-emerald-50 text-emerald-800',
-  warn: 'border-amber-200 bg-amber-50 text-amber-800',
-  error: 'border-red-200 bg-red-50 text-red-800',
+  ok: 'border-line bg-brand-soft text-ink',
+  warn: 'border-line bg-accent-soft text-accent-deep',
+  error: 'border-brand-accent bg-accent-soft text-accent-deep',
 };
 
 function Message({ tone, title, children }: { tone: Tone; title: string; children: ReactNode }) {
   return (
-    <div className={`rounded-md border px-3 py-2 text-xs ${toneClass[tone]}`} role={tone === 'error' ? 'alert' : 'status'}>
+    <div className={cn('rounded-card border px-3.5 py-2.5 text-xs', toneClass[tone])} role={tone === 'error' ? 'alert' : 'status'}>
       <p className="font-semibold">{title}</p>
       <div className="mt-1 space-y-1">{children}</div>
     </div>
@@ -152,11 +150,11 @@ export function OperatorPanel() {
   return (
     <Card id="operator-panel">
       <CardHeader>
-        <CardTitle>Source configuration (operator)</CardTitle>
-        <CardDescription>
-          Adding a source = paste a block into <code className="rounded bg-slate-100 px-1">sources.yaml</code>, apply
+        <CardTitle className="text-base font-semibold tracking-tight text-ink">Source configuration (operator)</CardTitle>
+        <CardDescription className="text-sm leading-relaxed text-ink-soft">
+          Adding a source = paste a block into <code className={codeClass}>sources.yaml</code>, apply
           it, then sync. No terminal needed — the{' '}
-          <a href={DOCS_URL} target="_blank" rel="noreferrer" className="text-brand-accent underline">
+          <a href={DOCS_URL} target="_blank" rel="noreferrer" className="font-medium text-brand-accent underline decoration-brand-accent/30 underline-offset-2 hover:text-accent-deep">
             one-page guide
           </a>{' '}
           has the block format.
@@ -166,7 +164,7 @@ export function OperatorPanel() {
         <div className="space-y-2">
           <div className="flex flex-wrap items-end gap-2">
             <div className="w-full max-w-md">
-              <label htmlFor="ingest-token" className="text-xs font-medium text-slate-700">Ingest token</label>
+              <label htmlFor="ingest-token" className="text-xs font-medium text-ink-soft">Ingest token</label>
               <input
                 id="ingest-token"
                 type="password"
@@ -175,22 +173,22 @@ export function OperatorPanel() {
                 value={token}
                 onChange={(event) => updateToken(event.target.value)}
                 placeholder="Paste the server’s INGEST_TOKEN"
-                className="mt-1 w-full rounded-md border border-slate-200 px-3 py-1.5 text-sm text-slate-800"
+                className="mt-1 w-full rounded-control border border-line bg-surface px-3 py-2 text-sm text-ink placeholder:text-ink-soft/70"
               />
             </div>
             {token && (
-              <button type="button" onClick={() => updateToken('')} className="text-xs text-brand-accent underline">
+              <button type="button" onClick={() => updateToken('')} className="text-xs font-medium text-brand-accent underline decoration-brand-accent/30 underline-offset-2 hover:text-accent-deep">
                 Forget token
               </button>
             )}
           </div>
-          <p className="text-xs text-slate-500">
-            The token is the server’s <code className="rounded bg-slate-100 px-1">INGEST_TOKEN</code>. It is kept in
+          <p className="text-xs text-ink-soft">
+            The token is the server’s <code className={codeClass}>INGEST_TOKEN</code>. It is kept in
             this browser tab only (sessionStorage) and is never part of the code.
           </p>
           {!token && (
-            <p className="text-sm text-slate-600">
-              Enter the token to load the current <code className="rounded bg-slate-100 px-1">sources.yaml</code>,
+            <p className="text-sm text-ink-soft">
+              Enter the token to load the current <code className={codeClass}>sources.yaml</code>,
               paste a new source and sync. Everything below needs it.
             </p>
           )}
@@ -204,24 +202,24 @@ export function OperatorPanel() {
               </Message>
             )}
 
-            <div className="space-y-1 rounded-md bg-brand-soft px-3 py-2 text-xs text-slate-600">
+            <div className="space-y-1 rounded-card bg-brand-soft px-3.5 py-2.5 text-xs text-ink-soft">
               <p>
                 File in effect:{' '}
                 {config.data ? (
-                  <code className="rounded bg-white px-1">{config.data.file}</code>
+                  <code className={codeClass}>{config.data.file}</code>
                 ) : config.isFetching ? (
                   'loading…'
                 ) : (
                   'not loaded yet — use “Load current YAML”'
                 )}
                 {config.data?.sha256 && (
-                  <span className="ml-2 text-slate-400">sha256 {config.data.sha256.slice(0, 12)}…</span>
+                  <span className="ml-2 text-ink-soft/60">sha256 {config.data.sha256.slice(0, 12)}…</span>
                 )}
               </p>
               <p>
                 Persistent: {persistence}
                 {applyResult && (
-                  <Badge variant={applyResult.persistent ? 'success' : 'warning'} className="ml-2">
+                  <Badge variant={applyResult.persistent ? 'success' : 'warning'} className={cn('ml-2 rounded-full px-2.5 py-1 text-xs font-medium', applyResult.persistent ? 'border-transparent bg-surface text-ink' : 'border-transparent bg-accent-soft text-accent-deep')}>
                     {applyResult.persistent ? 'persistent' : 'not persistent'}
                   </Badge>
                 )}
@@ -230,13 +228,13 @@ export function OperatorPanel() {
 
             <div className="space-y-2">
               <div className="flex flex-wrap items-center gap-2">
-                <label htmlFor="sources-yaml" className="text-xs font-medium text-slate-700">
-                  <code>sources.yaml</code>
+                <label htmlFor="sources-yaml" className="text-xs font-medium text-ink-soft">
+                  <code className="font-mono">sources.yaml</code>
                 </label>
-                <button type="button" onClick={loadYaml} disabled={config.isFetching} className={button()}>
+                <Button type="button" variant="outline" size="sm" onClick={loadYaml} disabled={config.isFetching} className="rounded-control border-line bg-surface text-ink hover:bg-brand-soft">
                   {config.isFetching ? 'Loading…' : 'Load current YAML'}
-                </button>
-                <a href={DOCS_URL} target="_blank" rel="noreferrer" className="text-xs text-brand-accent underline">
+                </Button>
+                <a href={DOCS_URL} target="_blank" rel="noreferrer" className="text-xs font-medium text-brand-accent underline decoration-brand-accent/30 underline-offset-2 hover:text-accent-deep">
                   How to add a source (one page) ↗
                 </a>
               </div>
@@ -246,24 +244,26 @@ export function OperatorPanel() {
                 onChange={(event) => setYaml(event.target.value)}
                 spellCheck={false}
                 placeholder={'# Load the current file, or paste a new block under "sources:"\nsources:\n  - id: itboard\n    name: "ITBoard Arbeitsmarkt"\n    source_url: "https://www.itboard.ch/arbeitsmarkt"\n    category: ["A"]\n    adapter_type: "csv_url"\n    endpoint: "https://www.itboard.ch/arbeitsmarkt/daten.csv"'}
-                className="h-[300px] w-full resize-y rounded-md border border-slate-200 bg-slate-50 p-3 font-mono text-xs text-slate-800"
+                className="h-[300px] w-full resize-y rounded-control border border-line bg-paper p-3 font-mono text-xs text-ink placeholder:text-ink-soft/60"
               />
               <div className="flex flex-wrap items-center gap-2">
-                <button type="button" onClick={applyYaml} disabled={!yaml.trim() || apply.isPending} className={button(true)}>
+                <Button type="button" variant="primary" size="sm" onClick={applyYaml} disabled={!yaml.trim() || apply.isPending} className="rounded-control">
                   {apply.isPending ? 'Validating…' : 'Validate & apply'}
-                </button>
-                <button
+                </Button>
+                <Button
                   type="button"
+                  variant="outline"
+                  size="sm"
                   onClick={reloadFile}
                   disabled={reload.isPending}
-                  className={button()}
+                  className="rounded-control border-line bg-surface text-ink hover:bg-brand-soft"
                   title="After editing a mounted file directly: re-read sources.yaml and apply it to the database."
                 >
                   {reload.isPending ? 'Applying…' : 'Apply file to DB'}
-                </button>
-                <p className="text-xs text-slate-500">
-                  <strong>Validate &amp; apply</strong> writes the text above into the file and applies it in one step.{' '}
-                  <strong>Apply file to DB</strong> re-reads a file you edited elsewhere (e.g. on a mounted volume).
+                </Button>
+                <p className="text-xs text-ink-soft">
+                  <strong className="font-semibold text-ink">Validate &amp; apply</strong> writes the text above into the file and applies it in one step.{' '}
+                  <strong className="font-semibold text-ink">Apply file to DB</strong> re-reads a file you edited elsewhere (e.g. on a mounted volume).
                 </p>
               </div>
             </div>
@@ -271,7 +271,7 @@ export function OperatorPanel() {
             {applyError && (
               <Message tone="error" title="Could not apply the configuration">
                 <p>{applyError}</p>
-                <p className="text-slate-600">
+                <p className="text-ink-soft">
                   Nothing changed: the previous configuration stays active. Fix the block above and try again.
                 </p>
               </Message>
@@ -293,11 +293,11 @@ export function OperatorPanel() {
                 ) : (
                   <p className="font-medium">
                     This file is not on a mounted volume — the change is lost on the next deploy. Point{' '}
-                    <code className="rounded bg-white px-1">SOURCES_FILE</code> at a mounted volume (e.g.{' '}
-                    <code className="rounded bg-white px-1">/data/sources.yaml</code>) to keep it.
+                    <code className={codeClass}>SOURCES_FILE</code> at a mounted volume (e.g.{' '}
+                    <code className={codeClass}>/data/sources.yaml</code>) to keep it.
                   </p>
                 )}
-                <p className="text-slate-600">Next: sync below so the new source’s records reach the database.</p>
+                <p className="text-ink-soft">Next: sync below so the new source’s records reach the database.</p>
               </Message>
             )}
 
@@ -321,16 +321,16 @@ export function OperatorPanel() {
               </Message>
             )}
 
-            <div className="space-y-2 border-t border-slate-100 pt-4">
+            <div className="space-y-2 border-t border-line pt-4">
               <div className="flex flex-wrap items-center gap-2">
-                <button type="button" onClick={() => runSync(false)} disabled={syncPending} className={button()}>
+                <Button type="button" variant="primary" size="sm" onClick={() => runSync(false)} disabled={syncPending} className="rounded-control">
                   {syncPending ? 'Syncing…' : 'Sync now'}
-                </button>
-                <button type="button" onClick={() => runSync(true)} disabled={syncPending} className={button()}>
+                </Button>
+                <Button type="button" variant="outline" size="sm" onClick={() => runSync(true)} disabled={syncPending} className="rounded-control border-line bg-surface text-ink hover:bg-brand-soft">
                   Sync due only
-                </button>
-                <p className="text-xs text-slate-500">
-                  <strong>Sync now</strong> fetches every enabled source; <strong>Sync due only</strong> skips sources
+                </Button>
+                <p className="text-xs text-ink-soft">
+                  <strong className="font-semibold text-ink">Sync now</strong> fetches every enabled source; <strong className="font-semibold text-ink">Sync due only</strong> skips sources
                   whose refresh rate has not elapsed (static sources only run on an explicit sync).
                 </p>
               </div>
@@ -338,18 +338,18 @@ export function OperatorPanel() {
               {syncError && (
                 <Message tone="error" title="Sync failed">
                   <p>{syncError}</p>
-                  <p className="text-slate-600">The previous records stay in place.</p>
+                  <p className="text-ink-soft">The previous records stay in place.</p>
                 </Message>
               )}
 
               {syncResult && (
                 <div className="space-y-2">
-                  <p className="text-xs text-slate-600">
+                  <p className="text-xs text-ink-soft">
                     {syncResult.results.length} source(s) · {syncResult.items.toLocaleString('de-CH')} item(s) ·{' '}
                     {syncResult.errors} error(s)
                   </p>
                   {syncResult.results.length === 0 ? (
-                    <p className="text-xs text-slate-500">No sources were synced.</p>
+                    <p className="text-xs text-ink-soft">No sources were synced.</p>
                   ) : (
                     <Table>
                       <TableHeader>
@@ -363,15 +363,15 @@ export function OperatorPanel() {
                       <TableBody>
                         {syncResult.results.map((result, index) => (
                           <TableRow key={`${result.source}-${index}`}>
-                            <TableCell className="font-medium">
+                            <TableCell className="font-medium text-ink">
                               {result.source}
-                              <p className="text-xs text-slate-400">{result.adapter}</p>
+                              <p className="text-xs text-ink-soft/70">{result.adapter}</p>
                             </TableCell>
-                            <TableCell>{result.items.toLocaleString('de-CH')}</TableCell>
-                            <TableCell className="max-w-xs text-xs text-slate-600">
+                            <TableCell className="tnum">{result.items.toLocaleString('de-CH')}</TableCell>
+                            <TableCell className="max-w-xs text-xs text-ink-soft">
                               {result.skipped ? (result.reason || 'skipped') : '–'}
                             </TableCell>
-                            <TableCell className="max-w-xs truncate text-xs text-red-700" title={result.error ?? undefined}>
+                            <TableCell className="max-w-xs truncate text-xs text-accent-deep" title={result.error ?? undefined}>
                               {result.error ?? '–'}
                             </TableCell>
                           </TableRow>
@@ -383,9 +383,9 @@ export function OperatorPanel() {
               )}
             </div>
 
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-ink-soft">
               After a sync, connector sources and their item counts appear in the table above; the records are listed
-              under <Link to="/items" className="text-brand-accent underline">Items</Link>.
+              under <Link to="/items" className="font-medium text-brand-accent underline decoration-brand-accent/30 underline-offset-2 hover:text-accent-deep">Items</Link>.
             </p>
           </>
         )}

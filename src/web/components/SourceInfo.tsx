@@ -27,37 +27,39 @@ export function SourceInfo({ source, note }: { source: SourceRef; note?: string 
       <summary
         title={badge}
         className={cn(
-          'inline-flex max-w-full cursor-pointer list-none items-center gap-1 rounded-md border border-slate-300 bg-white px-2 py-0.5 text-xs font-medium text-slate-700 hover:bg-slate-50',
+          'inline-flex max-w-full cursor-pointer list-none items-center gap-1.5 rounded-full border border-line bg-surface px-2.5 py-1 text-xs font-medium text-ink-soft transition-colors',
+          'hover:border-line-strong hover:text-ink',
           'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accent',
           '[&::-webkit-details-marker]:hidden',
         )}
       >
+        <span aria-hidden className="h-1 w-1 shrink-0 rounded-full bg-brand-accent" />
         <ExternalLink className="h-3 w-3 shrink-0" aria-hidden />
         <span className="min-w-0 truncate">{badge}</span>
       </summary>
-      <div className="absolute left-0 top-full z-30 mt-1 w-80 max-w-[calc(100vw-2rem)] rounded-lg border border-slate-200 bg-white p-3 text-left text-xs text-slate-700 shadow-lg">
-        <p className="text-sm font-semibold text-brand">{source.name}</p>
-        <dl className="mt-2 space-y-1">
-          <div>
-            <dt className="inline font-medium text-slate-800">Publisher date: </dt>
-            <dd className="inline">{asOf ?? 'The source does not state a date'}</dd>
+      <div className="absolute left-0 top-full z-30 mt-2 w-80 max-w-[calc(100vw-2rem)] rounded-card border border-line bg-surface p-4 text-left text-xs text-ink-soft shadow-float">
+        <p className="text-sm font-semibold text-ink">{source.name}</p>
+        <dl className="mt-2.5 space-y-1.5">
+          <div className="flex flex-wrap gap-x-1">
+            <dt className="font-medium text-ink">Publisher date: </dt>
+            <dd className="tnum">{asOf ?? 'The source does not state a date'}</dd>
           </div>
-          <div>
-            <dt className="inline font-medium text-slate-800">Retrieved by us: </dt>
-            <dd className="inline">{retrieved}</dd>
+          <div className="flex flex-wrap gap-x-1">
+            <dt className="font-medium text-ink">Retrieved by us: </dt>
+            <dd className="tnum">{retrieved}</dd>
           </div>
         </dl>
         {note && (
-          <div className="mt-2 border-t border-slate-100 pt-2">
-            <p className="font-semibold text-slate-800">What this measures</p>
-            <p className="mt-0.5">{note}</p>
+          <div className="mt-3 border-t border-line pt-3">
+            <p className="font-semibold text-ink">What this measures</p>
+            <p className="mt-1 leading-relaxed">{note}</p>
           </div>
         )}
         <a
           href={source.url}
           target="_blank"
           rel="noreferrer"
-          className="mt-3 inline-flex items-center gap-1 font-medium text-brand-accent underline underline-offset-2 hover:text-brand"
+          className="mt-3 inline-flex items-center gap-1 font-medium text-brand-accent underline decoration-brand-accent/30 underline-offset-2 hover:text-accent-deep"
         >
           Open {source.name} in a new tab
           <ExternalLink className="h-3 w-3 shrink-0" aria-hidden />
@@ -67,7 +69,7 @@ export function SourceInfo({ source, note }: { source: SourceRef; note?: string 
             href={source.datasetUrl}
             target="_blank"
             rel="noreferrer"
-            className="mt-1 flex items-center gap-1 font-medium text-brand-accent underline underline-offset-2 hover:text-brand"
+            className="mt-1.5 flex items-center gap-1 font-medium text-brand-accent underline decoration-brand-accent/30 underline-offset-2 hover:text-accent-deep"
           >
             Dataset on opendata.swiss
             {source.datasetModified ? ` (catalogue updated ${formatDate(source.datasetModified)})` : ''}

@@ -1,5 +1,6 @@
 import { ExternalLink } from 'lucide-react';
 import type { SourceRef } from '../../shared/types';
+import { cn } from '@/lib/utils';
 
 /**
  * The provenance line for one number: who published it, when the publisher last
@@ -15,14 +16,16 @@ export function SourceBadge({ source, compact = false }: { source: SourceRef; co
       href={source.url}
       target="_blank"
       rel="noreferrer"
-      className={
+      className={cn(
+        'inline-flex max-w-full items-center gap-1.5 text-xs text-ink-soft transition-colors hover:text-ink',
         compact
-          ? 'inline-flex max-w-full items-center gap-1 text-xs text-slate-600 underline underline-offset-2 hover:text-brand-accent'
-          : 'inline-flex max-w-full items-center gap-1 rounded-md border border-slate-300 px-2 py-0.5 text-xs font-medium text-slate-700 hover:bg-slate-50'
-      }
+          ? 'underline decoration-line-strong underline-offset-4 hover:decoration-ink'
+          : 'rounded-full border border-line bg-surface px-2.5 py-1 font-medium hover:border-line-strong',
+      )}
       aria-label={`Source: ${label}. Opens in a new tab.`}
       title={`Source: ${label}`}
     >
+      <span aria-hidden className="h-1 w-1 shrink-0 rounded-full bg-brand-accent" />
       <span className="truncate">
         {compact ? `${source.name} · ${asOf ?? fetched}` : `Source: ${source.name}${asOf ? ` · data as of ${asOf}` : ''} · retrieved ${fetched}`}
       </span>

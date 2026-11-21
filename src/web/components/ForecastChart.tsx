@@ -1,7 +1,7 @@
+import { useId } from 'react';
 import { Area, CartesianGrid, ComposedChart, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import type { ForecastPoint, Point } from '../../shared/types';
-
-const COLOUR = '#a8324e';
+import { CHART, axisProps, gridProps, tooltip } from '../charts/theme';
 
 type Row = {
   period: string;
@@ -29,13 +29,13 @@ function ForecastTooltip({ active, payload }: { active?: boolean; payload?: Tool
   const value = isForecast ? row.forecast : row.history;
   const high = row.low !== null && row.band !== null ? row.low + row.band : null;
   return (
-    <div className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs shadow-md">
-      <p className="font-semibold text-brand">{row.label}</p>
-      <p className="text-slate-700">{isForecast ? 'Forecast' : 'Reported'}: {value}</p>
+    <div className={tooltip.card}>
+      <p className={tooltip.label}>{row.label}</p>
+      <p className="tnum">{isForecast ? 'Forecast' : 'Reported'}: {value}</p>
       {isForecast && row.low !== null && high !== null && (
-        <p className="text-slate-600">95 % range: {row.low} to {high}</p>
+        <p className={`${tooltip.value} tnum`}>95 % range: {row.low} to {high}</p>
       )}
-      {isForecast && <p className="mt-1 font-medium text-amber-800">Extrapolation, not a promise.</p>}
+      {isForecast && <p className="mt-1 font-medium text-amber-900">Extrapolation, not a promise.</p>}
     </div>
   );
 }
@@ -56,6 +56,7 @@ export function ForecastChart({
   label: string;
   height?: number;
 }) {
+  const gradientId = `forecast-band-${useId().replace(/[:]/g, '')}`;
   const history = [...series].sort((a, b) => a.period.localeCompare(b.period));
   const future = [...(forecast ?? [])]
     .filter((point) => Number.isFinite(point.value))
@@ -63,7 +64,7 @@ export function ForecastChart({
   const latest = history.at(-1);
 
   if (!latest) {
-    return <p className="rounded-md bg-slate-50 p-3 text-sm text-slate-700">No monthly figures to show yet.</p>;
+    return <p className="rounded-control bg-brand-soft p-3 text-sm text-ink-soft">No monthly figures to show yet.</p>;
   }
 
   const rows: Row[] = history.map((point, index) => ({
@@ -106,19 +107,25 @@ export function ForecastChart({
       <div role="img" aria-label={ariaLabel} className="w-full" style={{ height }}>
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={rows} margin={{ top: 8, right: 8, bottom: 0, left: -12 }}>
-            <CartesianGrid stroke="#e2e8f0" vertical={false} />
-            <XAxis dataKey="label" tickLine={false} axisLine={false} fontSize={12} minTickGap={20} />
-            <YAxis tickLine={false} axisLine={false} fontSize={12} width={44} />
-            <Tooltip content={<ForecastTooltip />} cursor={{ stroke: '#94a3b8', strokeDasharray: '3 3' }} />
+            <defs>
+              <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={CHART.accent} stopOpacity={0.16} />
+                <stop offset="100%" stopColor={CHART.accent} stopOpacity={0.02} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid {...gridProps} />
+            <XAxis dataKey="label" minTickGap={20} {...axisProps} />
+            <YAxis width={44} {...axisProps} />
+            <Tooltip content={<ForecastTooltip />} cursor={tooltip.cursor} />
             {/* The 95 % band: a transparent base to `low`, then the low→high fill stacked on top. */}
             <Area type="monotone" dataKey="low" stackId="band" stroke="none" fill="transparent" isAnimationActive={false} activeDot={false} />
-            <Area type="monotone" dataKey="band" stackId="band" stroke="none" fill={COLOUR} fillOpacity={0.14} isAnimationActive={false} activeDot={false} />
+            <Area type="monotone" dataKey="band" stackId="band" stroke="none" fill={`url(#${gradientId})`} isAnimationActive={false} activeDot={false} />
             <Line
               type="monotone"
               dataKey="history"
-              stroke={COLOUR}
+              stroke={CHART.accent}
               strokeWidth={2.5}
-              dot={showDots ? { r: 2.5, strokeWidth: 0, fill: COLOUR } : false}
+              dot={showDots ? { r: 2.5, strokeWidth: 0, fill: CHART.accent } : false}
               connectNulls={false}
               isAnimationActive={false}
             />
@@ -126,7 +133,7 @@ export function ForecastChart({
               <Line
                 type="monotone"
                 dataKey="forecast"
-                stroke={COLOUR}
+                stroke={CHART.accent}
                 strokeWidth={2}
                 strokeDasharray="6 4"
                 dot={false}
@@ -137,12 +144,12 @@ export function ForecastChart({
           </ComposedChart>
         </ResponsiveContainer>
       </div>
-      <figcaption className="text-xs text-slate-600">
-        <span className="font-medium text-brand">Solid line:</span> months the source reported.
+      <figcaption className="text-xs text-ink-soft">
+        <span className="font-medium text-ink">Solid line:</span> months the source reported.
         {hasForecast && (
           <>
             {' '}
-            <span className="font-medium text-brand">Dashed line:</span> our forecast — an extrapolation, not a promise. The shaded band is the 95 % range.
+            <span className="font-medium text-ink">Dashed line:</span> our forecast — an extrapolation, not a promise. The shaded band is the 95 % range.
           </>
         )}
       </figcaption>

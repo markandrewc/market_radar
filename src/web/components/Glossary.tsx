@@ -8,17 +8,18 @@ const items = [
   ['Where do the numbers come from?', 'Every number has a badge with the source name and the date of the last update. Click the badge to open the original.'],
 ];
 
+/** Open section (h2 + quiet rules) rather than one more card: the page ends on a calm note. */
 export function Glossary() {
   return (
-    <section aria-labelledby="glossary-title" className="space-y-3">
-      <h2 id="glossary-title" className="text-xl font-semibold text-brand">Quick answers</h2>
-      <div className="divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white">
+    <section aria-labelledby="glossary-title" className="space-y-4">
+      <h2 id="glossary-title" className="text-2xl font-semibold tracking-tight text-ink sm:text-3xl">Quick answers</h2>
+      <div className="divide-y divide-line overflow-hidden rounded-card border border-line bg-surface shadow-card">
         {items.map(([q, a]) => (
-          <details key={q} className="group p-4">
-            <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-medium text-brand">
-              {q}<ChevronDown className="h-5 w-5 shrink-0 transition-transform group-open:rotate-180" aria-hidden />
+          <details key={q} className="group">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-3.5 font-medium text-ink transition-colors hover:text-brand-accent sm:px-5">
+              {q}<ChevronDown className="h-5 w-5 shrink-0 text-ink-soft transition-transform group-open:rotate-180" aria-hidden />
             </summary>
-            <p className="pt-2 text-slate-700">{a}</p>
+            <p className="px-4 pb-4 text-[15px] leading-relaxed text-ink-soft sm:px-5">{a}</p>
           </details>
         ))}
       </div>

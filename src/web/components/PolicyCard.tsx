@@ -1,3 +1,4 @@
+import { Compass } from 'lucide-react';
 import type { ExplainRequest, MarketItem, PolicyNote } from '../../shared/types';
 import { formatDate, itemSource } from '../lib/source';
 import { Badge } from './ui/badge';
@@ -42,44 +43,57 @@ export function PolicyCard({
   // The record permalink when the source has one, otherwise the source's own page.
   const href = item.url ?? item.source_url;
   return (
-    <Card className="h-full">
-      <CardContent className="space-y-3 pt-5">
-        <div>
-          <div className="flex flex-wrap items-center gap-2">
-            <p className="text-xs text-slate-600">
+    <Card interactive className="h-full">
+      <CardContent className="flex h-full flex-col gap-3 p-5">
+        <div className="space-y-2">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="kicker text-ink-soft">
               {item.published_at ? (
                 <time dateTime={item.published_at}>{formatDate(item.published_at)}</time>
               ) : (
                 'Publisher date not stated'
               )}
             </p>
-            {isNewThisWeek(item.published_at) && <Badge variant="secondary">New this week</Badge>}
+            {isNewThisWeek(item.published_at) && (
+              <Badge variant="secondary" className="rounded-full border-transparent bg-accent-soft px-2.5 py-1 text-xs font-medium text-accent-deep">
+                New this week
+              </Badge>
+            )}
           </div>
-          <h3 className="mt-1 text-base font-semibold text-brand">
+          <h3 className="text-lg font-semibold tracking-tight text-ink">
             <a
               href={href}
               target="_blank"
               rel="noreferrer"
-              className="underline-offset-2 hover:text-brand-accent hover:underline"
+              className="underline-offset-2 transition-colors hover:text-brand-accent hover:underline"
             >
               {item.title}
             </a>
           </h3>
         </div>
 
-        {item.summary && <p className="text-sm text-slate-700">{trimSummary(item.summary)}</p>}
+        {item.summary && <p className="text-[15px] leading-relaxed text-ink-soft">{trimSummary(item.summary)}</p>}
 
         {note && (
-          <div className="rounded-md border-l-4 border-amber-400 bg-amber-50 px-3 py-2">
-            <p className="text-xs font-semibold uppercase tracking-wide text-amber-800">Our reading, not the source</p>
-            <p className="mt-1 text-xs font-medium text-slate-700">{note.label}</p>
-            <p className="mt-1 text-sm text-slate-700">{note.note}</p>
+          <div className="relative overflow-hidden rounded-card border border-line bg-[#fbf6ee] px-3.5 py-3 pl-4">
+            <span aria-hidden className="absolute inset-y-0 left-0 w-[3px] bg-brand-accent" />
+            <div className="flex items-start gap-2.5">
+              <span aria-hidden className="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent-soft text-brand-accent">
+                <Compass className="h-3.5 w-3.5" />
+              </span>
+              <div className="min-w-0 space-y-1">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-soft">Our reading, not the source</p>
+                <p className="text-sm font-semibold text-ink">{note.label}</p>
+                <p className="text-[15px] leading-relaxed text-ink">{note.note}</p>
+              </div>
+            </div>
           </div>
         )}
 
-        <SourceBadge source={itemSource(item)} />
-
-        {explain && <ExplainPanel target={explain} fallbackText={item.summary} />}
+        <div className="mt-auto space-y-3 pt-1">
+          <SourceBadge source={itemSource(item)} />
+          {explain && <ExplainPanel target={explain} fallbackText={item.summary} />}
+        </div>
       </CardContent>
     </Card>
   );

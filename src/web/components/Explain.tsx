@@ -14,7 +14,7 @@ function SourceLink({ source }: { source: SourceRef }) {
       href={source.url}
       target="_blank"
       rel="noreferrer"
-      className="inline-flex max-w-full items-center gap-1 text-brand-accent underline underline-offset-2 hover:text-brand"
+      className="inline-flex max-w-full items-center gap-1 rounded-full border border-line bg-surface px-2 py-0.5 text-xs text-ink-soft underline decoration-line-strong underline-offset-2 transition-colors hover:border-line-strong hover:text-ink hover:decoration-ink"
     >
       <span>
         {source.name}
@@ -32,19 +32,19 @@ function SourceLink({ source }: { source: SourceRef }) {
  */
 function SentenceList({ sentences }: { sentences: CitedSentence[] }) {
   return (
-    <ul className="space-y-2">
+    <ul className="space-y-2.5">
       {sentences.map((sentence, index) => (
         <li key={`${index}-${sentence.text.slice(0, 24)}`} className="space-y-1">
-          <p className="text-sm text-slate-800">{sentence.text}</p>
+          <p className="text-[15px] leading-relaxed text-ink">{sentence.text}</p>
           {sentence.sources.length > 0 ? (
-            <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-600">
-              <span className="font-medium text-slate-700">Source:</span>
+            <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-ink-soft">
+              <span className="font-medium text-ink-soft">Source:</span>
               {sentence.sources.map((source, sourceIndex) => (
                 <SourceLink key={`${source.id}-${sourceIndex}`} source={source} />
               ))}
             </p>
           ) : (
-            <p className="text-xs text-slate-500">No source is stated for this sentence.</p>
+            <p className="text-xs text-ink-soft">No source is stated for this sentence.</p>
           )}
         </li>
       ))}
@@ -74,37 +74,45 @@ function ExplanationBody({
   const fromModel = explanation.method === 'model';
   return (
     <div className="space-y-3">
-      <p className="text-xs font-semibold uppercase tracking-wide text-slate-600">
-        {fromModel ? 'AI explanation · our reading, not the source' : 'AI unavailable — showing the data-based reading'}
-      </p>
+      {fromModel ? (
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-accent-soft px-2.5 py-1 text-xs font-semibold text-accent-deep">
+          <Sparkles className="h-3 w-3" aria-hidden />
+          AI explanation · our reading, not the source
+        </span>
+      ) : (
+        <span className="inline-flex items-center rounded-full border border-line bg-paper px-2.5 py-1 text-xs font-medium text-ink-soft">
+          AI unavailable — showing the data-based reading
+        </span>
+      )}
 
       {explanation.sentences.length > 0 ? (
         <SentenceList sentences={explanation.sentences} />
       ) : (
-        <p className="text-sm text-slate-800">{explanation.text}</p>
+        <p className="text-[15px] leading-relaxed text-ink">{explanation.text}</p>
       )}
 
       {fromModel && (
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-ink-soft">
           {explanation.model ? `Model ${explanation.model}` : 'Model not stated'}
           {explanation.cached ? ' · cached' : ''}
         </p>
       )}
 
-      <p className="text-xs text-slate-600">{explanation.disclaimer}</p>
+      <p className="text-xs leading-relaxed text-ink-soft">{explanation.disclaimer}</p>
 
       {fromModel && fallbackText && (
-        <div className="space-y-1 border-t border-slate-100 pt-2">
-          <button
-            type="button"
+        <div className="space-y-2 border-t border-line pt-3">
+          <Button
+            variant="outline"
+            size="sm"
             aria-expanded={showFallback}
             aria-controls={fallbackId}
             onClick={() => setShowFallback((shown) => !shown)}
-            className="text-xs font-medium text-brand-accent underline underline-offset-2 hover:text-brand"
+            className="w-fit border-line bg-surface text-ink hover:bg-brand-soft"
           >
             Show the data-based reading
-          </button>
-          <div id={fallbackId} hidden={!showFallback} className="rounded-md bg-slate-100 p-2 text-xs text-slate-600">
+          </Button>
+          <div id={fallbackId} hidden={!showFallback} className="rounded-card border border-line bg-paper p-3 text-xs leading-relaxed text-ink-soft">
             {fallbackText}
           </div>
         </div>
@@ -134,7 +142,7 @@ export function ExplainPanel({ target, fallbackText }: { target: ExplainRequest;
 
   if (status.isPending || !status.data) return null;
   if (!status.data.enabled) {
-    return <p className="text-xs text-slate-500">AI explanations are not configured on this server.</p>;
+    return <p className="text-xs text-ink-soft">AI explanations are not configured on this server.</p>;
   }
 
   const toggle = () => {
@@ -155,7 +163,7 @@ export function ExplainPanel({ target, fallbackText }: { target: ExplainRequest;
         aria-expanded={open}
         aria-controls={panelId}
         onClick={toggle}
-        className="w-fit"
+        className="w-fit border-line bg-surface text-ink hover:bg-brand-soft"
       >
         <Sparkles className="h-4 w-4" aria-hidden />
         Explain simply
@@ -167,18 +175,18 @@ export function ExplainPanel({ target, fallbackText }: { target: ExplainRequest;
         tabIndex={-1}
         hidden={!open}
         aria-busy={open ? explanation.isPending : undefined}
-        className="rounded-lg border border-slate-200 bg-white p-3 text-slate-800 shadow-sm focus:outline-2 focus:outline-offset-2 focus:outline-brand-accent"
+        className="rounded-card border border-line bg-surface p-4 text-ink shadow-card focus:outline-2 focus:outline-offset-2 focus:outline-brand-accent"
       >
         {open && explanation.isPending && (
-          <p aria-live="polite" className="text-sm text-slate-700">
+          <p aria-live="polite" className="text-sm text-ink-soft">
             Writing a plain-language explanation…
           </p>
         )}
 
         {open && explanation.isError && (
           <div className="space-y-2">
-            <p className="text-sm text-slate-800">{friendlyError(explanation.error)}</p>
-            <Button variant="outline" size="sm" onClick={() => explanation.mutate(target)}>
+            <p className="text-sm text-ink">{friendlyError(explanation.error)}</p>
+            <Button variant="outline" size="sm" onClick={() => explanation.mutate(target)} className="w-fit border-line bg-surface text-ink hover:bg-brand-soft">
               Try again
             </Button>
           </div>
