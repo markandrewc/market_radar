@@ -103,3 +103,28 @@ CREATE TABLE IF NOT EXISTS connector_state (
     errors        JSONB NOT NULL DEFAULT '[]'::jsonb,
     applied_at    TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+-- Normalised connector records (docs/market-item.schema.json). One row per record of a
+-- configured source; payload keeps the raw record for the AI skill matcher and is not served.
+CREATE TABLE IF NOT EXISTS market_items (
+    source_id    TEXT NOT NULL REFERENCES connector_sources(id) ON DELETE CASCADE,
+    id           TEXT NOT NULL,
+    category     TEXT NOT NULL CHECK (category IN ('A', 'B', 'C', 'D', 'E')),
+    categories   TEXT[] NOT NULL,
+    title        TEXT NOT NULL,
+    summary      TEXT NOT NULL DEFAULT '',
+    metrics      JSONB NOT NULL DEFAULT '{}'::jsonb,
+    payload      JSONB,
+    tags         TEXT[] NOT NULL DEFAULT '{}',
+    region       TEXT,
+    source_name  TEXT NOT NULL,
+    source_url   TEXT NOT NULL,
+    url          TEXT,
+    published_at TIMESTAMPTZ,
+    fetched_at   TIMESTAMPTZ NOT NULL,
+    PRIMARY KEY (source_id, id)
+);
+CREATE INDEX IF NOT EXISTS market_items_category ON market_items (category, published_at DESC);
+CREATE INDEX IF NOT EXISTS market_items_fetched ON market_items (fetched_at DESC);
+CREATE INDEX IF NOT EXISTS market_items_tags ON market_items USING GIN (tags);
+CREATE INDEX IF NOT EXISTS market_items_region ON market_items (region);

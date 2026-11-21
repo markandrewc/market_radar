@@ -115,7 +115,7 @@ The schema lives in [market-item.schema.json](market-item.schema.json), the Type
 | `summary` | string | Plain text, HTML stripped. |
 | `metrics` | `{ [name]: number \| null }` | Numbers that belong to the record; the key names the meaning. |
 | `tags` | string[] | Free-form tags and skills, e.g. `role:IT Support`. |
-| `region` | string \| null | Canton code (`ZH`, `BE`, …) when recognisable, else the raw location, `null` for Switzerland-wide. |
+| `region` | string \| null | Canton code (`ZH`, `BE`, …) when the record mentions a target city, else `null`. |
 | `source_name` | string | Shown next to every number (provenance). |
 | `source_url` | string | Link to the original data of the source. |
 | `url` | string \| null | Permalink of the single record; `null` for aggregates. |
@@ -136,6 +136,7 @@ the Python and TypeScript definitions one-to-one.
 | GET | `/api/skills?horizon=3` | `SkillsResponse` over all postings (`role.id = "all"`) |
 | GET | `/api/skills?role=<id>&horizon=3` | `SkillsResponse` for one role; empty `skills` if the role has no skill data; `404` for an unknown role |
 | GET | `/api/connectors` | `ConnectorList`: the sources from `sources.yaml`, the `defaults` (roles, cities, keywords), `configError`, `pendingChanges` |
+| GET | `/api/items?category=&region=&source=&q=&order=&limit=&offset=` | `MarketItem[]` from all connectors, newest `published_at` first |
 
 `months` (1–120): history returned in `series`. `horizon` (0–12): months of forecast in `trend.forecast`.
 
@@ -196,6 +197,26 @@ Requires `Authorization: Bearer <INGEST_TOKEN>`. Applies the file and returns
 A file that cannot be read at all answers `422` and changes nothing: the previously applied sources stay
 active, so a typo on a mounted volume cannot wipe the configuration. Broken single blocks are listed in
 `errors`, the valid ones are applied anyway.
+
+### `GET /api/items`
+
+Normalised records from every connector (shape see [MarketItem](#marketitem-frozen-contract)). Query parameters:
+`category` (A–E, matches `categories`), `region` (canton code), `source` (connector id), `q` (title/summary
+contains), `order` (`published_at`, default, or `fetched_at`), `limit` (1–1000, default 100), `offset`.
+An unknown `category` or `order` answers `422`.
+
+### `POST /api/connectors/sync?source=<id>&due_only=true`
+
+Requires the token. Fetches the configured sources, normalises them and writes `market_items`:
+`{results, items, errors}`. `source` limits the run to one id (`404` if unknown); `due_only` skips sources whose
+`refreshSeconds` has not elapsed since `lastSyncAt`, and `static` sources only run on an explicit call.
+Per source: `{source, adapter, items, skipped, replaced, reason, error}`.
+
+- A failing source does not stop the others: its previous items stay, `lastError` is stored and the result carries
+  the message.
+- An empty payload also keeps the existing items (`replaced: false`), so a temporarily broken feed cannot wipe a
+  source's data.
+- Missing `authEnv` variables skip the source instead of failing it.
 
 ## Write
 

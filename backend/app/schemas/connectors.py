@@ -46,3 +46,21 @@ class ReloadResult(BaseModel):
     sourceCount: int
     configSha256: str
     errors: list[str] = []
+
+
+class SyncResult(BaseModel):
+    """Outcome for one source. ``skipped`` means nothing was fetched (disabled, not due, missing env)."""
+
+    source: str
+    adapter: str
+    items: int = 0
+    skipped: bool = False
+    replaced: bool = False
+    reason: str | None = None
+    error: str | None = None
+
+
+class SyncSummary(BaseModel):
+    results: list[SyncResult] = []
+    items: int = 0
+    errors: int = 0

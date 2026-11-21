@@ -5,6 +5,7 @@ import yaml
 from app import config
 from app.connectors import config as sources_config
 from app.services import connectors as store
+from conftest import write_sources
 
 TOKEN = {"Authorization": "Bearer secret"}
 
@@ -53,19 +54,14 @@ SKILLS = {
 }
 
 
-def write_config(path, sources, defaults=None) -> None:
-    path.write_text(yaml.safe_dump({"version": 1, "defaults": defaults or DEFAULTS, "sources": sources},
-                                  allow_unicode=True, sort_keys=False), encoding="utf-8")
-
-
 @pytest.fixture
-def config_file(tmp_path, monkeypatch):
-    """Points SOURCES_FILE at a throwaway file; created before the client fixture starts the app."""
-    path = tmp_path / "sources.yaml"
-    write_config(path, [ITBOARD, POLICY, SKILLS])
-    monkeypatch.setattr(config, "SOURCES_FILE", path)
-    monkeypatch.setattr(config, "SOURCES_DEFAULT_FILE", tmp_path / "default.yaml")
-    return path
+def config_file(sources_file):
+    write_sources(sources_file, [ITBOARD, POLICY, SKILLS], DEFAULTS)
+    return sources_file
+
+
+def write_config(path, sources, defaults=None) -> None:
+    write_sources(path, sources, DEFAULTS if defaults is None else defaults)
 
 
 def test_load_parses_defaults_and_sources(config_file):

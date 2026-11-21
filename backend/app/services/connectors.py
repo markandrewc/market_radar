@@ -7,12 +7,18 @@ file are disabled instead of deleted - their market_items are history.
 """
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 
 from psycopg.types.json import Jsonb
 
+from ..connectors import adapter_for
+from ..connectors.base import apply_filters
+from ..connectors.config import Defaults, LoadedConfig, SourceConfig
 from ..db import Conn
-from ..connectors.config import LoadedConfig
+from ..schemas import SyncResult, SyncSummary
+from . import items as item_store
 
 _COLUMNS = """id, name, description, source_url, categories, adapter_type, endpoint, endpoints,
               refresh_rate, refresh_seconds, enabled, auth_env, params, headers, filter_keywords,
@@ -93,3 +99,61 @@ def apply_config(conn: Conn, loaded: LoadedConfig) -> ApplyResult:
 def read_state(conn: Conn) -> dict | None:
     row = conn.execute("SELECT * FROM connector_state WHERE id").fetchone()
     return dict(row) if row else None
+
+
+def _last_sync(conn: Conn, source_id: str) -> datetime | None:
+    row = conn.execute("SELECT last_sync_at FROM connector_sources WHERE id = %s", (source_id,)).fetchone()
+    return row["last_sync_at"] if row else None
+
+
+def is_due(source: SourceConfig, last_sync_at: datetime | None, now: datetime) -> bool:
+    """refresh_rate decides; 'static' sources only run on an explicit sync."""
+    seconds = source.refresh_seconds
+    if seconds is None:
+        return False
+    return last_sync_at is None or (now - last_sync_at).total_seconds() >= seconds
+
+
+def sync_source(conn: Conn, source: SourceConfig, defaults: Defaults, *, now: datetime | None = None) -> SyncResult:
+    """Fetch one source, normalise it and replace its stored items. Never raises for source errors."""
+    moment = now or datetime.now(timezone.utc)
+    missing = [name for name in source.auth_env if not os.environ.get(name)]
+    if missing:
+        return SyncResult(source=source.id, adapter=source.adapter_type, skipped=True,
+                          reason=f"missing env: {', '.join(missing)}")
+    try:
+        adapter = adapter_for(source.adapter_type)
+        raw = adapter(source, defaults=defaults, fetched_at=moment)
+    except Exception as exc:  # network, parsing, unknown adapter: keep the previous items
+        message = f"{type(exc).__name__}: {exc}"[:2000]
+        conn.execute("UPDATE connector_sources SET last_sync_at = now(), last_error = %s WHERE id = %s",
+                     (message, source.id))
+        return SyncResult(source=source.id, adapter=source.adapter_type, error=message)
+
+    items = apply_filters(raw, source, defaults)[:source.max_items]
+    with conn.transaction():
+        stored = item_store.upsert_items(conn, source.id, items)
+        if items:  # an empty payload keeps the existing records
+            item_store.delete_missing(conn, source.id, [item.id for item in items])
+        conn.execute("UPDATE connector_sources SET last_sync_at = now(), last_error = NULL WHERE id = %s",
+                     (source.id,))
+    return SyncResult(source=source.id, adapter=source.adapter_type, items=stored, replaced=bool(items),
+                      reason=None if items else "empty payload, existing items kept")
+
+
+def sync_all(conn: Conn, loaded: LoadedConfig, *, only: str | None = None, due_only: bool = False,
+             now: datetime | None = None) -> SyncSummary:
+    moment = now or datetime.now(timezone.utc)
+    results: list[SyncResult] = []
+    for source in loaded.sources:
+        if only and source.id != only:
+            continue
+        if not source.enabled:
+            results.append(SyncResult(source=source.id, adapter=source.adapter_type, skipped=True, reason="disabled"))
+            continue
+        if due_only and not is_due(source, _last_sync(conn, source.id), moment):
+            results.append(SyncResult(source=source.id, adapter=source.adapter_type, skipped=True, reason="not due"))
+            continue
+        results.append(sync_source(conn, source, loaded.defaults, now=moment))
+    return SyncSummary(results=results, items=sum(result.items for result in results),
+                       errors=sum(1 for result in results if result.error))

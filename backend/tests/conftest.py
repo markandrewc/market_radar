@@ -7,6 +7,7 @@ from pathlib import Path
 
 import psycopg
 import pytest
+import yaml
 from fastapi.testclient import TestClient
 
 from app import config
@@ -67,6 +68,22 @@ class RawFolder:
 @pytest.fixture
 def raw(client) -> RawFolder:
     return RawFolder(config.RAW_DIR)
+
+
+def write_sources(path: Path, sources: list[dict], defaults: dict | None = None) -> None:
+    """Write a throwaway sources.yaml (docs/ADDING_SOURCES.md)."""
+    path.write_text(yaml.safe_dump({"version": 1, "defaults": defaults or {}, "sources": sources},
+                                   allow_unicode=True, sort_keys=False), encoding="utf-8")
+
+
+@pytest.fixture
+def sources_file(tmp_path, monkeypatch) -> Path:
+    """Points SOURCES_FILE at a throwaway file; write to it before requesting `client`."""
+    path = tmp_path / "sources.yaml"
+    write_sources(path, [])
+    monkeypatch.setattr(config, "SOURCES_FILE", path)
+    monkeypatch.setattr(config, "SOURCES_DEFAULT_FILE", tmp_path / "default.yaml")
+    return path
 
 
 def normalize():

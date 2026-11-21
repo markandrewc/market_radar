@@ -34,7 +34,7 @@ export interface MarketItem {
   metrics: MarketItemMetrics;
   /** Tags and skills, e.g. "role:IT Support". */
   tags: string[];
-  /** Canton code (ZH, BE, ...) when recognisable, otherwise raw text or null. */
+  /** Canton code (ZH, BE, ...) when the record mentions a target city, else null. */
   region: string | null;
   source_name: string;
   source_url: string;

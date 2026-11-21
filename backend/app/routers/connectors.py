@@ -9,8 +9,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from .. import db
 from ..auth import require_token
 from ..db import Conn, get_conn, iso
-from ..schemas import ConnectorDefaults, ConnectorList, ConnectorSource, ReloadResult
+from ..schemas import ConnectorDefaults, ConnectorList, ConnectorSource, MarketItem, ReloadResult, SyncSummary
 from ..services import connectors
+from ..services import items as item_store
 from ..connectors import config as sources_config
 
 router = APIRouter()
@@ -57,3 +58,35 @@ def reload_config() -> ReloadResult:
     return ReloadResult(added=result.added, updated=result.updated, disabled=result.disabled,
                         sourceCount=result.source_count, configSha256=result.config_sha256,
                         errors=result.errors)
+
+
+@router.post("/connectors/sync", response_model=SyncSummary, dependencies=[Depends(require_token)])
+def sync_connectors(source: str | None = None, due_only: bool = False) -> SyncSummary:
+    """Fetches the configured sources and stores their normalised MarketItems.
+
+    ``source`` limits the run to one id; ``due_only`` skips sources whose refresh_rate has not elapsed.
+    """
+    with db.connect() as conn:
+        loaded = sources_config.load(sources_config.ensure_file())
+        if not loaded.usable:
+            raise HTTPException(422, loaded.errors or ["sources.yaml could not be read"])
+        if source is not None and source not in loaded.by_id():
+            raise HTTPException(404, f"Unknown source: {source}")
+        state = connectors.read_state(conn)
+        if state is None or state["config_sha256"] != loaded.sha256:
+            connectors.apply_config(conn, loaded)  # edited file? sync what is in the file now
+        return connectors.sync_all(conn, loaded, only=source, due_only=due_only)
+
+
+@router.get("/items", response_model=list[MarketItem])
+def list_items(category: str | None = None, region: str | None = None, source: str | None = None,
+               q: str | None = None, order: str = "published_at", limit: int = 100, offset: int = 0,
+               conn: Conn = Depends(get_conn)) -> list[MarketItem]:
+    """Normalised records from all connectors (docs/market-item.schema.json)."""
+    if category is not None and category.upper() not in sources_config.CATEGORIES:
+        raise HTTPException(422, f"category must be one of {', '.join(sources_config.CATEGORIES)}")
+    if order not in ("published_at", "fetched_at"):
+        raise HTTPException(422, "order must be 'published_at' or 'fetched_at'")
+    return item_store.read_items(
+        conn, category=category.upper() if category else None, region=region, source=source, q=q,
+        order=order, limit=max(1, min(limit, 1000)), offset=max(0, offset))

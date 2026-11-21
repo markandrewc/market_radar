@@ -88,7 +88,7 @@ sources:
     field_map:
       id: "{monat}:{kennzahl}:{auspraegung}"
       title: "{kennzahl} {auspraegung} ({monat})"
-      summary: "ITBoard {kennzahl} {auspraegung}: {anzahl} (Basis {basis})."
+      summary: "ITBoard {kennzahl} {auspraegung}: {anzahl} Inserate."
       published_at: "{monat}-01T00:00:00Z"
       tags: "{kennzahl},{auspraegung}"
       metrics:
@@ -131,12 +131,11 @@ sources:
     endpoint: "https://ourworldindata.org/grapher/net-migration-metrics.csv?csvType=full&useColumnShortNames=false"   # geprüft 2026-11-21: 200
     filter_keywords: ["Switzerland"]
     field_map:
-      id: "{Entity}:{Year}:net-migration"
-      title: "Nettomigration {Entity} {Year}"
-      summary: "Nettomigration {Entity} im Jahr {Year}: {Annual net migration} Personen."
-      region: "{Entity}"
-      published_at: "{Year}-01T00:00:00Z"
-      tags: "migration,owid"
+      id: "{Year}:net-migration"
+      title: "Nettomigration Schweiz {Year}"
+      summary: "Nettomigration der Schweiz im Jahr {Year}: {Annual net migration} Personen."
+      published_at: "{Year}-01-01T00:00:00Z"
+      tags: "migration,owid,{Entity}"
       metrics:
         net_migration: "Annual net migration"
     refresh_rate: "yearly"

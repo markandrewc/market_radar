@@ -34,7 +34,9 @@
       "type": "array",
       "minItems": 1,
       "uniqueItems": true,
-      "items": { "$ref": "#/$defs/category" },
+      "items": {
+        "$ref": "#/$defs/category"
+      },
       "description": "All categories the source feeds. category must be one of them."
     },
     "title": {
@@ -49,16 +51,27 @@
     "metrics": {
       "type": "object",
       "description": "Numeric values that belong to this record. The key names the meaning, e.g. {\"anzahl\": 41, \"basis\": null}.",
-      "additionalProperties": { "type": ["number", "null"] }
+      "additionalProperties": {
+        "type": [
+          "number",
+          "null"
+        ]
+      }
     },
     "tags": {
       "type": "array",
-      "items": { "type": "string", "minLength": 1 },
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
       "description": "Free-form tags and skills, e.g. [\"inserate\", \"role:IT Support\"]."
     },
     "region": {
-      "type": ["string", "null"],
-      "description": "Canton code (ZH, BE, ...) when recognisable, otherwise the raw location text, or null for Switzerland-wide records."
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Canton code (ZH, BE, ...) when the record mentions a target city; null when it cannot be mapped to a canton."
     },
     "source_name": {
       "type": "string",
@@ -71,12 +84,18 @@
       "description": "Link to the original data of this source (provenance)."
     },
     "url": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "format": "uri",
       "description": "Permalink of this single record; null for aggregate records that have none."
     },
     "published_at": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "format": "date-time",
       "description": "When the data was published (period start for monthly/ yearly figures), null if unknown."
     },
@@ -88,7 +107,13 @@
   },
   "$defs": {
     "category": {
-      "enum": ["A", "B", "C", "D", "E"],
+      "enum": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
       "description": "A = demand/ job market, B = skills, C = employers, D = population/ permits, E = policy/ regulation."
     }
   }
