@@ -44,7 +44,7 @@ export default function RolePage() {
       <div className="space-y-3">
         <h1 className="text-3xl font-semibold text-brand">{d.role.name}</h1>
         <nav aria-label="Switch role">
-          <ul className="flex flex-wrap gap-2">
+          {/* <ul className="flex flex-wrap gap-2">
             {demand.data!.map((r) => (
               <li key={r.role.id}>
                 <Link to={`/roles/${r.role.id}`} aria-current={r.role.id === id ? 'page' : undefined}
@@ -53,7 +53,7 @@ export default function RolePage() {
                 </Link>
               </li>
             ))}
-          </ul>
+          </ul> */}
         </nav>
       </div>
       <Tabs key={id} label={`${d.role.name}: demand, skills and employers`} tabs={tabs} />
