@@ -28,7 +28,7 @@ export default function Home() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">Job market overview</h1>
+        <h2 className="text-2xl font-semibold text-brand">Job market overview</h2>
         <p className="text-sm text-slate-500">Open positions in Switzerland, last 12 months</p>
       </div>
 
@@ -62,7 +62,7 @@ export default function Home() {
                   <XAxis dataKey="period" tickLine={false} axisLine={false} fontSize={12} />
                   <YAxis tickLine={false} axisLine={false} fontSize={12} width={32} />
                   <Tooltip />
-                  <Line type="monotone" dataKey="value" stroke="#0f766e" strokeWidth={2} dot={false} />
+                  <Line type="monotone" dataKey="value" stroke="#a8324e" strokeWidth={2} dot={false} />
                 </LineChart>
               </ResponsiveContainer>
             </div>

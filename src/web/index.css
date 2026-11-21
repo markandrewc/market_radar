@@ -1,2 +1,10 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
+
+/* Brand tokens: swap these once the official Powercoders colors are confirmed */
+@theme {
+  --color-brand: #2f2f31;
+  --color-brand-accent: #a8324e;
+  --color-brand-soft: #f5f3ef;
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
