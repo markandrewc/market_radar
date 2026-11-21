@@ -1,4 +1,4 @@
-import { useEffect, useId, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { Check, Download, Landmark, Target, Users } from 'lucide-react';
 import type { FormEvent } from 'react';
 import type { LucideIcon } from 'lucide-react';
@@ -99,7 +99,10 @@ export default function Reports() {
   const preview = useDigestPreview();
   const subscribe = useSubscribe();
 
+  // Every role is selected by default: a new subscriber should not have to build
+  // the topic list from scratch, and "all roles" is the sensible weekly briefing.
   const [selectedRoleIds, setSelectedRoleIds] = useState<string[]>([]);
+  const rolesInitialised = useRef(false);
   const [includePolicy, setIncludePolicy] = useState(true);
   const [includeTargetGroup, setIncludeTargetGroup] = useState(false);
   const [cadence, setCadence] = useState<Cadence>('weekly');
@@ -109,6 +112,20 @@ export default function Reports() {
 
   const roleList = roles.data;
   const rolePages = usePaged(roleList ?? [], ROLES_PER_PAGE);
+
+  useEffect(() => {
+    if (!roleList || rolesInitialised.current) return;
+    rolesInitialised.current = true;
+    setSelectedRoleIds(roleList.map((role) => role.id));
+  }, [roleList]);
+
+  const allRolesSelected = Boolean(roleList?.length) && selectedRoleIds.length === roleList?.length;
+  const allRolesCheckbox = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (allRolesCheckbox.current) {
+      allRolesCheckbox.current.indeterminate = selectedRoleIds.length > 0 && !allRolesSelected;
+    }
+  }, [allRolesSelected, selectedRoleIds.length]);
 
   const hasTopic = selectedRoleIds.length > 0 || includePolicy || includeTargetGroup;
 
@@ -208,7 +225,29 @@ export default function Reports() {
                   <h3 id="module-roles" className="text-sm font-semibold text-ink">Roles</h3>
                 </div>
                 <div className="mt-3 space-y-2">
-                  <ul className="divide-y divide-line border-y border-line">
+                  <label className="flex cursor-pointer items-center gap-3 border-y border-line px-1 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-paper">
+                    <input
+                      ref={allRolesCheckbox}
+                      type="checkbox"
+                      checked={allRolesSelected}
+                      onChange={() => setSelectedRoleIds(allRolesSelected ? [] : (roleList ?? []).map((role) => role.id))}
+                      aria-label={`All roles (${roleList.length})`}
+                      className="peer sr-only"
+                    />
+                    <span
+                      aria-hidden
+                      className={cn(
+                        'flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-[5px] border border-line-strong bg-surface text-transparent transition-colors',
+                        'peer-checked:border-brand-accent peer-checked:bg-brand-accent peer-checked:text-white',
+                        'peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-brand-accent',
+                      )}
+                    >
+                      <Check className="h-3 w-3" />
+                    </span>
+                    <span>All roles</span>
+                    <span className="meta ml-auto">{roleList.length}</span>
+                  </label>
+                  <ul className="divide-y divide-line border-b border-line">
                     {rolePages.slice.map((role) => (
                       <li key={role.id}>
                         <label className="group flex cursor-pointer items-center gap-3 px-1 py-2.5 text-sm text-ink transition-colors hover:bg-paper">

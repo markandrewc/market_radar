@@ -254,16 +254,24 @@ describe('reports form', () => {
 });
 
 describe('weekly report: topics and PDF', () => {
-  it('starts with no role selected, pages through the roles and keeps the choice', async () => {
+  it('starts with all roles selected, pages through them and keeps the choice', async () => {
     const user = userEvent.setup();
     show('/reports');
     await ready(/Weekly report/);
-    await screen.findByText(/0 of 33 roles selected/, {}, { timeout: 4000 });
+    await screen.findByText(/33 of 33 roles selected/, {}, { timeout: 4000 });
+    const allRoles = screen.getByRole('checkbox', { name: /All roles/ });
+    expect((allRoles as HTMLInputElement).checked).toBe(true);
+    expect(screen.getAllByRole('checkbox').filter((c) => (c as HTMLInputElement).checked)).toHaveLength(7); // all roles + 6 on the page
+
+    await user.click(allRoles);
+    expect(await screen.findByText(/0 of 33 roles selected/)).toBeTruthy();
     expect(screen.getAllByRole('checkbox').filter((c) => (c as HTMLInputElement).checked)).toHaveLength(0);
-    await user.click(screen.getAllByRole('checkbox')[0]);
+
+    await user.click(screen.getAllByRole('checkbox')[1]); // first role of the first page
     await user.click(screen.getByRole('button', { name: 'Next page' }));
     expect(await screen.findByText(/Showing 7–12 of 33/)).toBeTruthy();
     expect(screen.getByText(/1 of 33 roles selected/)).toBeTruthy();
+    expect((screen.getByRole('checkbox', { name: /All roles/ }) as HTMLInputElement).indeterminate).toBe(true);
   });
 
   it('offers a PDF download of the preview', async () => {
