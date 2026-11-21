@@ -127,6 +127,17 @@ describe('guidance', () => {
     expect((await screen.findAllByText('What this means for Powercoders', {}, { timeout: 4000 })).length).toBeGreaterThan(0);
   });
 
+  it('keeps the sources action inside the health tile and drops the info buttons', async () => {
+    show('/');
+    await ready(/This week's pulse/);
+    const action = await screen.findByRole('link', { name: /Check the sources/ }, { timeout: 4000 });
+    const tile = action.closest('li');
+    expect(tile).not.toBeNull();
+    expect(within(tile as HTMLElement).getByText('Sources up to date')).toBeTruthy();
+    const pulse = document.querySelector('[data-tour="pulse"]');
+    expect(pulse?.querySelectorAll('summary').length).toBe(0);
+  });
+
   it('opens every pulse source link in a new tab', async () => {
     show('/');
     await ready(/This week's pulse/);

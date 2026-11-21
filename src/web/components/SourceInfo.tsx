@@ -22,7 +22,7 @@ export function formatDate(iso: string): string {
  * Splitting them means the obvious click does the obvious thing (check the
  * original), and the metadata is one small extra tap for anyone who wants it.
  */
-export function SourceInfo({ source, note }: { source: SourceRef; note?: string }) {
+export function SourceInfo({ source, note, showInfo = true }: { source: SourceRef; note?: string; showInfo?: boolean }) {
   const asOf = source.dataAsOf ? formatDate(source.dataAsOf) : null;
   const retrieved = formatDate(source.fetchedAt);
   const badge = `Source: ${source.name}${asOf ? ` · data as of ${asOf}` : ''} · retrieved ${retrieved}`;
@@ -46,6 +46,7 @@ export function SourceInfo({ source, note }: { source: SourceRef; note?: string 
         <span className="sr-only"> (opens the publisher in a new tab)</span>
       </a>
 
+      {showInfo && (
       <details className="group relative shrink-0">
         <summary
           aria-label={`About this source: ${source.name}`}
@@ -100,6 +101,7 @@ export function SourceInfo({ source, note }: { source: SourceRef; note?: string 
           )}
         </div>
       </details>
+      )}
     </span>
   );
 }

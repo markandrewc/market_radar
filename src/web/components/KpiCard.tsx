@@ -22,6 +22,7 @@ export function KpiCard({
   note,
   source,
   icon,
+  action,
 }: {
   label: string;
   value: ReactNode;
@@ -33,6 +34,8 @@ export function KpiCard({
   source?: SourceRef;
   /** Optional quiet glyph that anchors the card in its section. */
   icon?: ReactNode;
+  /** Optional link rendered in the card footer, e.g. "Check the sources". */
+  action?: ReactNode;
 }) {
   return (
     <Card className="relative h-full">
@@ -77,9 +80,10 @@ export function KpiCard({
 
         {detail && <p className="text-sm leading-relaxed text-ink-soft">{detail}</p>}
         {insight && <Interpretation insight={insight} />}
-        {source && (
-          <div className="mt-auto pt-1">
-            <SourceInfo source={source} note={note} />
+        {(source || action) && (
+          <div className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-2 pt-1">
+            {source && <SourceInfo source={source} note={note} showInfo={false} />}
+            {action}
           </div>
         )}
       </CardContent>

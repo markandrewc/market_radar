@@ -315,13 +315,15 @@ export default function Home({ onHelp }: { onHelp: () => void }) {
                 value={health ? `${health.ok} of ${sourceTotal}` : 'No status yet'}
                 detail={health ? `stale: ${health.stale} · problems: ${health.error}` : 'The source status is not available yet.'}
                 icon={<ShieldCheck className="h-4 w-4" aria-hidden />}
+                action={
+                  <Link
+                    to="/sources"
+                    className="inline-flex items-center gap-1 text-sm font-medium text-brand-accent underline decoration-brand-accent/30 underline-offset-4 hover:text-accent-deep"
+                  >
+                    Check the sources <ArrowRight className="h-4 w-4" aria-hidden />
+                  </Link>
+                }
               />
-              <Link
-                to="/sources"
-                className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-brand-accent underline decoration-brand-accent/30 underline-offset-4 hover:text-accent-deep"
-              >
-                Check the sources <ArrowRight className="h-4 w-4" aria-hidden />
-              </Link>
             </li>
           </ul>
         ) : overview.error ? (
@@ -505,7 +507,7 @@ export default function Home({ onHelp }: { onHelp: () => void }) {
                     <dt className="text-sm text-ink-soft">{row.label}</dt>
                     <dd className="flex flex-wrap items-baseline gap-x-3 gap-y-2">
                       <span className="tnum text-base font-semibold text-ink">{row.value}</span>
-                      <SourceInfo source={row.source} />
+                      <SourceInfo source={row.source} showInfo={false} />
                     </dd>
                   </div>
                 ))}
