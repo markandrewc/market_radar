@@ -268,26 +268,6 @@ export default function Home({ onHelp }: { onHelp: () => void }) {
             )}
           </aside>
         </div>
-
-        {/* Role strip, directly under the hero CTAs: one choice drives both charts below.
-            It sits on a paper inset so the pills stay readable on the graphite hero. */}
-        <div className="relative px-6 pb-6 sm:px-10 sm:pb-8">
-          <div className="rounded-card border border-line bg-surface p-3 text-ink shadow-card sm:p-4">
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-              <div className="min-w-0 space-y-0.5">
-                <p className="meta">Switzerland-wide · updated {latest ? formatDate(latest) : 'date not available yet'}</p>
-              </div>
-              <div className="min-w-0 flex-1">
-                <FilterPills
-                  label="Choose the role both questions follow"
-                  options={roleOptions}
-                  value={selectedRole}
-                  onChange={setSelectedRole}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
       </section>
 
       {/* 1. This week's pulse */}
@@ -425,9 +405,18 @@ export default function Home({ onHelp }: { onHelp: () => void }) {
         {latest && <FreshnessFooter fetchedAt={latest} />}
       </section>
 
-      {/* 4 + 5. The two questions, side by side from xl: hiring volume and skill momentum.
-          One role strip above drives both, so the two charts always tell the same story. */}
-      <div className="grid gap-6 xl:grid-cols-2 xl:items-start">
+      {/* 4 + 5. Hiring volume and skill momentum side by side; one role choice above drives both. */}
+      <section aria-label="Hiring volume and skill momentum" className="space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-card border border-line bg-surface px-3 py-2.5 shadow-card sm:px-4">
+          <FilterPills
+            label="Choose the role both charts follow"
+            options={roleOptions}
+            value={selectedRole}
+            onChange={setSelectedRole}
+          />
+          <p className="meta">Switzerland-wide · updated {latest ? formatDate(latest) : 'date not available yet'}</p>
+        </div>
+        <div className="grid gap-6 xl:grid-cols-2 xl:items-start">
         {active && (
           <section aria-label="Demand for the roles we train for">
             <ChartFrame
@@ -491,7 +480,8 @@ export default function Home({ onHelp }: { onHelp: () => void }) {
             </div>
           </ChartFrame>
         </section>
-      </div>
+        </div>
+      </section>
 
       {/* 6. Regions: an open editorial list, not another card. */}
       {regionInsight && (
