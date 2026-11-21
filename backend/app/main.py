@@ -6,14 +6,13 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from . import config, db
-from .routers import health, ingest, market
+from .routers import health, ingest, market, raw
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    conn = db.connect()
-    db.init(conn)
-    conn.close()
+    with db.connect() as conn:
+        db.init(conn)
     yield
 
 
@@ -21,6 +20,7 @@ app = FastAPI(title="Market Radar API", lifespan=lifespan)
 app.include_router(health.router, prefix="/api")
 app.include_router(market.router, prefix="/api")
 app.include_router(ingest.router, prefix="/api")
+app.include_router(raw.router, prefix="/api")
 
 # Production: serve the built React app (npm run build -> dist/). In dev, Vite serves the frontend.
 if config.STATIC_DIR.is_dir():

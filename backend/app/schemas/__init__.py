@@ -5,11 +5,13 @@ from .ingest import IngestObservation, IngestRequest, IngestResult
 from .market import DemandResponse, SkillRow, SkillsResponse
 from .participants import TargetGroup, TargetGroupResponse
 from .policy import PolicyItem, PolicyResponse
+from .raw import RawDocument, RawSource, RawSourceStatus, RawUploadRequest, RawUploadResult, TransformResult
 from .sources import SourceStatus
 from .subscription import SubscribeBody, SubscribeResult
 
 __all__ = [
     "DemandResponse", "Employer", "EmployersResponse", "IngestObservation", "IngestRequest", "IngestResult",
-    "Point", "PolicyItem", "PolicyResponse", "Role", "SkillRow", "SkillsResponse", "SourceRef", "SourceStatus",
-    "SubscribeBody", "SubscribeResult", "TargetGroup", "TargetGroupResponse",
+    "Point", "PolicyItem", "PolicyResponse", "RawDocument", "RawSource", "RawSourceStatus",
+    "RawUploadRequest", "RawUploadResult", "Role", "SkillRow", "SkillsResponse", "SourceRef", "SourceStatus",
+    "SubscribeBody", "SubscribeResult", "TargetGroup", "TargetGroupResponse", "TransformResult",
 ]

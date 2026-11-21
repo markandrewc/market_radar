@@ -1,18 +1,17 @@
 """Demand and skills, computed from the observations table. Empty database -> empty lists / 404."""
-import sqlite3
 from collections import defaultdict
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from ..db import get_conn
-from ..models import DemandResponse, Point, Role, SkillRow, SkillsResponse, SourceRef
+from ..db import Conn, get_conn, iso
+from ..schemas import DemandResponse, Point, Role, SkillRow, SkillsResponse, SourceRef
 
 router = APIRouter()
 
 
-def _source(conn: sqlite3.Connection, source_id: str) -> SourceRef:
-    r = conn.execute("SELECT id, name, url, fetched_at FROM sources WHERE id = ?", (source_id,)).fetchone()
-    return SourceRef(id=r["id"], name=r["name"], url=r["url"], fetchedAt=r["fetched_at"])
+def _source(conn: Conn, source_id: str) -> SourceRef:
+    r = conn.execute("SELECT id, name, url, fetched_at FROM sources WHERE id = %s", (source_id,)).fetchone()
+    return SourceRef(id=r["id"], name=r["name"], url=r["url"], fetchedAt=iso(r["fetched_at"]))
 
 
 def _pct(new: float, old: float) -> float:
@@ -20,17 +19,17 @@ def _pct(new: float, old: float) -> float:
 
 
 @router.get("/roles", response_model=list[Role])
-def roles(conn: sqlite3.Connection = Depends(get_conn)) -> list[Role]:
+def roles(conn: Conn = Depends(get_conn)) -> list[Role]:
     return [Role(id=r["id"], name=r["name"]) for r in conn.execute("SELECT id, name FROM roles ORDER BY name")]
 
 
 @router.get("/sources", response_model=list[SourceRef])
-def sources(conn: sqlite3.Connection = Depends(get_conn)) -> list[SourceRef]:
+def sources(conn: Conn = Depends(get_conn)) -> list[SourceRef]:
     return [_source(conn, r["id"]) for r in conn.execute("SELECT id FROM sources ORDER BY name")]
 
 
 @router.get("/demand", response_model=list[DemandResponse])
-def demand(months: int = 12, conn: sqlite3.Connection = Depends(get_conn)) -> list[DemandResponse]:
+def demand(months: int = 12, conn: Conn = Depends(get_conn)) -> list[DemandResponse]:
     """One entry per role and source: last `months` periods, current value, change first -> last period."""
     rows = conn.execute(
         """SELECT o.role_id, r.name AS role_name, o.source_id, o.period, o.value
@@ -49,7 +48,7 @@ def demand(months: int = 12, conn: sqlite3.Connection = Depends(get_conn)) -> li
 
 
 @router.get("/skills", response_model=SkillsResponse)
-def skills(role: str | None = None, conn: sqlite3.Connection = Depends(get_conn)) -> SkillsResponse:
+def skills(role: str | None = None, conn: Conn = Depends(get_conn)) -> SkillsResponse:
     """Skills for one role in the latest period. share = % of postings mentioning the skill;
     changePct = relative change of that share vs. the previous period."""
     if role is None:
@@ -58,12 +57,12 @@ def skills(role: str | None = None, conn: sqlite3.Connection = Depends(get_conn)
         if not first:
             raise HTTPException(404, "No skill data yet.")
         role = first["role_id"]
-    r = conn.execute("SELECT id, name FROM roles WHERE id = ?", (role,)).fetchone()
+    r = conn.execute("SELECT id, name FROM roles WHERE id = %s", (role,)).fetchone()
     if not r:
         raise HTTPException(404, f"Unknown role: {role}")
     rows = conn.execute(
         """SELECT source_id, skill, period, value, base FROM observations
-           WHERE metric = 'skill' AND role_id = ? AND base > 0 ORDER BY period""", (role,)).fetchall()
+           WHERE metric = 'skill' AND role_id = %s AND base > 0 ORDER BY period""", (role,)).fetchall()
     if not rows:
         raise HTTPException(404, f"No skill data for role: {role}")
     share: dict[tuple[str, str], dict[str, float]] = defaultdict(dict)
