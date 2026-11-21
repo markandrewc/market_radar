@@ -13,8 +13,9 @@ Everything on screen names its source — point at the source line once and let 
 3. **Data in place**: `npm run pipeline` (ITBoard + BFS + SEM tables) and
    `curl -X POST "$HOST/api/connectors/sync" -H "Authorization: Bearer $INGEST_TOKEN"`
    (Adzuna needs `ADZUNA_APP_ID`/`ADZUNA_APP_KEY`, otherwise Level 3 employers is empty).
-4. **Check `/api/health`, `/api/demand`, `/api/items?category=E`, `/api/employers?role=<id>`** — the last one is
-   allowed to be empty, but then say so instead of showing a mock.
+4. **Check `/api/health`, `/api/overview`, `/api/insights/taxonomy`, `/api/items?category=E`,
+   `/api/employers?role=<id>`** — the last one is allowed to be empty, but then say so instead of showing a mock.
+   `/api/overview` should show the latest month, a sample size and two movers with a `current` count.
 5. **Send yourself one briefing** and confirm it arrives; keep the inbox open in a second window.
 6. Have `/sources` open in a second tab for the operator panel.
 
@@ -23,12 +24,21 @@ Everything on screen names its source — point at the source line once and let 
 | Seconds | Screen | Say |
 |---|---|---|
 | 0–20 | `/` | "Powercoders' programme decisions depend on a market nobody has time to read. This is one radar for it." |
-| 20–50 | `/` → a role card | "Demand for this role over the last months, with trend and forecast. Every card names its source, the publisher's date and when we fetched it — click it and you are at the original." |
-| 50–80 | `/roles/<id>` | "The skills named in the postings, rising and falling. This is what we should teach next term." |
-| 80–130 | `/reports` | "Staff pick topics, preview the exact e-mail with links, and subscribe. Here is the one that just arrived." (switch to inbox, open a bullet link) |
-| 130–170 | `/participants`, `/roles/<id>` employers | "Context on our target group — residence status, canton, integration — aggregate only. And the employers worth a call, straight from the postings." |
-| 170–200 | `/policy` | "New laws and motions that change what we can do: Status S/F, job reporting duties. The note under a card is our reading and is labelled as such." |
-| 200–240 | `/sources` → operator panel | "Adding a source is a config block, not a code change: paste, apply, sync." Paste the block below, click *Validate & apply*, then *Sync now*, open `/items?category=E` and show the new rows. |
+| 20–45 | `/` — **This week's pulse** | "Four numbers, each with its source: the sample of all IT postings, the biggest riser and faller — with the number of postings behind the move — and how current our sources are." |
+| 45–75 | `/` — Demand & Skills cards | "Demand for the role we pick, with the forecast band. Below the chart: our reading in plain language, labelled as ours, with the evidence it is based on. The skills card shows what to teach next term." |
+| 75–95 | `/` — Regions & Policy | "BFS gives the regional picture quarterly. Policy in 30 seconds: the newest three items, each with its source." |
+| 95–125 | `/roles/<id>` | "Inside a role: three tabs, and under each number a short 'what this means for Powercoders'. The source badge opens the original." |
+| 125–165 | `/reports` | "Staff pick topics, preview the exact e-mail with links, and subscribe. Here is the one that just arrived." (switch to inbox, open a bullet link) |
+| 165–190 | `/participants`, `/roles/<id>` employers | "Context on our target group — residence status, canton, integration, aggregate only — and the employers worth a call, straight from the postings." |
+| 190–215 | `/policy` | "Three triggers from our interviews: SEM numbers and distribution, migration law, labour law. Each card carries our reading and the publisher's link." |
+| 215–240 | `/sources` → operator panel | "Adding a source is a config block, not a code change: paste, apply, sync." Paste the block below, click *Validate & apply*, then *Sync now*, open `/items?category=E` and show the new rows. |
+
+## The two tests the team asked for
+
+| Test | Where | Passes when |
+|---|---|---|
+| **10 seconds:** "Where are the skills for Zürich/Bern?" | `/` (skills card) or `/roles/<id>` | the page names the role, the share of postings per skill and the source, without a click into a report |
+| **30 seconds:** "What does this new SEM/Fedlex item mean for us?" | `/policy` → a card | the publisher's text, the source link, and our reading are visibly separate, and the reading is labelled "Our reading, not the source" |
 
 ## Level 4 block to paste (no code, no shell)
 

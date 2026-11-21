@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { MarketItem } from '../../shared/types';
-import { useItems } from '../api';
+import { useInsights, useItems } from '../api';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Interpretation } from '@/components/Interpretation';
 import { SourceBadge } from '@/components/SourceBadge';
 import { Empty, ErrorMsg, Loading } from '@/components/Status';
 import { formatDate, freshness, itemSource } from '../lib/source';
@@ -31,6 +32,8 @@ function Metrics({ metrics }: { metrics: MarketItem['metrics'] }) {
 export default function Participants() {
   const [canton, setCanton] = useState('');
   const { data, isLoading, error } = useItems({ category: 'D', limit: 100 });
+  // Our plain-language reading of the target-group figures; hidden until the API has one.
+  const targetInsight = useInsights({ kind: 'target' }).data?.[0];
 
   if (isLoading) return <Loading />;
   if (error) return <ErrorMsg />;
@@ -66,6 +69,8 @@ export default function Participants() {
   return (
     <div className="space-y-6">
       {header}
+
+      {targetInsight && <Interpretation insight={targetInsight} className="p-3" />}
 
       <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Filter participant statistics by canton">
         <button

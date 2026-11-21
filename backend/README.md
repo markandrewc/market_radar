@@ -54,6 +54,20 @@ uv run python -m app.connectors sync --due-only      # cron entry point
 `sources.yaml` is applied on startup and by `POST /api/connectors/reload`. `SOURCES_FILE` can point at a volume
 (`/data/sources.yaml`); a missing file is seeded from the image copy.
 
+## Insights (the plain-language reading)
+
+`app/insights/` turns stored rows into short, deterministic `Insight` texts — one fact, one source per bullet,
+no model involved. `templates.py` holds the sentence rules (comparable months, forecasts as extrapolation,
+sample-share instead of raw counts), `service.py` assembles demand/skills/employers/regions/target/policy
+insights and the home-page `Overview`, and `taxonomy.py` holds the curated policy groups and our reading notes.
+
+- `GET /api/overview`: the weekly pulse (postings sample, movers, new policy items, source health, top insights).
+- `GET /api/insights?role=&kind=&limit=`: the insight list for a page or a briefing.
+- `GET /api/insights/taxonomy`: policy groups, notes and role aliases (editable in `sources.yaml` defaults).
+
+Every number in an insight text must also appear in its `evidence` with a `SourceRef`; the test suite enforces it.
+Same source of truth for the dashboard and the e-mailed briefing (`app/reports/digest.py`).
+
 ## Production
 
 FastAPI also serves the built frontend from `dist/` (see `DEPLOY.md`). The pipeline can run anywhere that reaches

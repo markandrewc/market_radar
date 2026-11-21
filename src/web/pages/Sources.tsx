@@ -55,7 +55,10 @@ export default function Sources() {
       )}
 
       <section className="space-y-3">
-        <h2 className="text-lg font-semibold text-brand">Pipeline sources</h2>
+        <div>
+          <h2 className="text-lg font-semibold text-brand">Pipeline sources</h2>
+          <p className="text-sm text-slate-500">Every number in Market Radar links to one of these sources.</p>
+        </div>
         {sources.isLoading ? (
           <Loading />
         ) : sources.error || !sources.data ? (
@@ -63,38 +66,45 @@ export default function Sources() {
         ) : sources.data.length === 0 ? (
           <Empty text="No sources from the pipeline yet. Run `npm run pipeline` against this database." />
         ) : (
-          <Card>
-            <CardContent className="pt-5">
-              <Table>
-                <TableCaption>Data sources and their update status</TableCaption>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Source</TableHead>
-                    <TableHead>Last update</TableHead>
-                    <TableHead>Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {sources.data.map((s) => (
-                    <TableRow key={s.id}>
-                      <TableCell className="font-medium">
-                        <a href={s.url} target="_blank" rel="noreferrer">{s.name}</a>
-                        {s.licence && <p className="text-xs text-slate-400">{s.licence}</p>}
-                      </TableCell>
-                      <TableCell>
-                        {new Date(s.lastFetchedAt).toLocaleDateString('en-GB')}
-                        {s.dataAsOf && <p className="text-xs text-slate-400">data as of {s.dataAsOf}</p>}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={variant[s.status]}>{label[s.status]}</Badge>
-                        {s.problem && <p className="mt-1 max-w-xs text-xs text-slate-500">{s.problem}</p>}
-                      </TableCell>
+          <>
+            <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Source health">
+              <Badge variant="success">Up to date: {sources.data.filter((s) => s.status === 'ok').length}</Badge>
+              <Badge variant="warning">Out of date: {sources.data.filter((s) => s.status === 'stale').length}</Badge>
+              <Badge variant="default">Problem: {sources.data.filter((s) => s.status === 'error').length}</Badge>
+            </div>
+            <Card>
+              <CardContent className="pt-5">
+                <Table>
+                  <TableCaption>Data sources and their update status</TableCaption>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Source</TableHead>
+                      <TableHead>Last update</TableHead>
+                      <TableHead>Status</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+                  </TableHeader>
+                  <TableBody>
+                    {sources.data.map((s) => (
+                      <TableRow key={s.id}>
+                        <TableCell className="font-medium">
+                          <a href={s.url} target="_blank" rel="noreferrer">{s.name}</a>
+                          {s.licence && <p className="text-xs text-slate-400">{s.licence}</p>}
+                        </TableCell>
+                        <TableCell>
+                          {new Date(s.lastFetchedAt).toLocaleDateString('en-GB')}
+                          {s.dataAsOf && <p className="text-xs text-slate-400">data as of {s.dataAsOf}</p>}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={variant[s.status]}>{label[s.status]}</Badge>
+                          {s.problem && <p className="mt-1 max-w-xs text-xs text-slate-500">{s.problem}</p>}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </>
         )}
       </section>
 

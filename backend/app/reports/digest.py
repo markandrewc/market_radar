@@ -20,6 +20,7 @@ from zoneinfo import ZoneInfo
 
 from .. import config
 from ..db import Conn, iso
+from ..insights import taxonomy
 from ..schemas import Digest, DigestBullet, DigestRequest, DigestSection, SourceRef
 from ..services import market_view
 
@@ -183,6 +184,7 @@ def _items(conn: Conn, category: str, limit: int) -> list[dict]:
 def _policy_section(conn: Conn) -> tuple[DigestSection | None, bool]:
     rows = _items(conn, "E", _POLICY_LIMIT)
     bullets = []
+    note = None  # our reading of the first matched topic; rendered as "Our reading, not the source"
     for row in rows:
         source = _item_source(row)
         title = (row["title"] or "").strip()
@@ -191,7 +193,11 @@ def _policy_section(conn: Conn) -> tuple[DigestSection | None, bool]:
         summary = _trim(row["summary"])
         text = f"{title}: {summary}" if summary else title
         bullets.append(DigestBullet(text=text, source=source))
-    return (DigestSection(heading="Policy watch", bullets=bullets) if bullets else None), bool(bullets)
+        if note is None:
+            curated = taxonomy.note_for(f"{title} {summary}")
+            if curated is not None:
+                note = curated.note
+    return (DigestSection(heading="Policy watch", bullets=bullets, note=note) if bullets else None), bool(bullets)
 
 
 def _target_section(conn: Conn) -> tuple[DigestSection | None, bool]:

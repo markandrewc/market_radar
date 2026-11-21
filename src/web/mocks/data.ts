@@ -1,6 +1,6 @@
 import type {
-  ConnectorConfigFile, ConnectorList, Digest, DigestRequest, DemandResponse, EmployersResponse, Role, SkillsResponse,
-  SourceRef, SourceStatus, SubscribeBody, SubscribeResult,
+  ConnectorConfigFile, ConnectorList, Digest, DigestRequest, DemandResponse, EmployersResponse, Evidence, Insight,
+  InsightKind, Overview, Role, SkillsResponse, SourceRef, SourceStatus, SubscribeBody, SubscribeResult, Taxonomy,
 } from '../../shared/types';
 
 // Demo data for designing and testing the screens. Clearly labelled, never presented as real.
@@ -116,7 +116,10 @@ export const mockConnectors = (): ConnectorList => ({
   configError: null,
   pendingChanges: false,
   appliedAt: source.fetchedAt,
-  defaults: { targetCities: ['Zürich', 'Bern'], targetRoles: ['Web Developer', 'IT Support'], policyKeywords: ['Asyl'] },
+  defaults: {
+    targetCities: ['Zürich', 'Bern'], targetRoles: ['Web Developer', 'IT Support'], policyKeywords: ['Asyl'],
+    policyGroups: mockTaxonomy().policyGroups, roleAliases: mockTaxonomy().roleAliases,
+  },
   sources: [
     {
       id: 'demo_feed', name: 'Demo feed', description: 'Mock connector', sourceUrl: source.url,
@@ -139,3 +142,88 @@ export const mockSources = (): SourceStatus[] => [
   { id: 'demo-b', name: 'Demo source B', url: source.url, lastFetchedAt: ago(60), status: 'stale' },
   { id: 'demo-c', name: 'Demo source C', url: source.url, lastFetchedAt: ago(200), status: 'error' },
 ];
+
+
+// ---- Insights (template text, demo numbers) --------------------------------
+const evidence = (label: string, value: string): Evidence => ({ label, value, source });
+
+export const mockTaxonomy = (): Taxonomy => ({
+  policyGroups: [
+    { label: 'SEM numbers & distribution', keywords: ['Asylstatistik', 'Schutzstatus', 'Status S', 'Status F', 'Kantonsverteilung'] },
+    { label: 'Migration law', keywords: ['Asyl', 'Ausländer', 'Migration', 'Aufenthalt', 'Einbürgerung'] },
+    { label: 'Labour law & reporting', keywords: ['Arbeitsrecht', 'Stellenmeldepflicht', 'Erwerbstätigkeit', 'Berufsbildung'] },
+  ],
+  policyNotes: [
+    { keyword: 'Status S', label: 'Protection status S: residence and work rights', note: 'Status S is temporary protection while an asylum case is open, not a settled residence permit. Working is possible under conditions set by the asylum decision and the canton, and the status can change when the case is decided — confirm the current permit before relying on it in a placement.' },
+    { keyword: 'Status F', label: 'Status F: provisional admission and work permits', note: 'Status F is a provisional admission while removal is not possible. Taking up work normally needs an explicit permit that the employer requests through the cantonal migration office, so the waiting time belongs in the placement plan — check the current decision with the canton before promising a start date.' },
+    { keyword: 'Stellenmeldepflicht', label: 'Job-reporting duty for posted vacancies', note: 'The Stellenmeldepflicht makes employers report vacancies in the occupations the rules list to the RAV before advertising them publicly. If it is extended, affected roles may appear later and through other channels; the duty sits with the employer, but it changes how soon we can see a vacancy.' },
+    { keyword: 'Asyl', label: 'Asylum procedure changes', note: 'Changes to asylum procedure law can shorten or lengthen how long someone stays in the process, and with it their access to work and integration measures. Check the amendment’s entry into force before changing a participant’s plan; this summary does not say whether it already applies.' },
+    { keyword: 'Integration', label: 'Integration funding', note: 'Integration funding usually covers language courses and placement support and is renewed per budget period. A change can shift which courses or programmes are free for participants in a canton, so confirm with the canton before promising a specific place.' },
+    { keyword: 'Fachkräftemangel', label: 'Skills-shortage policy', note: 'Debates about the Fachkräftemangel often concern admission rules and quotas for professionals from outside the EU/EFTA. If a rule changes, it can affect which permits employers are willing to pursue, but it does not change the skills employers ask for today.' },
+  ],
+  roleAliases: {
+    'AI Specialist': ['AI', 'Artificial Intelligence', 'Machine Learning', 'ML'],
+    'Data Science': ['Data Scientist', 'Analytics', 'Machine Learning'],
+    'IT Support': ['Helpdesk', 'Service Desk', 'First Level', 'Support Specialist'],
+    'Web Developer': ['Frontend', 'Frontend Developer', 'Full Stack'],
+    'Software Engineer': ['Backend', 'Backend Developer'],
+    'Data Analyst': ['BI', 'Business Intelligence'],
+  },
+});
+
+const generatedAt = '2026-11-21T09:00:00Z';
+
+export const mockInsights = (filter: { role?: string; kind?: InsightKind; limit?: number } = {}): Insight[] => {
+  const role = roles.find((r) => r.id === filter.role) ?? roles[2];
+  const all: Insight[] = [
+    {
+      id: `demand:${role.id}`, kind: 'demand', roleId: role.id,
+      headline: `${role.name}: demand is rising`,
+      body: `${role.name} shows 1,350 open positions in November 2026, 4.2 % more than in October. The trend points up over the last months; treat the forecast as an extrapolation, not a promise.`,
+      evidence: [evidence('Open positions, Nov 2026', '1,350'), evidence('Change vs. October', '+4.2 %')],
+      severity: 'info', method: 'template', generatedAt,
+    },
+    {
+      id: 'skills:all', kind: 'skills',
+      headline: 'Two skills are gaining ground',
+      body: 'TypeScript is named in 57 % of postings, 8 % more than last month. Docker is rising fastest. Skills falling back (Java, SQL) still appear in a third of the postings, so they stay in the curriculum.',
+      evidence: [evidence('TypeScript, share of postings', '57 %'), evidence('Docker, change', '+6 %')],
+      severity: 'info', method: 'template', generatedAt,
+    },
+    {
+      id: 'regions:besta', kind: 'regions',
+      headline: 'Zürich region leads, Espace Mittelland grows',
+      body: 'In the latest quarter the Zürich region reports the most open positions. The Espace Mittelland grew fastest compared with the previous quarter. Regional figures are quarterly, so they move more slowly than the monthly national series.',
+      evidence: [evidence('Open positions, Zürich region', '18,420'), evidence('Change, Espace Mittelland', '+3.1 %')],
+      severity: 'info', method: 'template', generatedAt,
+    },
+    {
+      id: 'target:latest', kind: 'target',
+      headline: 'What the latest figures say about our target group',
+      body: 'The newest published statistics show the number of people with protection status S and the cantonal distribution of new arrivals. Aggregate figures only; they say nothing about individual participants.',
+      evidence: [evidence('Status S, latest month', '1,812')],
+      severity: 'info', method: 'template', generatedAt,
+    },
+    {
+      id: 'policy:latest', kind: 'policy', itemId: 'demo-policy',
+      headline: 'A new publication touches Status S',
+      body: 'A federal publication mentions protection status S and work rights. Our reading: check whether the change is already in force before promising a start date — the source text does not say it for you.',
+      evidence: [evidence('Published', '2026-11-12')],
+      severity: 'attention', method: 'template', generatedAt,
+    },
+  ];
+  const filtered = filter.kind ? all.filter((i) => i.kind === filter.kind) : all;
+  return filter.limit ? filtered.slice(0, filter.limit) : filtered;
+};
+
+export const mockOverview = (): Overview => ({
+  generatedAt,
+  postings: { value: 1350, period: '2026-11', base: 2200, source },
+  rolesTracked: roles.length,
+  biggestRiser: { role: roles[1], changePct: 8.2, current: 92, source },
+  biggestFaller: { role: roles[0], changePct: -4.1, current: 64, source },
+  newPolicyItems: 2,
+  targetGroupItems: 6,
+  sources: { ok: 2, stale: 1, error: 0 },
+  insights: mockInsights(),
+});

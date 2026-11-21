@@ -12,6 +12,7 @@ import re
 import ssl
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
+from functools import lru_cache
 from html import unescape as html_unescape
 from typing import Any
 from urllib.request import Request, urlopen
@@ -175,7 +176,8 @@ def normalise(record: dict, source: SourceConfig, defaults: Defaults, fetched_at
         json.dumps(record, sort_keys=True, ensure_ascii=False).encode()).hexdigest()[:16]
     region_raw = text_of(value("region", "canton", "location")) or source.region
     tags = _tags(value("tags", "categories"), source.tags)
-    tags += _role_tags(f"{title} {text_of(value('summary', 'description'))}", defaults.target_roles)
+    tags += _role_tags(f"{title} {text_of(value('summary', 'description'))}", defaults.target_roles,
+                       defaults.role_aliases)
 
     return MarketItem(
         id=item_id[:200],
@@ -205,9 +207,30 @@ def _tags(value: Any, static: list[str]) -> list[str]:
     return out[:20]
 
 
-def _role_tags(text: str, roles: list[str]) -> list[str]:
+@lru_cache(maxsize=512)
+def _alias_pattern(alias: str) -> re.Pattern[str]:
+    """Case-insensitive whole-word-ish match: a short alias such as "AI" must not match "said"."""
+    left = r"(?<![a-z0-9])" if alias[:1].isalnum() else ""
+    right = r"(?![a-z0-9])" if alias[-1:].isalnum() else ""
+    return re.compile(f"{left}{re.escape(alias)}{right}", re.IGNORECASE)
+
+
+def _role_tags(text: str, roles: list[str], aliases: dict[str, list[str]] | None = None) -> list[str]:
+    """`role:<canonical name>` for every role whose name or one of its aliases occurs in `text`.
+
+    The role name keeps the historical plain substring match; aliases from `defaults.role_aliases`
+    match case-insensitively with word-ish boundaries, so "Machine Learning Engineer" becomes
+    ``role:AI Specialist`` while a word like "said" never tags ``AI``.
+    """
     haystack = text.lower()
-    return [f"role:{role}" for role in roles if role.lower() in haystack]
+    tags: list[str] = []
+    for role in roles:
+        found = role.lower() in haystack
+        if not found:
+            found = any(_alias_pattern(alias).search(text) for alias in (aliases or {}).get(role, []) if alias)
+        if found:
+            tags.append(f"role:{role}")
+    return tags
 
 
 def _metrics(record: dict, mapping: Any) -> dict[str, float | None]:

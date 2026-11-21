@@ -25,7 +25,7 @@ async function noViolations() {
 describe('accessibility (axe) on every page', () => {
   for (const [name, path, heading] of [
     ['Job market', '/', /Job market by role/], ['Role page', '/roles/web-developer', /^Web Developer$/],
-    ['Policy', '/policy', /Policy news/], ['Reports', '/reports', /Weekly report/], ['Sources', '/sources', /Data sources/],
+    ['Policy', '/policy', /Policy news/], ['Participants', '/participants', /Participants/], ['Reports', '/reports', /Weekly report/], ['Sources', '/sources', /Data sources/],
   ] as const) {
     it(`${name} has no violations`, async () => {
       show(path);
@@ -65,6 +65,15 @@ describe('guidance', () => {
     show('/');
     await ready(/Quick answers/);
     expect(screen.getByText(/How is the change calculated/)).toBeTruthy();
+  });
+
+  it('opens with the weekly pulse and a cited interpretation', async () => {
+    show('/');
+    await ready(/This week's pulse/);
+    expect(screen.getByText('IT postings in the sample')).toBeTruthy();
+    expect(screen.getByText(/Biggest riser/)).toBeTruthy();
+    expect(screen.getByText(/Sources up to date/)).toBeTruthy();
+    expect((await screen.findAllByText('What this means for Powercoders', {}, { timeout: 4000 })).length).toBeGreaterThan(0);
   });
 });
 
@@ -130,6 +139,13 @@ describe('role page', () => {
     expect(screen.getByRole('img', { name: /From .* to .*open IT Support positions/ })).toBeTruthy(); // chart text alternative
   });
 
+  it('explains the numbers and lists what to watch', async () => {
+    show('/roles/web-developer');
+    await ready(/^Web Developer$/);
+    expect((await screen.findAllByText('What this means for Powercoders', {}, { timeout: 4000 })).length).toBeGreaterThan(0);
+    expect(await screen.findByRole('heading', { name: 'What to watch' })).toBeTruthy();
+  });
+
   it('lets people switch role and shows a friendly message for an unknown one', async () => {
     const user = userEvent.setup();
     show('/roles/web-developer');
@@ -148,16 +164,17 @@ describe('policy page', () => {
     show('/policy');
     await ready(/Policy news/);
     const chips = await screen.findByRole('group', { name: 'Filter policy items by topic' });
-    expect(within(chips).getByRole('button', { name: 'Status S' })).toBeTruthy();
+    // The topics come from the API taxonomy, so the app and the briefing share them.
     expect(within(chips).getByRole('button', { name: 'All topics' })).toBeTruthy();
+    expect(within(chips).getByRole('button', { name: 'Migration law' })).toBeTruthy();
 
     // Every card carries a provenance link once the demo items are loaded.
     expect((await screen.findAllByRole('link', { name: /^Source: / }, { timeout: 4000 })).length).toBeGreaterThan(0);
 
-    await user.click(within(chips).getByRole('button', { name: 'Status S' }));
-    expect(within(chips).getByRole('button', { name: 'Status S' }).getAttribute('aria-pressed')).toBe('true');
-    // A matching item shows our interpretation, explicitly labelled as ours.
-    expect(await screen.findByText(/Our reading, not the source/i, {}, { timeout: 4000 })).toBeTruthy();
+    await user.click(within(chips).getByRole('button', { name: 'Migration law' }));
+    expect(within(chips).getByRole('button', { name: 'Migration law' }).getAttribute('aria-pressed')).toBe('true');
+    // Matching items show our interpretation, explicitly labelled as ours (more than one card can match).
+    expect((await screen.findAllByText(/Our reading, not the source/i, {}, { timeout: 4000 })).length).toBeGreaterThan(0);
   });
 });
 

@@ -17,6 +17,7 @@ from ..schemas import (ConnectorConfigFile, ConnectorConfigUpdate, ConnectorDefa
 from ..services import connectors
 from ..services import items as item_store
 from ..connectors import config as sources_config
+from ..insights import taxonomy
 
 router = APIRouter()
 
@@ -52,7 +53,9 @@ def list_connectors(conn: Conn = Depends(get_conn)) -> ConnectorList:
         appliedAt=iso(state["applied_at"]) if state and state.get("applied_at") else None,
         defaults=ConnectorDefaults(targetCities=loaded.defaults.target_cities,
                                    targetRoles=loaded.defaults.target_roles,
-                                   policyKeywords=loaded.defaults.policy_keywords),
+                                   policyKeywords=loaded.defaults.policy_keywords,
+                                   policyGroups=taxonomy.groups_from(loaded.defaults),
+                                   roleAliases=taxonomy.aliases_from(loaded.defaults)),
         sources=[_source(row, counts.get(row["id"], 0)) for row in rows])
 
 

@@ -82,6 +82,36 @@ Records heissen selten so wie das Ziel. `field_map` mappt Feld → Pfad **oder**
 
 Alles, was `defaults` (Zielstädte, Zielrollen, Policy-Keywords) betrifft, steht **einmal** oben in der Datei.
 
+## Produktwissen: Politik-Gruppen und Rollen-Aliase (optional)
+
+Zwei Felder in `defaults` steuern nicht den Abruf, sondern die Deutung und die Zuordnung. Sie sind der Ort, an
+dem das Team Formulierungen und Zuordnungen pflegt — ohne Code:
+
+```yaml
+defaults:
+  policy_groups:                       # Chips auf der Policy-Seite + Abschnitt im Briefing
+    - label: "SEM numbers & distribution"
+      keywords: ["Asylstatistik", "Schutzstatus", "Status S", "Status F", "Kantonsverteilung"]
+    - label: "Migration law"
+      keywords: ["Asyl", "Ausländer", "Migration", "Aufenthalt"]
+    - label: "Labour law & reporting"
+      keywords: ["Arbeitsrecht", "Stellenmeldepflicht", "Erwerbstätigkeit", "Berufsbildung"]
+  role_aliases:                        # Synonyme, die als kanonische Rolle gezählt werden
+    "AI Specialist": ["AI", "Artificial Intelligence", "Machine Learning", "ML"]
+    "IT Support": ["Helpdesk", "Service Desk", "First Level"]
+```
+
+- `policy_groups` erscheinen als Filter auf **Policy** und als Abschnitts-Hinweis im Briefing. Ein Eintrag ohne
+  Treffer verschwindet nicht, sondern filtert die Liste ehrlich auf „keine Treffer“.
+- `role_aliases` wirkt beim Normalisieren **neuer** Abrufe: Ein Inserat mit „Machine Learning Engineer“ bekommt
+  das Tag `role:AI Specialist`. Das verbessert die Arbeitgeber-Zuordnung; bereits gespeicherte Records werden
+  erst beim nächsten Sync neu getaggt.
+- Beide Werte liefert `GET /api/insights/taxonomy` (und `/api/connectors` unter `defaults`). Änderungen an der
+  Datei greifen beim nächsten Aufruf; ein `reload` ist nur für die Quellen-Blöcke nötig.
+- Die sechs kuratierten „Our reading“-Texte zu Status S/F, Stellenmeldepflicht, Asyl, Integration und
+  Fachkräftemangel stehen bewusst im Code (`backend/app/insights/taxonomy.py`) — es sind Rechtstexte-nahe
+  Einordnungen, die reviewt werden müssen.
+
 ## Einbauen und prüfen
 
 ```bash

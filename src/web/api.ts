@@ -1,11 +1,12 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import type {
   ConnectorConfigFile, ConnectorConfigUpdate, ConnectorList, Digest, DigestRequest, DemandResponse, EmployersResponse,
-  MarketItem, MarketItemCategory, Role, SkillsResponse, SourceStatus, SubscribeBody, SubscribeResult, SyncSummary,
+  Insight, InsightKind, MarketItem, MarketItemCategory, Overview, Role, SkillsResponse, SourceStatus, SubscribeBody,
+  SubscribeResult, SyncSummary, Taxonomy,
 } from '../shared/types';
 import {
-  mockConnectorConfig, mockConnectors, mockDemand, mockDigest, mockEmployers, mockRoles, mockSkills, mockSources,
-  mockSubscribeResult, type Scenario,
+  mockConnectorConfig, mockConnectors, mockDemand, mockDigest, mockEmployers, mockInsights, mockOverview, mockRoles,
+  mockSkills, mockSources, mockSubscribeResult, mockTaxonomy, type Scenario,
 } from './mocks/data';
 import { mockMarketItems } from './mocks/marketItems';
 
@@ -133,6 +134,40 @@ export const useEmployers = (roleId: string) =>
     queryKey: ['employers', roleId],
     queryFn: (): Promise<EmployersResponse> =>
       useMocks ? mock(() => mockEmployers(roleId)) : get(`/employers?role=${encodeURIComponent(roleId)}`),
+  });
+
+// ---- Insights: our plain-language reading ---------------------------------
+export const useOverview = () =>
+  useQuery({
+    queryKey: ['overview'],
+    queryFn: (): Promise<Overview> => (useMocks ? mock(mockOverview) : get('/overview')),
+  });
+
+export interface InsightFilter {
+  role?: string;
+  kind?: InsightKind;
+  limit?: number;
+}
+
+export const useInsights = (filter: InsightFilter = {}) =>
+  useQuery({
+    queryKey: ['insights', filter],
+    queryFn: (): Promise<Insight[]> => {
+      if (useMocks) return mock(() => mockInsights(filter));
+      const params = new URLSearchParams();
+      if (filter.role) params.set('role', filter.role);
+      if (filter.kind) params.set('kind', filter.kind);
+      if (filter.limit) params.set('limit', String(filter.limit));
+      const query = params.toString();
+      return get(`/insights${query ? `?${query}` : ''}`);
+    },
+  });
+
+export const useTaxonomy = () =>
+  useQuery({
+    queryKey: ['taxonomy'],
+    staleTime: 5 * 60_000,
+    queryFn: (): Promise<Taxonomy> => (useMocks ? mock(mockTaxonomy) : get('/insights/taxonomy')),
   });
 
 // ---- Level 2: briefings ----------------------------------------------------

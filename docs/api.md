@@ -377,3 +377,73 @@ numbers are as old as the last sync.
 - No category-C data (e.g. `ADZUNA_APP_ID`/`ADZUNA_APP_KEY` missing) answers `200` with `employers: []`; the UI
   explains what to configure instead of showing placeholder numbers.
 - Aggregate only: employer names and counts, no contact persons, no applications.
+
+## Insights (the plain-language reading)
+
+The UI never shows a bare number: each card carries one or more `Insight` objects — a short, deterministic
+reading of the data. **The text is generated from the same rows the numbers come from; no model, no invented
+figures.** Every number that appears in `body` must also appear in `evidence`, together with its source. The UI
+labels the text as *our reading, not the source*; it is never attributed to the publisher.
+
+```json
+{
+  "id": "demand:it-support",
+  "kind": "demand",
+  "headline": "IT Support: demand is rising",
+  "body": "IT Support has 41 open positions in November 2026, 1.2 % more than in October. The trend points up over the last months; treat the forecast as an extrapolation, not a promise.",
+  "evidence": [
+    { "label": "Open positions, Nov 2026", "value": "41", "source": { "id": "itboard-monthly", "name": "ITBoard · IT-Arbeitsmarkt Schweiz", "url": "https://www.itboard.ch/arbeitsmarkt", "fetchedAt": "2026-11-21T08:00:00Z", "dataAsOf": "2026-11-15", "comparableFrom": "2026-06" } }
+  ],
+  "severity": "info",
+  "method": "template",
+  "generatedAt": "2026-11-21T14:00:00Z",
+  "roleId": "it-support",
+  "itemId": null
+}
+```
+
+`kind`: `demand` · `skills` · `employers` · `regions` · `target` · `policy`. `severity`: `info` · `attention`
+(e.g. a policy item that matches one of the watch groups). `method` is always `template` today.
+
+### `GET /api/insights?role=<id>&kind=<kind>&limit=<n>`
+
+Returns `Insight[]`, newest/most relevant first. `role` limits demand/skills/employers insights to one role
+(`404` for an unknown role); `kind` filters the list; `limit` defaults to 20, max 100. Empty database → `[]`
+(no insight without data). A missing section (e.g. no category-C records) produces no insight, not an empty one.
+
+### `GET /api/overview`
+
+The weekly pulse for the home page:
+
+```json
+{
+  "generatedAt": "2026-11-21T14:00:00Z",
+  "postings": { "value": 184, "period": "2026-11", "base": 770,
+                "source": { "id": "itboard-monthly", "name": "…", "url": "…", "fetchedAt": "…", "dataAsOf": "…" } },
+  "rolesTracked": 6,
+  "biggestRiser": { "role": { "id": "data-analyst", "name": "Data Analyst" }, "changePct": 12.4, "source": { "…": "…" } },
+  "biggestFaller": null,
+  "newPolicyItems": 2,
+  "targetGroupItems": 343,
+  "sources": { "ok": 5, "stale": 1, "error": 0 },
+  "insights": [ { "…": "Insight" } ]
+}
+```
+
+- `postings.value` is the **largest role count** in the latest month, `base` is the sample of all postings in that
+  month. Never sum role counts: ITBoard counts one posting for several roles (136–161 % of postings).
+- `biggestRiser` / `biggestFaller` compare the latest month with the previous one, using the share where the
+  source states a sample size. They prefer roles with at least 20 postings in the latest month (small samples
+  swing wildly); when no role reaches that, the largest available role is used. `current` is that month's
+  postings, so the UI can show the sample next to the move. `null` when fewer than two comparable months exist
+  for every role.
+- `newPolicyItems` = category-E records whose `published_at` (fallback `fetched_at`) is within the last 7 days.
+- `sources` counts the health states of `GET /api/sources` (`ok`, `stale`, `error`).
+- `insights` embeds the short list shown in the pulse (demand, skills, regions, target, policy).
+
+### `GET /api/insights/taxonomy`
+
+Curated product knowledge, so the app and the e-mailed briefing tell the same story:
+`{ policyGroups: [{label, keywords[]}], policyNotes: [{keyword, label, note}], roleAliases: {role: [alias]} }`.
+`policyGroups` and `roleAliases` come from `sources.yaml` → `defaults` when present (falling back to the built-in
+list); `policyNotes` are curated text (our reading, never the source's). No token required.

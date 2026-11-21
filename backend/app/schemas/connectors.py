@@ -1,6 +1,8 @@
 """Schemas for the config-driven connectors (docs/api.md)."""
 from pydantic import BaseModel, Field
 
+from .insights import PolicyGroup
+
 
 class ConnectorSource(BaseModel):
     """One configured source as the UI sees it; secrets are never included."""
@@ -29,6 +31,9 @@ class ConnectorDefaults(BaseModel):
     targetCities: list[str] = []
     targetRoles: list[str] = []
     policyKeywords: list[str] = []
+    # Curated knowledge served under defaults too, so the operator sees what the app shows.
+    policyGroups: list[PolicyGroup] = []
+    roleAliases: dict[str, list[str]] = {}
 
 
 class ConnectorList(BaseModel):

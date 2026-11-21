@@ -43,6 +43,25 @@ defaults:
     - "Erwerbstätigkeit"
     - "Berufsbildung"
     - "Migration"
+  # Kuratiertes Produktwissen (docs/ADDING_SOURCES.md): Chips auf der Policy-Seite und
+  # Hinweis im Briefing. Ohne diese Blöcke greifen die eingebauten Defaults aus
+  # backend/app/insights/taxonomy.py.
+  policy_groups:
+    - label: "SEM numbers & distribution"
+      keywords: ["Asylstatistik", "Schutzstatus", "Status S", "Status F", "Kantonsverteilung", "Gesuche"]
+    - label: "Migration law"
+      keywords: ["Asyl", "Ausländer", "Migration", "Aufenthalt", "Einbürgerung", "Ausweis"]
+    - label: "Labour law & reporting"
+      keywords: ["Arbeitsrecht", "Stellenmeldepflicht", "Erwerbstätigkeit", "Berufsbildung", "Arbeitszeit"]
+  # Synonyme, die beim Normalisieren neuer Abrufe als kanonische Rolle zählen:
+  # "Machine Learning Engineer" bekommt das Tag `role:AI Specialist`.
+  role_aliases:
+    "AI Specialist": ["AI", "Artificial Intelligence", "Machine Learning", "ML"]
+    "Data Science": ["Data Scientist", "Analytics", "Machine Learning", "Data Mining"]
+    "IT Support": ["Helpdesk", "Service Desk", "First Level", "Support Specialist"]
+    "Web Developer": ["Frontend", "Frontend Developer", "Full Stack"]
+    "Software Engineer": ["Backend", "Backend Developer"]
+    "Data Analyst": ["BI", "Business Intelligence", "Datenanalyst"]
 
 sources:
   # ----------------------------------------------------------------------------

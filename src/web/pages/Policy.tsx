@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import type { MarketItem } from '../../shared/types';
-import { useItems } from '../api';
+import type { MarketItem, PolicyGroup, PolicyNote } from '../../shared/types';
+import { useItems, useTaxonomy } from '../api';
 import { PageHeader } from '@/components/PageHeader';
 import { PolicyCard } from '@/components/PolicyCard';
+import { FilterPills } from '@/components/FilterPills';
 import { Empty, ErrorMsg, Loading } from '@/components/Status';
-import { POLICY_WATCH, matchesKeyword, noteFor } from '../lib/policy-watch';
 import { formatDate } from '../lib/source';
 
 interface SourceGroup {
@@ -31,24 +31,37 @@ function sourceGroups(items: MarketItem[]): SourceGroup[] {
     .sort((a, b) => b.newest.localeCompare(a.newest) || a.name.localeCompare(b.name));
 }
 
-/** While a topic is filtered, show that topic's note; otherwise the first match wins. */
-function noteForItem(item: MarketItem, activeKeyword: string) {
-  if (activeKeyword) {
-    const active = POLICY_WATCH.find((note) => note.keyword === activeKeyword);
-    if (active && matchesKeyword(item, active.keyword)) return active;
-  }
-  return noteFor(item);
+/** Case-insensitive match of any keyword in the publisher's title and summary. */
+function mentions(item: MarketItem, keywords: string[]): boolean {
+  const text = `${item.title} ${item.summary}`.toLowerCase();
+  return keywords.some((keyword) => text.includes(keyword.toLowerCase()));
 }
 
+/**
+ * The first curated note whose keyword appears in the item. The notes are OUR
+ * plain-language reading, served by the taxonomy endpoint — never hardcoded here,
+ * and never attributed to the publisher.
+ */
+function noteFor(item: MarketItem, notes: PolicyNote[]): PolicyNote | undefined {
+  return notes.find((note) => mentions(item, [note.keyword]));
+}
+
+const ALL_TOPICS = '';
+
 export default function Policy() {
-  const [keyword, setKeyword] = useState('');
+  const [topic, setTopic] = useState<string>(ALL_TOPICS);
   const { data, isLoading, error } = useItems({ category: 'E', limit: 100 });
+  const taxonomy = useTaxonomy();
 
-  if (isLoading) return <Loading />;
-  if (error) return <ErrorMsg />;
+  // The taxonomy (topics + our notes) is optional: if it is still loading, failed
+  // or empty, the page shows every item without chips beyond "All topics" and
+  // without notes — never a hardcoded copy of the curated texts.
+  const policyGroups: PolicyGroup[] = taxonomy.data?.policyGroups ?? [];
+  const policyNotes: PolicyNote[] = taxonomy.data?.policyNotes ?? [];
 
+  const activeGroup = policyGroups.find((group) => group.label === topic);
   const allItems = data ?? [];
-  const items = keyword ? allItems.filter((item) => matchesKeyword(item, keyword)) : allItems;
+  const items = activeGroup ? allItems.filter((item) => mentions(item, activeGroup.keywords)) : allItems;
   const groups = sourceGroups(items);
 
   const header = (
@@ -57,6 +70,9 @@ export default function Policy() {
       description="New laws, motions and reporting duties that can change what we teach or who we can place."
     />
   );
+
+  if (isLoading) return <Loading />;
+  if (error) return <ErrorMsg />;
 
   if (allItems.length === 0) {
     return (
@@ -71,6 +87,11 @@ export default function Policy() {
     );
   }
 
+  const chipOptions = [
+    { value: ALL_TOPICS, label: 'All topics' },
+    ...policyGroups.map((group) => ({ value: group.label, label: group.label })),
+  ];
+
   return (
     <div className="space-y-6">
       {header}
@@ -78,39 +99,19 @@ export default function Policy() {
         Notes marked “Our reading, not the source” are our own interpretation, not the publisher’s wording.
       </p>
 
-      <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Filter policy items by topic">
-        <button
-          type="button"
-          onClick={() => setKeyword('')}
-          aria-pressed={!keyword}
-          className={`rounded-md border px-3 py-1 text-xs font-medium ${
-            keyword ? 'border-slate-200 text-slate-600' : 'border-brand bg-brand text-white'
-          }`}
-        >
-          All topics
-        </button>
-        {POLICY_WATCH.map((note) => (
-          <button
-            key={note.keyword}
-            type="button"
-            onClick={() => setKeyword(keyword === note.keyword ? '' : note.keyword)}
-            aria-pressed={keyword === note.keyword}
-            title={note.label}
-            className={`rounded-md border px-3 py-1 text-xs font-medium ${
-              keyword === note.keyword ? 'border-brand bg-brand text-white' : 'border-slate-200 text-slate-600'
-            }`}
-          >
-            {note.keyword}
-          </button>
-        ))}
-      </div>
+      <FilterPills
+        label="Filter policy items by topic"
+        options={chipOptions}
+        value={activeGroup ? topic : ALL_TOPICS}
+        onChange={setTopic}
+      />
 
       {items.length === 0 ? (
         <div className="space-y-2">
-          <Empty text={`No policy item mentions “${keyword}” right now.`} />
+          <Empty text={`No policy item mentions “${activeGroup?.label ?? topic}” right now.`} />
           <button
             type="button"
-            onClick={() => setKeyword('')}
+            onClick={() => setTopic(ALL_TOPICS)}
             className="rounded-md border border-slate-200 px-3 py-1 text-xs font-medium text-slate-600"
           >
             Show all topics
@@ -137,14 +138,18 @@ export default function Policy() {
               </div>
               <div className="grid gap-4 md:grid-cols-2">
                 {group.items.map((item) => (
-                  <PolicyCard key={`${item.source_name}-${item.id}`} item={item} note={noteForItem(item, keyword)} />
+                  <PolicyCard
+                    key={`${item.source_name}-${item.id}`}
+                    item={item}
+                    note={noteFor(item, policyNotes)}
+                  />
                 ))}
               </div>
             </section>
           ))}
           <p className="text-xs text-slate-500">
             {items.length} item(s) from {groups.length} source(s)
-            {keyword ? ` matching “${keyword}”` : ''}.
+            {activeGroup ? ` on “${activeGroup.label}”` : ''}.
           </p>
         </div>
       )}

@@ -16,6 +16,43 @@ export interface Employer { name: string; openings: number; topSkills: string[];
 export interface EmployersResponse { role: Role; window: { from: string; to: string } | null; employers: Employer[]; source: SourceRef }
 export interface SourceStatus { id: string; name: string; url: string; lastFetchedAt: string; dataAsOf?: string | null; licence?: string | null; licenceUrl?: string | null; status: 'ok' | 'stale' | 'error'; problem?: string | null }
 
+// ---- Insights: our plain-language reading of a number or an item -----------
+// Evidence is the only place numbers may come from: the text never introduces a number
+// that is not also listed there with its source. `method` is 'template' — a deterministic
+// sentence, not a model. `note`-style text is always labelled as our reading, never the source.
+export type InsightKind = 'demand' | 'skills' | 'employers' | 'regions' | 'target' | 'policy';
+export interface Evidence { label: string; value: string; source: SourceRef }
+export interface Insight {
+  id: string;
+  kind: InsightKind;
+  headline: string;
+  body: string;
+  evidence: Evidence[];
+  severity: 'info' | 'attention';
+  method: 'template';
+  generatedAt: string;
+  roleId?: string | null;
+  itemId?: string | null;
+}
+// The weekly pulse on the home page. `postings` uses the sample size of all postings,
+// never the sum of role counts (one posting can count for several roles).
+export interface PulsePostings { value: number; period: string; base: number | null; source: SourceRef }
+export interface PulseMover { role: Role; changePct: number; current: number; source: SourceRef }
+export interface SourceHealth { ok: number; stale: number; error: number }
+export interface Overview {
+  generatedAt: string;
+  postings: PulsePostings | null;
+  rolesTracked: number;
+  biggestRiser: PulseMover | null;
+  biggestFaller: PulseMover | null;
+  newPolicyItems: number;
+  targetGroupItems: number;
+  sources: SourceHealth;
+  insights: Insight[];
+}
+// Curated product knowledge, served so the app and the e-mailed briefing tell the same story.
+export interface Taxonomy { policyGroups: PolicyGroup[]; policyNotes: PolicyNote[]; roleAliases: Record<string, string[]> }
+
 // ---- Level 2: briefings ----------------------------------------------------
 // One bullet = one fact plus the source it came from. The backend appends the citation line, never the model.
 export interface DigestBullet { text: string; source: SourceRef }
@@ -35,7 +72,15 @@ export interface ConnectorSource {
   filterKeywords: string[]; licence?: string | null; licenceUrl?: string | null;
   lastSyncAt?: string | null; lastError?: string | null; itemCount: number;
 }
-export interface ConnectorDefaults { targetCities: string[]; targetRoles: string[]; policyKeywords: string[] }
+export interface PolicyGroup { label: string; keywords: string[] }
+export interface PolicyNote { keyword: string; label: string; note: string }
+export interface ConnectorDefaults {
+  targetCities: string[];
+  targetRoles: string[];
+  policyKeywords: string[];
+  policyGroups: PolicyGroup[];
+  roleAliases: Record<string, string[]>;
+}
 export interface ConnectorList {
   configFile: string; configError?: string | null; pendingChanges: boolean; appliedAt?: string | null;
   defaults: ConnectorDefaults; sources: ConnectorSource[];

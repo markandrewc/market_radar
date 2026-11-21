@@ -24,6 +24,7 @@ import yaml
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field, ValidationError, field_validator, model_validator
 
 from .. import config as app_config
+from ..schemas.insights import PolicyGroup
 
 log = logging.getLogger(__name__)
 
@@ -81,6 +82,9 @@ class Defaults(BaseModel):
     target_cities: list[str] = []
     target_roles: list[str] = []
     policy_keywords: list[str] = []
+    # Curated product knowledge (docs/ADDING_SOURCES.md). Empty = use app/insights/taxonomy.py.
+    policy_groups: list[PolicyGroup] = []
+    role_aliases: dict[str, list[str]] = {}
     # Optional override of the built-in city -> canton map used for region normalisation.
     city_cantons: dict[str, str] = {}
 

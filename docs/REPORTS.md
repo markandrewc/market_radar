@@ -29,8 +29,9 @@ retrieval date) are what the in-app preview shows and what `report_sends` stores
 | Employers | `market_items` with category C | only when the selected role has Adzuna postings |
 
 `note` on a section is **our reading** (a plain-language implication for the programme), always shown separately
-and labelled "Our reading, not the source". If nothing is available, `empty: true` and the text says why and links
-to `/sources`; the briefing never invents a number.
+and labelled "Our reading, not the source". The policy note comes from the same taxonomy the app serves at
+`GET /api/insights/taxonomy`, so the e-mail and the Policy page never tell different stories. If nothing is
+available, `empty: true` and the text says why and links to `/sources`; the briefing never invents a number.
 
 ## Building blocks
 
