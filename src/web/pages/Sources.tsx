@@ -88,6 +88,14 @@ export default function Sources() {
                       <TableRow key={s.id}>
                         <TableCell className="font-medium">
                           <a href={s.url} target="_blank" rel="noreferrer">{s.name}</a>
+                          {s.datasetUrl && (
+                            <p className="text-xs text-slate-400">
+                              <a href={s.datasetUrl} target="_blank" rel="noreferrer" className="underline">
+                                Dataset on opendata.swiss
+                              </a>
+                              {s.datasetModified ? ` · catalogue ${s.datasetModified}` : ''}
+                            </p>
+                          )}
                           {s.licence && <p className="text-xs text-slate-400">{s.licence}</p>}
                         </TableCell>
                         <TableCell>
