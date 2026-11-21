@@ -275,7 +275,6 @@ export default function Home({ onHelp }: { onHelp: () => void }) {
           <div className="rounded-card border border-line bg-surface p-3 text-ink shadow-card sm:p-4">
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
               <div className="min-w-0 space-y-0.5">
-                <p className="kicker">Level 1 · Questions A &amp; B</p>
                 <p className="meta">Switzerland-wide · updated {latest ? formatDate(latest) : 'date not available yet'}</p>
               </div>
               <div className="min-w-0 flex-1">
