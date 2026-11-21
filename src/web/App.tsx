@@ -6,7 +6,6 @@ import RolePage from './pages/RolePage';
 import RolesList from './pages/RolesList';
 import Reports from './pages/Reports';
 import Policy from './pages/Policy';
-import Participants from './pages/Participants';
 import Sources from './pages/Sources';
 import Items from './pages/Items';
 import { Logo } from './components/Logo';
@@ -17,7 +16,6 @@ import { useLocalFlag } from './hooks';
 
 const nav = [
   { label: 'Job market', to: '/' },
-  { label: 'Participants', to: '/participants' },
   { label: 'Policy', to: '/policy' },
   { label: 'Reports', to: '/reports' },
   { label: 'Items', to: '/items' },
@@ -78,7 +76,6 @@ export default function App() {
           <Route path="/" element={<Home onHelp={() => setHelp(true)} />} />
           <Route path="/roles" element={<RolesList />} />
           <Route path="/roles/:id" element={<RolePage />} />
-          <Route path="/participants" element={<Participants />} />
           <Route path="/policy" element={<Policy />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/sources" element={<Sources />} />

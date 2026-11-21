@@ -1,9 +1,12 @@
+import { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { usePaged } from '../hooks';
+import { Pagination } from '@/components/ui/pagination';
 import type { MarketItem, MarketItemCategory } from '../../shared/types';
 import { useItems } from '../api';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Empty, ErrorMsg, Loading } from '@/components/Status';
 
 const categories: { value: MarketItemCategory; label: string }[] = [
@@ -25,6 +28,8 @@ function Metrics({ metrics }: { metrics: MarketItem['metrics'] }) {
 }
 
 const date = (value: string | null) => (value ? new Date(value).toLocaleDateString('en-GB') : '–');
+
+const PAGE = 15;
 
 export default function Items() {
   // Filters live in the URL, so a view can be linked or shown on a slide.
@@ -50,6 +55,11 @@ export default function Items() {
     q: q || undefined,
     limit: 200,
   });
+
+  const rowsAll = data ?? [];
+  const paged = usePaged(rowsAll, PAGE);
+  const filterKey = `${category}|${region}|${source}|${q}`;
+  useEffect(() => paged.setPage(1), [filterKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const regions = [...new Set((data ?? []).map((item) => item.region).filter(Boolean) as string[])].sort();
   const sources = [...new Set((data ?? []).map((item) => item.source_name))].sort();
@@ -122,6 +132,7 @@ export default function Items() {
         <Card>
           <CardContent className="pt-5">
             <Table>
+              <TableCaption>Market items from all sources</TableCaption>
               <TableHeader>
                 <TableRow>
                   <TableHead>Item</TableHead>
@@ -133,7 +144,7 @@ export default function Items() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {data.map((item) => (
+                {paged.slice.map((item) => (
                   <TableRow key={`${item.source_name}-${item.id}`}>
                     <TableCell className="max-w-md">
                       <a href={item.url ?? item.source_url} target="_blank" rel="noreferrer" className="font-medium hover:text-brand-accent">
@@ -161,7 +172,7 @@ export default function Items() {
                 ))}
               </TableBody>
             </Table>
-            <p className="mt-3 text-xs text-slate-500">{data.length} item(s) shown</p>
+            <Pagination label="Items pages" page={paged.page} pageCount={paged.pageCount} total={paged.total} size={PAGE} onChange={paged.setPage} />
           </CardContent>
         </Card>
       )}

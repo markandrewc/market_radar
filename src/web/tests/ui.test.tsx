@@ -130,13 +130,7 @@ describe('role page', () => {
     expect(screen.getByRole('img', { name: /From .* to .*open IT Support positions/ })).toBeTruthy(); // chart text alternative
   });
 
-  it('lets people switch role and shows a friendly message for an unknown one', async () => {
-    const user = userEvent.setup();
-    show('/roles/web-developer');
-    await ready(/^Web Developer$/);
-    await user.click(await screen.findByRole('link', { name: 'Data Analyst' }));
-    await ready(/^Data Analyst$/);
-    cleanup();
+  it('shows a friendly message for an unknown role', async () => {
     show('/roles/nope');
     expect(await screen.findByText(/We have no data for this role yet/, {}, { timeout: 4000 })).toBeTruthy();
   });

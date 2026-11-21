@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { usePaged } from '../hooks';
+import { Pagination } from '@/components/ui/pagination';
 import { Link } from 'react-router-dom';
 import type { MarketItem } from '../../shared/types';
 import { useItems } from '../api';
@@ -40,16 +42,21 @@ function noteForItem(item: MarketItem, activeKeyword: string) {
   return noteFor(item);
 }
 
+const PAGE = 8;
+
 export default function Policy() {
   const [keyword, setKeyword] = useState('');
   const { data, isLoading, error } = useItems({ category: 'E', limit: 100 });
 
-  if (isLoading) return <Loading />;
-  if (error) return <ErrorMsg />;
-
   const allItems = data ?? [];
   const items = keyword ? allItems.filter((item) => matchesKeyword(item, keyword)) : allItems;
-  const groups = sourceGroups(items);
+  // Pages hold 8 items in the same order as the source sections; each page is regrouped by source.
+  const ordered = sourceGroups(items).flatMap((g) => g.items);
+  const paged = usePaged(ordered, PAGE);
+  const groups = sourceGroups(paged.slice);
+
+  if (isLoading) return <Loading />;
+  if (error) return <ErrorMsg />;
 
   const header = (
     <PageHeader
@@ -81,7 +88,7 @@ export default function Policy() {
       <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Filter policy items by topic">
         <button
           type="button"
-          onClick={() => setKeyword('')}
+          onClick={() => { setKeyword(''); paged.setPage(1); }}
           aria-pressed={!keyword}
           className={`rounded-md border px-3 py-1 text-xs font-medium ${
             keyword ? 'border-slate-200 text-slate-600' : 'border-brand bg-brand text-white'
@@ -93,7 +100,7 @@ export default function Policy() {
           <button
             key={note.keyword}
             type="button"
-            onClick={() => setKeyword(keyword === note.keyword ? '' : note.keyword)}
+            onClick={() => { setKeyword(keyword === note.keyword ? '' : note.keyword); paged.setPage(1); }}
             aria-pressed={keyword === note.keyword}
             title={note.label}
             className={`rounded-md border px-3 py-1 text-xs font-medium ${
@@ -132,7 +139,7 @@ export default function Policy() {
                   </a>
                 </h2>
                 <p className="text-xs text-slate-500">
-                  {group.items.length} item(s) · newest {group.newest ? formatDate(group.newest) : 'date not stated'}
+                  {group.items.length} item(s) on this page · newest {group.newest ? formatDate(group.newest) : 'date not stated'}
                 </p>
               </div>
               <div className="grid gap-4 md:grid-cols-2">
@@ -142,10 +149,8 @@ export default function Policy() {
               </div>
             </section>
           ))}
-          <p className="text-xs text-slate-500">
-            {items.length} item(s) from {groups.length} source(s)
-            {keyword ? ` matching “${keyword}”` : ''}.
-          </p>
+          <Pagination label="Policy items pages" page={paged.page} pageCount={paged.pageCount} total={paged.total} size={PAGE} onChange={paged.setPage} />
+          {keyword && <p className="text-xs text-slate-600">Filtered by “{keyword}”.</p>}
         </div>
       )}
     </div>

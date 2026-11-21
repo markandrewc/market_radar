@@ -26,7 +26,7 @@ Everything on screen names its source — point at the source line once and let 
 | 20–50 | `/` → a role card | "Demand for this role over the last months, with trend and forecast. Every card names its source, the publisher's date and when we fetched it — click it and you are at the original." |
 | 50–80 | `/roles/<id>` | "The skills named in the postings, rising and falling. This is what we should teach next term." |
 | 80–130 | `/reports` | "Staff pick topics, preview the exact e-mail with links, and subscribe. Here is the one that just arrived." (switch to inbox, open a bullet link) |
-| 130–170 | `/participants`, `/roles/<id>` employers | "Context on our target group — residence status, canton, integration — aggregate only. And the employers worth a call, straight from the postings." |
+| 130–170 | `/roles/<id>` employers | "The employers worth a call, straight from the postings." |
 | 170–200 | `/policy` | "New laws and motions that change what we can do: Status S/F, job reporting duties. The note under a card is our reading and is labelled as such." |
 | 200–240 | `/sources` → operator panel | "Adding a source is a config block, not a code change: paste, apply, sync." Paste the block below, click *Validate & apply*, then *Sync now*, open `/items?category=E` and show the new rows. |
 
